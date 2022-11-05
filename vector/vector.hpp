@@ -137,8 +137,19 @@ namespace ft {
         template <class InputIterator>
         void                assign(InputIterator first, InputIterator last);
         void                assign(size_type, const value_type&);
-        void                push_back(const value_type&);
-        void                pop_back(void);
+
+        void    push_back(const value_type& value) {
+            if (_last == _end_of_storage) {
+                _realloc_data(this->size() << 1);
+            }
+            _allocator.construct(_last, value);
+            ++_last;
+        }
+
+        void    pop_back(void) {
+            _allocator.destroy(--_last);
+        }
+
         iterator            insert(iterator, const value_type&);
         void                insert(iterator, size_type, const value_type&);
         template <class InputIterator>
@@ -146,17 +157,32 @@ namespace ft {
         iterator            erase(iterator);
         iterator            erase(iterator, iterator);
         void                swap(vector&);
-        void                clear(void);
 
+        void    clear(void) {
+            std::_Destroy(_first, _last);
+            _last = _first;
+        }
 
         /*                              Allocator:                            */
-        allocator_type      get_allocator(void) const;
+        allocator_type  get_allocator(void) const {
+            return allocator_type(_allocator);
+        }
 
      private:
         pointer         _first;
         pointer         _last;
         pointer         _end_of_storage;
         allocator_type  _allocator;
+
+        void    _realloc_data(size_type n) {
+            pointer newBlock = _allocator.allocate(n);
+            pointer newLast = std::uninitialized_copy(_first, _last, newBlock);
+            _end_of_storage = newBlock + n;
+            std::_Destroy(_first, _last);
+            _allocator.deallocate(_first, size());
+            _first = newBlock;
+            _last = newLast;
+        }
     };
     /*                          Relational Operators                      */
     template <class T, class Alloc>
