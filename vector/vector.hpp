@@ -17,9 +17,24 @@ namespace ft {
         typedef const T*                                    const_pointer;
 
      public:
-        vector(void) {}
-        vector(const vector&);
-        ~vector(void) {}
+        vector(void) {
+            _first = _allocator.allocate(1);
+            _last = _first;
+            _end_of_storage = _first + 1;
+        }
+
+        vector(const vector& src) {
+            if (_first)
+                this->~vector();
+            _first = _allocator.allocate(src.size());
+            _last = std::uninitialized_copy(src.cbegin(), src.cend(), _first);
+            _end_of_storage = src._end_of_storage;
+        };
+
+        ~vector(void) {
+            std::_Destroy(_first, _last);
+            _allocator.deallocate(_first, this->capacity());
+        }
 
         vector& operator=(const vector&);
 
@@ -96,7 +111,10 @@ namespace ft {
         allocator_type      get_allocator(void) const;
 
      private:
-        
+        pointer         _first;
+        pointer         _last;
+        pointer         _end_of_storage;
+        allocator_type  _allocator;
     };
     /*                          Relational Operators                      */
     template <class T, class Alloc>
