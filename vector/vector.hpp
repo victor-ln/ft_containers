@@ -46,8 +46,13 @@ namespace ft {
 
         /*                              Capacity:                             */
 
-        size_type   size(void) const;
-        size_type   max_size(void) const;
+        size_type   size(void) const {
+            return _last - _first;
+        }
+
+        size_type   max_size(void) const {
+            return _allocator.max_size();
+        }
 
         /**
          * Resizes the container so that it contains n elements.
@@ -75,8 +80,15 @@ namespace ft {
          *  defined in vector as an alias of the first template parameter (T)
          */
         void        resize(size_type n, value_type val = value_type());
-        size_type   capacity(void) const;
-        bool        empty(void) const;
+
+        size_type   capacity(void) const {
+            return _end_of_storage - _first;
+        }
+
+        bool    empty(void) const {
+            return this->_first == this->_last;
+        }
+
         void        reserve(size_type);
 
         /*                          Element access:                           */
