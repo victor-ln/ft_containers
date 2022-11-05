@@ -92,16 +92,46 @@ namespace ft {
         void        reserve(size_type);
 
         /*                          Element access:                           */
-        reference           operator[](size_type);
-        const_reference     operator[](size_type) const;
-        reference           at(size_type);
-        const_reference     at(size_type) const;
-        reference           front(void);
-        const_reference     front(void) const;
-        reference           back(void);
-        const_reference     back(void) const;
-        value_type*         data(void) noexcept;
-        const value_type*   data(void) const noexcept;
+
+        reference   operator[](size_type n) {
+            return *(_first + n);
+        }
+
+        const_reference operator[](size_type n) const {
+            return *(_first + n);
+        }
+
+        reference   at(size_type n) {
+            return *(_first + n);
+        }
+
+        const_reference at(size_type n) const {
+            return *(_first + n);
+        }
+
+        reference   front(void) {
+            return *_first;
+        }
+
+        const_reference front(void) const {
+            return *_first;
+        }
+
+        reference   back(void) {
+            return *(_last - 1);
+        }
+
+        const_reference back(void) const {
+            return *(_last - 1);
+        }
+
+        value_type* data(void) noexcept {
+            return _first;
+        }
+
+        const value_type*   data(void) const noexcept {
+            return _first;
+        }
 
         /*                              Modifiers:                            */
         template <class InputIterator>
