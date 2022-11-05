@@ -5,16 +5,16 @@
 #include <memory>
 
 namespace ft {
-    template <class Tp, class AllocTp = std::allocator<Tp> >
+    template <class T, class AllocTp = std::allocator<T> >
     class vector {
-        typedef Tp                                          value_type;
-        typedef allocator_type                              AllocTp;
+        typedef T                                           value_type;
+        typedef AllocTp                                     allocator_type;
         typedef std::size_t                                 size_type;
         typedef std::ptrdiff_t                              difference_type;
-        typedef typename AllocTp::reference                 reference;
-        typedef typename AllocTp::const_reference           const_reference;
-        typedef typename AllocTp::pointer                   pointer;
-        typedef typename AllocTp::const_pointer             const_pointer;
+        typedef T&                                          reference;
+        typedef const T&                                    const_reference;
+        typedef T*                                          pointer;
+        typedef const T*                                    const_pointer;
 
      public:
         vector(void) {}
