@@ -1,203 +1,113 @@
+/* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
+
 #pragma once
 #ifndef FT_CONTAINERS_INCLUDES_FT_CONTAINERS_HPP_
 #define FT_CONTAINERS_INCLUDES_FT_CONTAINERS_HPP_
 
 #include <memory>
+#include "../iterators/random_access_iter.hpp"
+#include "../iterators/reverse_iter.hpp"
 
 namespace ft {
-    template <class T, class AllocTp = std::allocator<T> >
-    class vector {
-        typedef T                                           value_type;
-        typedef AllocTp                                     allocator_type;
-        typedef std::size_t                                 size_type;
-        typedef std::ptrdiff_t                              difference_type;
-        typedef T&                                          reference;
-        typedef const T&                                    const_reference;
-        typedef T*                                          pointer;
-        typedef const T*                                    const_pointer;
 
-     public:
-        vector(void) {
-            _first = _allocator.allocate(1);
-            _last = _first;
-            _end_of_storage = _first + 1;
-        }
+template <class T, class AllocTp = std::allocator<T> >
+class vector {
 
-        vector(const vector& src) {
-            if (_first)
-                this->~vector();
-            _first = _allocator.allocate(src.size());
-            _last = std::uninitialized_copy(src.cbegin(), src.cend(), _first);
-            _end_of_storage = src._end_of_storage;
-        };
+ public:
+    typedef T                                            value_type;
+    typedef AllocTp                                      allocator_type;
+    typedef std::size_t                                  size_type;
+    typedef std::ptrdiff_t                               difference_type;
+    typedef T&                                           reference;
+    typedef const T&                                     const_reference;
+    typedef T*                                           pointer;
+    typedef const T*                                     const_pointer;
+    typedef random_access_iter<pointer>                  iterator;
+    typedef random_access_iter<const_pointer>            const_iterator;
+    typedef reverse_iter<pointer>                        reverse_iterator;
+    typedef reverse_iter<const_pointer>                  const_reverse_iterator;
 
-        ~vector(void) {
-            std::_Destroy(_first, _last);
-            _allocator.deallocate(_first, this->capacity());
-        }
+    vector(void);
+    vector(const vector& src);
+    ~vector(void);
 
-        vector& operator=(const vector&);
+    vector&            operator=(const vector&);
 
-        /*                              Iterators:                            */
-        begin(void);
-        end(void);
-        rbegin(void);
-        rend(void);
+    /*                              Iterators:                            */
+    iterator               begin(void);
+    iterator               end(void);
+    const_iterator         begin(void);
+    const_iterator         end(void);
 
-        /*                              Capacity:                             */
+    reverse_iterator       rbegin(void);
+    reverse_iterator       rend(void);
+    const_reverse_iterator rbegin(void);
+    const_reverse_iterator rend(void);
 
-        size_type   size(void) const {
-            return _last - _first;
-        }
+    /*                              Capacity:                             */
 
-        size_type   max_size(void) const {
-            return _allocator.max_size();
-        }
+    size_type           size(void) const;
+    size_type           max_size(void) const;
+    void                resize(size_type n, value_type val = value_type());
+    size_type           capacity(void) const;
+    bool                empty(void) const;
+    void                reserve(size_type);
 
-        /**
-         * Resizes the container so that it contains n elements.
-         * 
-         * If n is smaller than the current container size, 
-         * the content is reduced to its first n elements, 
-         * removing those beyond (and destroying them).
-         * 
-         * If n is greater than the current container size, the content is 
-         * expanded by inserting at the end as many elements as needed to reach 
-         * a size of n. If val is specified, the new elements are initialized 
-         * as copies of val, otherwise, they are value-initialized.
-         * 
-         * If n is also greater than the current container capacity, an
-         * automatic reallocation of the allocated storage space takes place.
-         * Notice that this function changes the actual content 
-         * of the container by inserting or erasing elements from it.
-         * 
-         * @param n New container size, expressed in number of elements.
-         * Member type size_type is an unsigned integral type.
-         * @param val Object whose content is copied to the added elements 
-         * in case that n is greater than the current container size.
-         * If not specified, the default constructor is used instead.
-         * Member type value_type is the type of the elements in the container,
-         *  defined in vector as an alias of the first template parameter (T)
-         */
-        void        resize(size_type n, value_type val = value_type());
+    /*                          Element access:                           */
+    reference           operator[](size_type n);
+    const_reference     operator[](size_type n) const;
+    reference           at(size_type n);
+    const_reference     at(size_type n) const;
+    reference           front(void);
+    const_reference     front(void) const;
+    reference           back(void);
+    const_reference     back(void) const;
+    value_type*         data(void) noexcept;
+    const value_type*   data(void) const noexcept;
 
-        size_type   capacity(void) const {
-            return _end_of_storage - _first;
-        }
+    /*                              Modifiers:                            */
+    template <class InputIterator>
+    void                assign(InputIterator first, InputIterator last);
+    void                assign(size_type, const value_type&);
 
-        bool    empty(void) const {
-            return this->_first == this->_last;
-        }
+    void                push_back(const value_type& value);
+    void                pop_back(void);
+    iterator            insert(iterator, const value_type&);
+    void                insert(iterator, size_type, const value_type&);
+    template <class InputIterator>
+    void                insert(iterator, InputIterator, InputIterator);
+    iterator            erase(iterator);
+    iterator            erase(iterator, iterator);
+    void                swap(vector&);
+    void    clear(void);
 
-        void        reserve(size_type);
+    /*                              Allocator:                            */
+    allocator_type      get_allocator(void) const;
 
-        /*                          Element access:                           */
+ private:
+    pointer             _first;
+    pointer             _last;
+    pointer             _end_of_storage;
+    allocator_type      _allocator;
 
-        reference   operator[](size_type n) {
-            return *(_first + n);
-        }
+    void                _realloc_data(size_type n);
 
-        const_reference operator[](size_type n) const {
-            return *(_first + n);
-        }
+}; /* class vector */
 
-        reference   at(size_type n) {
-            return *(_first + n);
-        }
+/*                          Relational Operators                      */
+template <class T, class Alloc>
+bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
+template <class T, class Alloc>
+bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
+template <class T, class Alloc>
+bool operator< (const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
+template <class T, class Alloc>
+bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
+template <class T, class Alloc>
+bool operator> (const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
+template <class T, class Alloc>
+bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
 
-        const_reference at(size_type n) const {
-            return *(_first + n);
-        }
-
-        reference   front(void) {
-            return *_first;
-        }
-
-        const_reference front(void) const {
-            return *_first;
-        }
-
-        reference   back(void) {
-            return *(_last - 1);
-        }
-
-        const_reference back(void) const {
-            return *(_last - 1);
-        }
-
-        value_type* data(void) noexcept {
-            return _first;
-        }
-
-        const value_type*   data(void) const noexcept {
-            return _first;
-        }
-
-        /*                              Modifiers:                            */
-        template <class InputIterator>
-        void                assign(InputIterator first, InputIterator last);
-        void                assign(size_type, const value_type&);
-
-        void    push_back(const value_type& value) {
-            if (_last == _end_of_storage) {
-                _realloc_data(this->size() << 1);
-            }
-            _allocator.construct(_last, value);
-            ++_last;
-        }
-
-        void    pop_back(void) {
-            _allocator.destroy(--_last);
-        }
-
-        iterator            insert(iterator, const value_type&);
-        void                insert(iterator, size_type, const value_type&);
-        template <class InputIterator>
-        void                insert(iterator, InputIterator, InputIterator);
-        iterator            erase(iterator);
-        iterator            erase(iterator, iterator);
-        void                swap(vector&);
-
-        void    clear(void) {
-            std::_Destroy(_first, _last);
-            _last = _first;
-        }
-
-        /*                              Allocator:                            */
-        allocator_type  get_allocator(void) const {
-            return allocator_type(_allocator);
-        }
-
-     private:
-        pointer         _first;
-        pointer         _last;
-        pointer         _end_of_storage;
-        allocator_type  _allocator;
-
-        void    _realloc_data(size_type n) {
-            pointer newBlock = _allocator.allocate(n);
-            pointer newLast = std::uninitialized_copy(_first, _last, newBlock);
-            _end_of_storage = newBlock + n;
-            std::_Destroy(_first, _last);
-            _allocator.deallocate(_first, size());
-            _first = newBlock;
-            _last = newLast;
-        }
-    };
-    /*                          Relational Operators                      */
-    template <class T, class Alloc>
-    bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>
-    bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>
-    bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>
-    bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>
-    bool operator> (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>
-    bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-};
-
+}; /* namespace ft */
 
 #endif /* FT_CONTAINERS_INCLUDES_FT_CONTAINERS_HPP_ */
