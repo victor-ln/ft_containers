@@ -1,12 +1,18 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
 #pragma once
-#ifndef FT_CONTAINERS_INCLUDES_FT_CONTAINERS_ITERATOR_TRAITS_HPP_
-#define FT_CONTAINERS_INCLUDES_FT_CONTAINERS_ITERATOR_TRAITS_HPP_
+#ifndef FT_CONTAINERS_ITERATORS_ITERATOR_TRAITS_HPP_
+#define FT_CONTAINERS_ITERATORS_ITERATOR_TRAITS_HPP_
 
 #include <cstddef>
 
 namespace ft {
+
+struct input_iterator_tag { };
+struct output_iterator_tag { };
+struct forward_iterator_tag : public input_iterator_tag { };
+struct bidirectional_iterator_tag : public forward_iterator_tag { };
+struct random_access_iterator_tag : public bidirectional_iterator_tag { };
 
 template<typename _Category, typename _Tp, typename _Distance = std::ptrdiff_t,
  typename _Pointer = _Tp*, typename _Reference = _Tp&>
@@ -34,7 +40,7 @@ struct iterator_traits<T*> {
     typedef T                                           value_type;
     typedef T*                                          pointer;
     typedef T&                                          reference;
-    typedef std::random_access_iterator_tag             iterator_category;
+    typedef random_access_iterator_tag                  iterator_category;
 };
 
 template<class T>
@@ -43,7 +49,7 @@ struct iterator_traits<const T*> {
     typedef T                                           value_type;
     typedef const T*                                    pointer;
     typedef const T&                                    reference;
-    typedef std::random_access_iterator_tag             iterator_category;
+    typedef random_access_iterator_tag                  iterator_category;
 };
 
 };  /* namespace ft */
