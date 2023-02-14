@@ -1,7 +1,7 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#ifndef FT_CONTAINERS_ITERATORS_RANDOM_ACCESS_ITER_HPP_
-#define FT_CONTAINERS_ITERATORS_RANDOM_ACCESS_ITER_HPP_
+#ifndef ITERATORS_RANDOM_ACCESS_ITER_HPP_
+#define ITERATORS_RANDOM_ACCESS_ITER_HPP_
 
 #include "./iterator_traits.hpp"
 
@@ -138,4 +138,4 @@ class random_access_iter : public iterator<random_access_iterator_tag, Tp> {
     }
 }; /* namespace ft */
 
-#endif /* FT_CONTAINERS_ITERATORS_RANDOM_ACCESS_ITER_HPP_ */
+#endif /* ITERATORS_RANDOM_ACCESS_ITER_HPP_ */

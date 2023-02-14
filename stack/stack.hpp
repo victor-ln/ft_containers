@@ -1,7 +1,7 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#ifndef FT_CONTAINERS_INCLUDES_FT_CONTAINERS_STACK_HPP_
-#define FT_CONTAINERS_INCLUDES_FT_CONTAINERS_STACK_HPP_
+#ifndef STACK_STACK_HPP_
+#define STACK_STACK_HPP_
 
 #include <memory>
 
@@ -55,4 +55,4 @@ class stack {
 
 #include "./stack.tpp"
 
-#endif /* FT_CONTAINERS_INCLUDES_FT_CONTAINERS_STACK_HPP_ */
+#endif  // STACK_STACK_HPP_

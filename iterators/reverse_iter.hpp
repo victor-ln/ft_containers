@@ -1,7 +1,7 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#ifndef FT_CONTAINERS_ITERATORS_REVERSE_ITER_HPP_
-#define FT_CONTAINERS_ITERATORS_REVERSE_ITER_HPP_
+#ifndef ITERATORS_REVERSE_ITER_HPP_
+#define ITERATORS_REVERSE_ITER_HPP_
 
 #include "./iterator_traits.hpp"
 
@@ -132,4 +132,4 @@ class reverse_iter : iterator<iterator_traits<T>::iterator_category,
 
 }   /* namespace ft */
 
-#endif /* FT_CONTAINERS_ITERATORS_REVERSE_ITER_HPP_ */
+#endif /* ITERATORS_REVERSE_ITER_HPP_ */

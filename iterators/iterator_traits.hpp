@@ -1,7 +1,7 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#ifndef FT_CONTAINERS_ITERATORS_ITERATOR_TRAITS_HPP_
-#define FT_CONTAINERS_ITERATORS_ITERATOR_TRAITS_HPP_
+#ifndef ITERATORS_ITERATOR_TRAITS_HPP_
+#define ITERATORS_ITERATOR_TRAITS_HPP_
 
 #include <cstddef>
 
@@ -53,4 +53,4 @@ struct iterator_traits<const T*> {
 
 };  /* namespace ft */
 
-#endif /* FT_CONTAINERS_ITERATORS_ITERATOR_TRAITS_HPP_ */
+#endif /* ITERATORS_ITERATOR_TRAITS_HPP_ */

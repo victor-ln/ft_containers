@@ -1,6 +1,6 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "./stack.hpp"
+#include "stack/stack.hpp"
 
 namespace ft {
     template <class T, class Container >
