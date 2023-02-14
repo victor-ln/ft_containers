@@ -1,6 +1,5 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#pragma once
 #ifndef FT_CONTAINERS_ITERATORS_REVERSE_ITER_HPP_
 #define FT_CONTAINERS_ITERATORS_REVERSE_ITER_HPP_
 

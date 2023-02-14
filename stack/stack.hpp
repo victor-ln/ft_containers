@@ -1,6 +1,5 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#pragma once
 #ifndef FT_CONTAINERS_INCLUDES_FT_CONTAINERS_STACK_HPP_
 #define FT_CONTAINERS_INCLUDES_FT_CONTAINERS_STACK_HPP_
 
