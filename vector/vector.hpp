@@ -1,9 +1,9 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#pragma once
 #ifndef FT_CONTAINERS_INCLUDES_FT_CONTAINERS_HPP_
 #define FT_CONTAINERS_INCLUDES_FT_CONTAINERS_HPP_
 
+#include <stdexcept>
 #include <memory>
 #include "../iterators/random_access_iter.hpp"
 #include "../iterators/reverse_iter.hpp"
@@ -22,13 +22,23 @@ class vector {
     typedef const T&                                     const_reference;
     typedef T*                                           pointer;
     typedef const T*                                     const_pointer;
+
     typedef random_access_iter<pointer>                  iterator;
     typedef random_access_iter<const_pointer>            const_iterator;
     typedef reverse_iter<pointer>                        reverse_iterator;
     typedef reverse_iter<const_pointer>                  const_reverse_iterator;
 
-    vector(void);
+    explicit vector(const allocator_type& alloc);
+
+    explicit vector (size_type n, const value_type& val = value_type(),
+      const allocator_type& alloc = allocator_type());
+
     vector(const vector& src);
+
+    template <class InputIterator>
+    vector (InputIterator first, InputIterator last,
+      const allocator_type& alloc = allocator_type());
+
     ~vector(void);
 
     vector&            operator=(const vector&);
@@ -79,7 +89,7 @@ class vector {
     iterator            erase(iterator);
     iterator            erase(iterator, iterator);
     void                swap(vector&);
-    void    clear(void);
+    void                clear(void);
 
     /*                              Allocator:                            */
     allocator_type      get_allocator(void) const;
