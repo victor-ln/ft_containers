@@ -1,255 +1,335 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "./vector.hpp"
+#include "vector/vector.hpp"
 
 namespace ft {
 
     template <class T, class AllocTp>
-    vector<T, AllocTp>::vector(void) {
-        _first = _allocator.allocate(1);
+    vector<T, AllocTp>::vector(const allocator_type& alloc) {
+        _first = _last = _end_of_storage = 0;
+        _allocator = alloc;
+    }
+
+    template <class T, class AllocTp>
+    vector<T, AllocTp>::vector(size_type n,
+                            const value_type& val = value_type(),
+                            const allocator_type& alloc = allocator_type()) {
+        _allocator = alloc;
+        _first = _allocate(n);
         _last = _first;
-        _end_of_storage = _first + 1;
+        _end_of_storage = _first + n;
+        while (_last != _end_of_storage) {
+            _allocator.construct(_last, val);
+            ++_last;
+        }
+    }
+
+    template <class T, class AllocTp>
+    template <class InputIterator>
+    vector<T, AllocTp>::vector(InputIterator first, InputIterator last,
+                            const allocator_type& alloc = allocator_type()) {
+        _allocator = alloc;
+        _first = _allocate(last - first);
+        _last = std::uninitialized_copy(first, last, _first);
+        _end_of_storage = _last;
     }
 
     template <class T, class AllocTp>
     vector<T, AllocTp>::vector(const vector& src) {
-        if (_first)
-            this->~vector();
-        _first = _allocator.allocate(src.size());
-        _last = std::uninitialized_copy(src.cbegin(), src.cend(), _first);
-        _end_of_storage = src._end_of_storage;
-    };
-
-    template <class T, class AllocTp>
-    vector<T, AllocTp>::~vector(void) {
-        std::_Destroy(_first, _last);
-        _allocator.deallocate(_first, this->capacity());
+        _first = _allocate(src.size());
+        _last = std::uninitialized_copy(src.begin(), src.end(), _first);
+        _end_of_storage = _last;
     }
 
     template <class T, class AllocTp>
-    vector<T, AllocTp>& vector<T, AllocTp>::operator=(const vector&) {
-        
+    vector<T, AllocTp>::~vector(void) {
+        _destroy(_first, _last);
+        _allocator.deallocate(_first, capacity());
+        _first = _last = _end_of_storage = 0;
+    }
+
+    template <class T, class AllocTp>
+    vector<T, AllocTp>& vector<T, AllocTp>::operator=(const vector& src) {
+        if (this != &rhs) {
+            if (_first) {
+                _destroy(_first, _last);
+                _allocator.deallocate(_first, capacity());
+            }
+            _first = _allocate(src.size());
+            _last = std::uninitialized_copy(src.begin(), src.end(), _first);
+            _end_of_storage = _last;
+        }
+        return *this;
     }
 
     /*                              Iterators:                            */
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::iterator   begin(void) {
-        return 
+        iterator(_first);
     }
+
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::iterator   end(void) {
-        
+        iterator(_last);
     }
+
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::const_iterator  begin(void) {
-        
+        const_iterator(_first);
     }
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::const_iterator  end(void) {
-        
+        const_iterator(_last);
     }
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::reverse_iterator    rbegin(void) {
-        
+        reverse_iterator(_first);
     }
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::reverse_iterator    rend(void) {
-        
+        reverse_iterator(_last);
     }
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::const_reverse_iterator rbegin(void) {
-        
+        const_reverse_iterator(_first);
     }
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::const_reverse_iterator rend(void) {
-        
+        const_reverse_iterator(_last);
     }
 
     /*                              Capacity:                             */
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::size_type   vector<T, AllocTp>::size(void) const {
+    typename vector<T, AllocTp>::size_type
+                vector<T, AllocTp>::size(void) const {
         return _last - _first;
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::size_type   vector<T, AllocTp>::max_size(void) const {
+    typename vector<T, AllocTp>::size_type
+                vector<T, AllocTp>::max_size(void) const {
         return _allocator.max_size();
     }
 
-    /**
-     * Resizes the container so that it contains n elements.
-     * 
-     * If n is smaller than the current container size, 
-     * the content is reduced to its first n elements, 
-     * removing those beyond (and destroying them).
-     * 
-     * If n is greater than the current container size, the content is 
-     * expanded by inserting at the end as many elements as needed to reach 
-     * a size of n. If val is specified, the new elements are initialized 
-     * as copies of val, otherwise, they are value-initialized.
-     * 
-     * If n is also greater than the current container capacity, an
-     * automatic reallocation of the allocated storage space takes place.
-     * Notice that this function changes the actual content 
-     * of the container by inserting or erasing elements from it.
-     * 
-     * @param n New container size, expressed in number of elements.
-     * Member type size_type is an unsigned integral type.
-     * @param val Object whose content is copied to the added elements 
-     * in case that n is greater than the current container size.
-     * If not specified, the default constructor is used instead.
-     * Member type value_type is the type of the elements in the container,
-     *  defined in vector as an alias of the first template parameter (T)
-     */
     template <class T, class AllocTp>
-    void        vector<T, AllocTp>::resize(size_type n, value_type val = value_type()) {
-
+    void vector<T, AllocTp>::resize(size_type n, value_type val = value_type()) {
+        if (size() == n) { return; }
+        if (n < size()) {
+            _destroy(_first + n, _last);
+            _last = _first + n;
+        } else {
+            if (n > capacity()) {
+                reserve(std::max(n, size() << 1));
+            }
+            _last = _construct(_last, _last + n, val);
+        }
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::size_type   vector<T, AllocTp>::capacity(void) const {
+    void     vector<T, AllocTp>::reserve(size_type newCapacity) {
+        if (newCapacity <= capacity()) { return; }
+        if (newCapacity > max_size()) {
+            _full_destroy_and_deallocate();
+            throw std::length_error();
+        }
+        pointer newFirst = _allocate(newCapacity);
+        pointer newLast = 0;
+        if (_first) {
+            newLast = std::uninitialized_copy(_first, _last, newFirst);
+            _full_destroy_and_deallocate();
+        } else { newLast = newFirst; }
+        _first = newFirst;
+        _last = newLast;
+        _end_of_storage = newFirst + newCapacity;
+    }
+
+    template <class T, class AllocTp>
+    inline typename vector<T, AllocTp>::size_type
+                        vector<T, AllocTp>::capacity(void) const {
         return _end_of_storage - _first;
     }
 
     template <class T, class AllocTp>
-    bool    vector<T, AllocTp>::empty(void) const {
-        return this->_first == this->_last;
-    }
-
-    template <class T, class AllocTp>
-    void        vector<T, AllocTp>::reserve(size_type) {
-
+    inline bool    vector<T, AllocTp>::empty(void) const {
+        return _first == _last;
     }
 
     /*                          Element access:                           */
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::reference   vector<T, AllocTp>::operator[](size_type n) {
+    inline typename vector<T, AllocTp>::reference
+                vector<T, AllocTp>::operator[](size_type n) {
         return *(_first + n);
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::const_reference vector<T, AllocTp>::operator[](size_type n) const {
+    inline typename vector<T, AllocTp>::const_reference
+                vector<T, AllocTp>::operator[](size_type n) const {
         return *(_first + n);
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::reference   vector<T, AllocTp>::at(size_type n) {
+    inline typename vector<T, AllocTp>::reference
+                vector<T, AllocTp>::at(size_type n) {
         return *(_first + n);
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::const_reference vector<T, AllocTp>::at(size_type n) const {
+    inline typename vector<T, AllocTp>::const_reference
+                vector<T, AllocTp>::at(size_type n) const {
         return *(_first + n);
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::reference   vector<T, AllocTp>::front(void) {
+    inline typename vector<T, AllocTp>::reference
+                        vector<T, AllocTp>::front(void) {
         return *_first;
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::const_reference vector<T, AllocTp>::front(void) const {
+    inline typename vector<T, AllocTp>::const_reference
+                vector<T, AllocTp>::front(void) const {
         return *_first;
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::reference   vector<T, AllocTp>::back(void) {
+    inline typename vector<T, AllocTp>::reference
+                vector<T, AllocTp>::back(void) {
         return *(_last - 1);
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::const_reference vector<T, AllocTp>::back(void) const {
+    inline typename vector<T, AllocTp>::const_reference
+                vector<T, AllocTp>::back(void) const {
         return *(_last - 1);
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::value_type* vector<T, AllocTp>::data(void) noexcept {
+    inline typename vector<T, AllocTp>::value_type*
+                vector<T, AllocTp>::data(void) {
         return _first;
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::const value_type*   vector<T, AllocTp>::data(void) const noexcept {
+    inline const typename vector<T, AllocTp>::value_type*
+                    vector<T, AllocTp>::data(void) const {
         return _first;
     }
 
     /*                              Modifiers:                            */
     template <class T, class AllocTp>
     template <class InputIterator>
-    void                vector<T, AllocTp>::assign(InputIterator first, InputIterator last) {
-
-    }
-    template <class T, class AllocTp>
-    void                vector<T, AllocTp>::assign(size_type, const value_type&) {
-
-    }
+    void vector<T, AllocTp>::assign(InputIterator first, InputIterator last) {}
 
     template <class T, class AllocTp>
-    void    vector<T, AllocTp>::push_back(const value_type& value) {
+    void vector<T, AllocTp>::assign(size_type, const value_type&) {}
+
+    template <class T, class AllocTp>
+    void vector<T, AllocTp>::push_back(const value_type& value) {
         if (_last == _end_of_storage) {
-            _realloc_data(this->size() << 1);
+            reserve(size() << 1);
         }
         _allocator.construct(_last, value);
         ++_last;
     }
 
     template <class T, class AllocTp>
-    void    vector<T, AllocTp>::pop_back(void) {
+    inline void vector<T, AllocTp>::pop_back(void) {
         _allocator.destroy(--_last);
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::iterator            vector<T, AllocTp>::insert(iterator, const value_type&) {
-
+    typename vector<T, AllocTp>::iterator
+                vector<T, AllocTp>::insert(iterator pos, const value_type& val) {
+        if (_last == _end_of_storage) {
+            size_type   dist = pos.base() - _first;
+            reserve(size() << 1);
+            pos = iterator(_first + dist);
+        }
+        pointer posBase = pos.base();
+        if (posBase == _last) {
+            _allocator.construct(_last, val);
+        } else {
+            std::copy_backward(posBase, _last - 1, _last);
+            _allocator.construct(posBase, val);
+        }
+        ++_last;
+        return pos;
     }
 
     template <class T, class AllocTp>
-    void                vector<T, AllocTp>::insert(iterator, size_type, const value_type&) {
-
-    }
+    void vector<T, AllocTp>::insert(iterator, size_type, const value_type&) {}
 
     template <class T, class AllocTp>
     template <class InputIterator>
-    void    vector<T, AllocTp>::insert(iterator, InputIterator, InputIterator) {
+    void vector<T, AllocTp>::insert(iterator, InputIterator, InputIterator) {}
 
+    template <class T, class AllocTp>
+    typename vector<T, AllocTp>::iterator vector<T, AllocTp>::erase(iterator) {}
+
+    template <class T, class AllocTp>
+    typename vector<T, AllocTp>::iterator
+                vector<T, AllocTp>::erase(iterator, iterator) {}
+
+    template <class T, class AllocTp>
+    void vector<T, AllocTp>::swap(vector& rhs) {
+        std::swap(_first, rhs._first);
+        std::swap(_last, rhs._last);
+        std::swap(_end_of_storage, rhs._end_of_storage);
+        std::swap(_allocator, rhs._allocator);
     }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::iterator   vector<T, AllocTp>::erase(iterator) {
-
-    }
-
-    template <class T, class AllocTp>
-    typename vector<T, AllocTp>::iterator   vector<T, AllocTp>::erase(iterator, iterator) {
-
-    }
-
-    template <class T, class AllocTp>
-    void                vector<T, AllocTp>::swap(vector&) {
-
-    }
-
-    template <class T, class AllocTp>
-    void    vector<T, AllocTp>::clear(void) {
-        std::_Destroy(_first, _last);
+    void vector<T, AllocTp>::clear(void) {
+        _destroy(_first, _last);
         _last = _first;
     }
 
     /*                              Allocator:                            */
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::allocator_type  vector<T, AllocTp>::get_allocator(void) const {
+    typename vector<T, AllocTp>::allocator_type
+                vector<T, AllocTp>::get_allocator(void) const {
         return allocator_type(_allocator);
     }
 
+/*                          Private member functions                          */
+
     template <class T, class AllocTp>
-    void    vector<T, AllocTp>::_realloc_data(size_type n) {
-        pointer newBlock = _allocator.allocate(n);
-        pointer newLast = std::uninitialized_copy(_first, _last, newBlock);
-        _end_of_storage = newBlock + n;
-        std::_Destroy(_first, _last);
-        _allocator.deallocate(_first, size());
-        _first = newBlock;
-        _last = newLast;
+    void vector<T, AllocTp>::_destroy(pointer first, pointer last) {
+        while (first != last) {
+            first->~T();
+            ++first;
+        }
     }
-}
+
+    template <class T, class AllocTp>
+    typename vector<T, AllocTp>::pointer
+            vector<T, AllocTp>::_construct(pointer first, pointer last,
+                                                    const value_type& val) {
+        while (first != last) {
+            _allocator.construct(first, val);
+            ++first;
+        }
+        return first;
+    }
+
+    template <class T, class AllocTp>
+    typename vector<T, AllocTp>::pointer
+                vector<T, AllocTp>::_allocate(size_type n) {
+        pointer newBlock;
+        try {
+            newBlock = _allocator.allocate(n);
+        } catch (...) {
+            _full_destroy_and_deallocate();
+            throw std::bad_alloc();
+        }
+        return newBlock;
+    }
+
+    template <class T, class AllocTp>
+    void vector<T, AllocTp>::_full_destroy_and_deallocate(void) {
+        _destroy(first, last);
+        _allocator.deallocate(first, capacity());
+    }
+}   // namespace ft
