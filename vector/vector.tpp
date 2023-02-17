@@ -30,20 +30,21 @@ namespace ft {
                             const allocator_type& alloc = allocator_type()) {
         _allocator = alloc;
         _first = _allocate(last - first);
-        _last = std::uninitialized_copy(first, last, _first);
+        _last = std::copy(first, last, _first);
         _end_of_storage = _last;
     }
 
     template <class T, class AllocTp>
     vector<T, AllocTp>::vector(const vector& src) {
         _first = _allocate(src.size());
-        _last = std::uninitialized_copy(src.begin(), src.end(), _first);
+        _last = std::copy(src.begin(), src.end(), _first);
         _end_of_storage = _last;
     }
 
     template <class T, class AllocTp>
     vector<T, AllocTp>::~vector(void) {
-        _destroy(_first, _last);
+        if (!_is_integral)
+            _destroy(_first, _last);
         _allocator.deallocate(_first, capacity());
         _first = _last = _end_of_storage = 0;
     }
@@ -51,12 +52,14 @@ namespace ft {
     template <class T, class AllocTp>
     vector<T, AllocTp>& vector<T, AllocTp>::operator=(const vector& src) {
         if (this != &rhs) {
-            if (_first) {
+            if (size() && !_is_integral)
                 _destroy(_first, _last);
-                _allocator.deallocate(_first, capacity());
+            if (capacity() < src.size()) {
+                if (capacity())
+                    _allocator.deallocate(_first, capacity());
+                _first = _allocate(src.size());
             }
-            _first = _allocate(src.size());
-            _last = std::uninitialized_copy(src.begin(), src.end(), _first);
+            _last = std::copy(src.begin(), src.end(), _first);
             _end_of_storage = _last;
         }
         return *this;
@@ -116,13 +119,19 @@ namespace ft {
     void vector<T, AllocTp>::resize(size_type n, value_type val = value_type()) {
         if (size() == n) { return; }
         if (n < size()) {
-            _destroy(_first + n, _last);
+            if (!_is_integral)
+                _destroy(_first + n, _last);
             _last = _first + n;
         } else {
             if (n > capacity()) {
                 reserve(std::max(n, size() << 1));
             }
-            _last = _construct(_last, _last + n, val);
+            if (!_is_integral) {
+                _last = _construct(_last, _last + n, val);
+            } else {
+                std::fill(_last, _last + n, val);
+                _last += n;
+            }
         }
     }
 
@@ -136,7 +145,7 @@ namespace ft {
         pointer newFirst = _allocate(newCapacity);
         pointer newLast = 0;
         if (_first) {
-            newLast = std::uninitialized_copy(_first, _last, newFirst);
+            newLast = std::copy(_first, _last, newFirst);
             _full_destroy_and_deallocate();
         } else { newLast = newFirst; }
         _first = newFirst;
@@ -247,30 +256,82 @@ namespace ft {
             reserve(size() << 1);
             pos = iterator(_first + dist);
         }
-        pointer posBase = pos.base();
-        if (posBase == _last) {
-            _allocator.construct(_last, val);
-        } else {
-            std::copy_backward(posBase, _last - 1, _last);
-            _allocator.construct(posBase, val);
+        pointer posPtr = pos.base();
+        if (posPtr != _last) {
+            std::copy_backward(posPtr, _last - 1, _last);
         }
+        _allocator.construct(posPtr, val);
         ++_last;
         return pos;
     }
 
     template <class T, class AllocTp>
-    void vector<T, AllocTp>::insert(iterator, size_type, const value_type&) {}
+    void vector<T, AllocTp>::insert(iterator pos, size_type n,
+                                    const value_type& val) {
+        if (n > capacity() - size()) {
+            size_type   dist = pos.base() - _first;
+            reserve(size() + std::max(n, size()));
+            pos = iterator(_first + dist);
+        }
+        pointer     posStart = pos.base();
+        pointer     posEnd = posStart + n;
+        if (posStart != _last) {
+            std::copy_backward(posStart, _last - 1, _last + n);
+        }
+        if (!_is_integral) {
+            _construct(posStart, posEnd, val);
+        } else {
+            std::fill(posStart, posEnd, val);
+        }
+        _last += n;
+    }
 
     template <class T, class AllocTp>
     template <class InputIterator>
-    void vector<T, AllocTp>::insert(iterator, InputIterator, InputIterator) {}
+    void vector<T, AllocTp>::insert(iterator pos,
+                                    InputIterator first, InputIterator last) {
+        size_type n = std::distance(first, last);
+        if (n > capacity() - size()) {
+            size_type   dist = pos.base() - _first;
+            reserve(size() + std::max(n, size()));
+            pos = iterator(_first + dist);
+        }
+        if (pos.base() != _last) {
+            std::copy_backward(pos.base(), _last - 1, _last + n);
+        }
+        std::copy(first, last, pos);
+        _last += n;
+    }
 
     template <class T, class AllocTp>
-    typename vector<T, AllocTp>::iterator vector<T, AllocTp>::erase(iterator) {}
+    typename vector<T, AllocTp>::iterator vector<T, AllocTp>::erase(iterator pos) {
+        if (pos != end()) {
+            if (pos + 1 != end()) {
+                std::copy(pos + 1, _last, pos);
+            }
+            _allocator.destroy(--_last);
+        }
+        return pos;
+    }
 
     template <class T, class AllocTp>
     typename vector<T, AllocTp>::iterator
-                vector<T, AllocTp>::erase(iterator, iterator) {}
+                vector<T, AllocTp>::erase(iterator first, iterator last) {
+        if (first == end()) {
+            return first;
+        }
+        if (last == end()) {
+            if (!_is_integral)
+                _destroy(first.base(), _last);
+            _last = first.base();
+            return first;
+        }
+        pointer newLast = (std::copy(last, end(), first)).base();
+        if (!_is_integral)
+            _destroy(newLast, _last);
+        _last -= last - first;
+        return first;
+    }
 
     template <class T, class AllocTp>
     void vector<T, AllocTp>::swap(vector& rhs) {
@@ -282,7 +343,8 @@ namespace ft {
 
     template <class T, class AllocTp>
     void vector<T, AllocTp>::clear(void) {
-        _destroy(_first, _last);
+        if (!_is_integral)
+            _destroy(_first, _last);
         _last = _first;
     }
 
@@ -329,7 +391,8 @@ namespace ft {
 
     template <class T, class AllocTp>
     void vector<T, AllocTp>::_full_destroy_and_deallocate(void) {
-        _destroy(first, last);
+        if (!_is_integral)
+            _destroy(first, last);
         _allocator.deallocate(first, capacity());
     }
 }   // namespace ft

@@ -94,10 +94,11 @@ class vector {
     allocator_type      get_allocator(void) const;
 
  private:
-    pointer             _first;
-    pointer             _last;
-    pointer             _end_of_storage;
+    pointer             _first = 0;
+    pointer             _last = 0;
+    pointer             _end_of_storage = 0;
     allocator_type      _allocator;
+    is_integral<T>      _is_integral;
 
     pointer             _allocate(size_type);
     pointer             _construct(pointer, pointer, const value_type&);
