@@ -8,6 +8,8 @@
 #include "../iterators/random_access_iter.hpp"
 #include "../iterators/reverse_iter.hpp"
 #include "../type_traits/type_traits.hpp"
+#include "../algorithm/equal.hpp"
+#include "../algorithm/lexicographical_compare.hpp"
 
 namespace ft {
 
