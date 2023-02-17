@@ -102,6 +102,8 @@ class vector {
 
     pointer             _allocate(size_type);
     pointer             _construct(pointer, pointer, const value_type&);
+    template <class InputIter>
+    pointer             _construct(InputIter, InputIter, pointer);
     void                _destroy(pointer, pointer);
     void                _full_destroy_and_deallocate(void);
 }; /* class vector */

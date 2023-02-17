@@ -29,15 +29,23 @@ namespace ft {
     vector<T, AllocTp>::vector(InputIterator first, InputIterator last,
                             const allocator_type& alloc = allocator_type()) {
         _allocator = alloc;
-        _first = _allocate(last - first);
-        _last = std::copy(first, last, _first);
+        _first = _allocate(std::distance(first, last));
+        if (_is_integral) {
+            _last = std::copy(first, last, _first);
+        } else {
+            _last = _construct(first, last, _first);
+        }
         _end_of_storage = _last;
     }
 
     template <class T, class AllocTp>
     vector<T, AllocTp>::vector(const vector& src) {
         _first = _allocate(src.size());
-        _last = std::copy(src.begin(), src.end(), _first);
+        if (_is_integral) {
+            _last = std::copy(src.begin(), src.end(), _first);
+        } else {
+            _last = _construct(src.begin(), src.end(), _first);
+        }
         _end_of_storage = _last;
     }
 
@@ -144,7 +152,7 @@ namespace ft {
         }
         pointer newFirst = _allocate(newCapacity);
         pointer newLast = 0;
-        if (_first) {
+        if (size()) {
             newLast = std::copy(_first, _last, newFirst);
             _full_destroy_and_deallocate();
         } else { newLast = newFirst; }
@@ -227,12 +235,41 @@ namespace ft {
     }
 
     /*                              Modifiers:                            */
-    template <class T, class AllocTp>
-    template <class InputIterator>
-    void vector<T, AllocTp>::assign(InputIterator first, InputIterator last) {}
 
     template <class T, class AllocTp>
-    void vector<T, AllocTp>::assign(size_type, const value_type&) {}
+    void vector<T, AllocTp>::assign(size_type n, const value_type& val) {
+        if (n > capacity()) {
+            vector tmp(n, val, _allocator);
+            tmp.swap(*this);
+        } else if (n > size()) {
+            if (_is_integral) {
+                std::fill(begin(), begin() + n, val);
+            } else {
+                std::fill(begin(), end(), val);
+                _construct(_last, _last + n - size(), val);
+            }
+            _last = _first + n;
+        } else {
+            erase(std::fill_n(begin(), n, val), end());
+        }
+    }
+
+    template <class T, class AllocTp>
+    template <class InputIterator>
+    void vector<T, AllocTp>::assign(InputIterator first, InputIterator last) {
+        if (ft::is_integral<InputIterator>) {
+            assign(static_cast<size_type>(first), static_cast<value_type>(last));
+        } else {
+            size_type   n = std::distance(first, last);
+            if (n > capacity()) {
+                vector tmp(first, last);
+                tmp.swap(*this);
+            } else {
+                std::copy(first, last, _first);
+                _last = _first + n;
+            }
+        }
+    }
 
     template <class T, class AllocTp>
     void vector<T, AllocTp>::push_back(const value_type& value) {
@@ -339,6 +376,7 @@ namespace ft {
         std::swap(_last, rhs._last);
         std::swap(_end_of_storage, rhs._end_of_storage);
         std::swap(_allocator, rhs._allocator);
+        std::swap(_is_integral, rhs._is_integral);
     }
 
     template <class T, class AllocTp>
@@ -374,6 +412,19 @@ namespace ft {
             ++first;
         }
         return first;
+    }
+
+    template <class T, class AllocTp>
+    template <class InputIter>
+    typename vector<T, AllocTp>::pointer
+            vector<T, AllocTp>::_construct(InputIter first, InputIter last,
+                                                    pointer result) {
+        while (first != last) {
+            _allocator.construct(result, *first);
+            ++first;
+            ++result;
+        }
+        return result;
     }
 
     template <class T, class AllocTp>
