@@ -8,17 +8,25 @@
 namespace ft {
 
 template <typename T>
-class reverse_iter : iterator<iterator_traits<T>::iterator_category,
-    iterator_traits<T>::value_type, iterator_traits<T>::difference_type,
-    iterator_traits<T>::pointer, iterator_traits<T>::reference> {
+class reverse_iter
+      : public ft::iterator<typename ft::iterator_traits<T>::iterator_category,
+                        typename ft::iterator_traits<T>::value_type,
+                        typename ft::iterator_traits<T>::difference_type,
+                        typename ft::iterator_traits<T>::pointer,
+                        typename ft::iterator_traits<T>::reference> {
  protected:
     T       current;
 
  public:
+    typedef T                                                   iterator_type;
+    typedef typename ft::iterator_traits<T>::difference_type    difference_type;
+    typedef typename ft::iterator_traits<T>::reference          reference;
+    typedef typename ft::iterator_traits<T>::pointer            pointer;
+
     reverse_iter(void) : current() {}
     explicit reverse_iter(iterator_type x) : current(x) {}
     template< class U >
-    reverse_iter(const reverse_iter<U>& x) : current(x.current) {}
+    reverse_iter(const reverse_iter<U>& x) : current(x.base()) {}
     ~reverse_iter(void) {}
 
     /*                   Assignment operator                    */
@@ -119,7 +127,7 @@ class reverse_iter : iterator<iterator_traits<T>::iterator_category,
     reverse_iter<T>  operator+(
         typename reverse_iter<T>::difference_type n,
         const reverse_iter<T>& it) {
-        return reverse_iter<T>(it.base() - n)
+        return reverse_iter<T>(it.base() - n);
     }
 
     /*                   Decrement operators                    */

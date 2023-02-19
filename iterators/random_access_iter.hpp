@@ -8,30 +8,28 @@
 namespace ft {
 
 template <typename Tp>
-class random_access_iter : public iterator<random_access_iterator_tag, Tp> {
+class random_access_iter {
  protected:
     Tp       current;
 
-    typedef iterator_traits<Tp>                          traits_type;
-
  public:
-    typedef Tp                                           iterator_type;
-    typedef typename traits_type::iterator_category      iterator_category;
-    typedef typename traits_type::value_type             value_type;
-    typedef typename traits_type::difference_type        difference_type;
-    typedef typename traits_type::reference              reference;
-    typedef typename traits_type::pointer                pointer;
+    typedef Tp iterator_type;
+    typedef typename ft::iterator_traits<Tp>::iterator_category iterator_category;
+    typedef typename ft::iterator_traits<Tp>::value_type        value_type;
+    typedef typename ft::iterator_traits<Tp>::difference_type   difference_type;
+    typedef typename ft::iterator_traits<Tp>::reference         reference;
+    typedef typename ft::iterator_traits<Tp>::pointer           pointer;
 
-    random_access_iter(void) : current() {}
+    random_access_iter(void) : current(NULL) {}
     explicit random_access_iter(const Tp& x) : current(x) {}
-    random_access_iter(const random_access_iter& x) : current(x.current) {}
+    random_access_iter(const random_access_iter& x) : current(x.base()) {}
     template <typename T>
-    random_access_iter(const random_access_iter<T>& x) : current(x.current) {}
+    random_access_iter(const random_access_iter<T>& x) : current(x.base()) {}
     ~random_access_iter(void) {}
 
     /*                   Assignment operator                    */
     random_access_iter&   operator=(const random_access_iter& rhs) {
-        current = rhs.current;
+        current = rhs.base();
         return *this;
     }
 
@@ -42,9 +40,10 @@ class random_access_iter : public iterator<random_access_iterator_tag, Tp> {
     pointer     operator->(void) {
         return current;
     }
-    iterator_type base(void) const {
+    const Tp& base() const {
         return current;
     }
+
     reference   operator[](difference_type n) const {
         return current[n];
     }
@@ -126,7 +125,7 @@ class random_access_iter : public iterator<random_access_iterator_tag, Tp> {
     random_access_iter<T>  operator+(
         typename random_access_iter<T>::difference_type n,
         const random_access_iter<T>& it) {
-        return random_access_iter<T>(it.base() + n)
+        return random_access_iter<T>(it.base() + n);
     }
 
     /*                   Decrement operators                    */
@@ -134,8 +133,8 @@ class random_access_iter : public iterator<random_access_iterator_tag, Tp> {
     typename random_access_iter<Iterator1>::difference_type   operator-(
         const random_access_iter<Iterator1>& lhs,
         const random_access_iter<Iterator2>& rhs) {
-        return rhs.base() - lhs.base();
+        return lhs.base() - rhs.base();
     }
-}; /* namespace ft */
+}   /* namespace ft */
 
 #endif /* ITERATORS_RANDOM_ACCESS_ITER_HPP_ */
