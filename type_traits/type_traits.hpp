@@ -11,7 +11,7 @@ struct integral_constant {
     typedef Tp                           value_type;
     typedef integral_constant<Tp, v>     type;
 
-    explicit operator bool() const { return value; }
+    operator bool() const { return value; }
     value_type operator()() const { return value; }
 };
 
