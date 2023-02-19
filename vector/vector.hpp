@@ -30,7 +30,7 @@ class vector {
     typedef reverse_iter<pointer>                        reverse_iterator;
     typedef reverse_iter<const_pointer>                  const_reverse_iterator;
 
-    explicit vector(const allocator_type&);
+    explicit vector(const allocator_type& alloc = allocator_type());
 
     explicit vector(size_type, const value_type& val = value_type(),
                       const allocator_type& alloc = allocator_type());
@@ -43,18 +43,18 @@ class vector {
 
     ~vector(void);
 
-    vector&            operator=(const vector&);
+    vector&                operator=(const vector&);
 
     /*                              Iterators:                            */
     iterator               begin(void);
     iterator               end(void);
-    const_iterator         begin(void);
-    const_iterator         end(void);
+    const_iterator         begin(void) const;
+    const_iterator         end(void) const;
 
     reverse_iterator       rbegin(void);
     reverse_iterator       rend(void);
-    const_reverse_iterator rbegin(void);
-    const_reverse_iterator rend(void);
+    const_reverse_iterator rbegin(void) const;
+    const_reverse_iterator rend(void) const;
 
     /*                              Capacity:                             */
 
@@ -74,8 +74,8 @@ class vector {
     const_reference     front(void) const;
     reference           back(void);
     const_reference     back(void) const;
-    value_type*         data(void) noexcept;
-    const value_type*   data(void) const noexcept;
+    value_type*         data(void);
+    const value_type*   data(void) const;
 
     /*                              Modifiers:                            */
     template <class InputIterator>
@@ -96,9 +96,9 @@ class vector {
     allocator_type      get_allocator(void) const;
 
  private:
-    pointer             _first = 0;
-    pointer             _last = 0;
-    pointer             _end_of_storage = 0;
+    pointer             _first;
+    pointer             _last;
+    pointer             _end_of_storage;
     allocator_type      _allocator;
     is_integral<T>      _is_integral;
 
@@ -108,6 +108,19 @@ class vector {
     pointer             _construct(InputIter, InputIter, pointer);
     void                _destroy(pointer, pointer);
     void                _full_destroy_and_deallocate(void);
+    void                _init_dispatch(size_type, const value_type&, true_type);
+    template <class InputIter>
+    void                _init_dispatch(InputIter, InputIter, false_type);
+    void                _assign_dispatch(size_type, const value_type&,
+                                         true_type);
+    template <class InputIter>
+    void                _assign_dispatch(InputIter, InputIter, false_type);
+    template <class Integer>
+    void                _insert_dispatch(iterator, size_type, const Integer&,
+                                         true_type);
+    template <class InputIter>
+    void                _insert_dispatch(iterator, InputIter, InputIter,
+                                         false_type);
 }; /* class vector */
 
 /*                          Relational Operators                      */
@@ -123,6 +136,8 @@ template <class T, class Alloc>
 bool operator> (const vector<T, Alloc>&, const vector<T, Alloc>&);
 template <class T, class Alloc>
 bool operator>=(const vector<T, Alloc>&, const vector<T, Alloc>&);
-}; /* namespace ft */
+}  /* namespace ft */
+
+#include "./vector.tpp"
 
 #endif /* VECTOR_VECTOR_HPP_ */
