@@ -8,17 +8,18 @@
 namespace ft {
 
 template <typename Tp>
-class random_access_iter {
+class random_access_iter : iterator<std::random_access_iterator_tag, Tp> {
  protected:
     Tp       current;
 
+    typedef ft::iterator_traits<Tp>                 _iter_traits;
  public:
     typedef Tp iterator_type;
-    typedef typename ft::iterator_traits<Tp>::iterator_category iterator_category;
-    typedef typename ft::iterator_traits<Tp>::value_type        value_type;
-    typedef typename ft::iterator_traits<Tp>::difference_type   difference_type;
-    typedef typename ft::iterator_traits<Tp>::reference         reference;
-    typedef typename ft::iterator_traits<Tp>::pointer           pointer;
+    typedef typename _iter_traits::iterator_category iterator_category;
+    typedef typename _iter_traits::value_type        value_type;
+    typedef typename _iter_traits::difference_type   difference_type;
+    typedef typename _iter_traits::reference         reference;
+    typedef typename _iter_traits::pointer           pointer;
 
     random_access_iter(void) : current(NULL) {}
     explicit random_access_iter(const Tp& x) : current(x) {}
