@@ -43,15 +43,15 @@ namespace ft {
     template <class T, class AllocTp>
     vector<T, AllocTp>& vector<T, AllocTp>::operator=(const vector& src) {
         if (this != &src) {
-            size_type srcSize(src.size());
-            if (srcSize > capacity()) {
+            size_type src_size(src.size());
+            if (src_size > capacity()) {
                 _full_destroy_and_deallocate();
-                _first = _allocate(srcSize);
+                _first = _allocate(src_size);
                 _last = std::uninitialized_copy(src._first, src._last, _first);
-                _end_of_storage = _first + srcSize;
+                _end_of_storage = _first + src_size;
             } else {
                 size_type oldSize(size());
-                if (oldSize >= srcSize) {
+                if (oldSize >= src_size) {
                     _destroy(std::copy(src._first, src._last, _first), _last);
                 } else {
                     std::copy(src._first, src._first + oldSize, _first);
@@ -126,24 +126,24 @@ namespace ft {
             if (n > capacity()) {
                 reserve(std::max(n, size() << 1));
             }
-            pointer oldLast(_last);
+            pointer old_last(_last);
             _last += n - size();
-            std::uninitialized_fill(oldLast, _last, val);
+            std::uninitialized_fill(old_last, _last, val);
         }
     }
 
     template <class T, class AllocTp>
-    void     vector<T, AllocTp>::reserve(size_type newCapacity) {
-        if (newCapacity <= capacity()) { return; }
-        pointer newFirst = _allocate(newCapacity);
-        pointer newLast = newFirst;
+    void     vector<T, AllocTp>::reserve(size_type new_capacity) {
+        if (new_capacity <= capacity()) { return; }
+        pointer new_first = _allocate(new_capacity);
+        pointer new_last = new_first;
         if (size()) {
-            newLast = std::uninitialized_copy(_first, _last, newFirst);
+            new_last = std::uninitialized_copy(_first, _last, new_first);
             _full_destroy_and_deallocate();
         }
-        _first = newFirst;
-        _last = newLast;
-        _end_of_storage = newFirst + newCapacity;
+        _first = new_first;
+        _last = new_last;
+        _end_of_storage = new_first + new_capacity;
     }
 
     template <class T, class AllocTp>
@@ -266,13 +266,13 @@ namespace ft {
             reserve(std::max(size() << 1, static_cast<size_type>(1)));
             pos = iterator(_first + dist);
         }
-        pointer posPtr = pos.base();
-        if (posPtr != _last) {
+        pointer pos_ptr = pos.base();
+        if (pos_ptr != _last) {
             _allocator.construct(_last, *(_last - 1));
-            std::copy_backward(posPtr, _last - 1, _last);
-            *posPtr = val;
+            std::copy_backward(pos_ptr, _last - 1, _last);
+            *pos_ptr = val;
         } else {
-            _allocator.construct(posPtr, val);
+            _allocator.construct(pos_ptr, val);
         }
         ++_last;
         return pos;
@@ -286,21 +286,21 @@ namespace ft {
             reserve(size() + std::max(n, size()));
             pos = iterator(_first + dist);
         }
-        pointer     posPtr = pos.base();
-        pointer     oldLast(_last);
-        size_type   posN(_last - posPtr);
+        pointer     pos_ptr = pos.base();
+        pointer     old_last(_last);
+        size_type   pos_n(_last - pos_ptr);
 
-        if (posN > n) {
+        if (pos_n > n) {
             std::uninitialized_copy(_last - n, _last, _last);
             _last += n;
-            std::copy_backward(posPtr, oldLast - n, oldLast);
-            std::fill_n(posPtr, n, val);
+            std::copy_backward(pos_ptr, old_last - n, old_last);
+            std::fill_n(pos_ptr, n, val);
         } else {
-            std::uninitialized_fill_n(_last, n - posN, val);
-            _last += n - posN;
-            std::uninitialized_copy(posPtr, oldLast, _last);
-            _last += posN;
-            std::fill(posPtr, oldLast, val);
+            std::uninitialized_fill_n(_last, n - pos_n, val);
+            _last += n - pos_n;
+            std::uninitialized_copy(pos_ptr, old_last, _last);
+            _last += pos_n;
+            std::fill(pos_ptr, old_last, val);
         }
     }
 
@@ -330,8 +330,8 @@ namespace ft {
             _last = first.base();
             return first;
         }
-        pointer newLast = std::copy(last.base(), _last, first.base());
-        _destroy(newLast, _last);
+        pointer new_last = std::copy(last.base(), _last, first.base());
+        _destroy(new_last, _last);
         _last -= last - first;
         return first;
     }
@@ -396,42 +396,39 @@ namespace ft {
     void vector<T, AllocTp>::_insert_dispatch(iterator pos, InputIter first,
                                               InputIter last, false_type) {
         size_type   n = last - first;
-        pointer     firstPtr(&*first), lastPtr(&*last), posPtr(pos.base());
+        pointer     first_ptr(&*first), last_ptr(&*last), pos_ptr(pos.base());
 
         if (n > static_cast<size_type>(_end_of_storage - _last)) {
             size_type len(size() + std::max(n, size()));
-            pointer newFirst(_allocate(len));
-            pointer newLast(newFirst);
+            pointer new_first(_allocate(len));
+            pointer new_last(new_first);
 
             try {
-                newLast = std::uninitialized_copy(_first, posPtr, newFirst);
-                newLast = std::uninitialized_copy(firstPtr, lastPtr, newLast);
-                newLast = std::uninitialized_copy(posPtr, _last, newLast);
+                new_last = std::uninitialized_copy(_first, pos_ptr, new_first);
+                new_last = std::uninitialized_copy(first_ptr, last_ptr, new_last);
+                new_last = std::uninitialized_copy(pos_ptr, _last, new_last);
             } catch (...) {
-                _destroy(newFirst, newLast);
-                _allocator.deallocate(newFirst, n);
+                _destroy(new_first, new_last);
+                _allocator.deallocate(new_first, n);
                 throw;
             }
             _full_destroy_and_deallocate();
-            _first = newFirst;
-            _last = newLast;
+            _first = new_first;
+            _last = new_last;
             _end_of_storage = _first + len;
         } else {
-            pointer     oldLast(_last);
-            size_type   posN(_last - posPtr);
+            pointer     old_last(_last);
+            size_type   pos_n(_last - pos_ptr);
 
-            if (posN > n) {
-                std::uninitialized_copy(_last - n, _last, _last);
-                _last += n;
-                std::copy_backward(posPtr, oldLast - n, oldLast);
-                std::copy(firstPtr, lastPtr, posPtr);
+            if (pos_n > n) {
+                _last = std::uninitialized_copy(_last - n, _last, _last);
+                std::copy_backward(pos_ptr, old_last - n, old_last);
+                std::copy(first_ptr, last_ptr, pos_ptr);
             } else {
-                pointer mid(firstPtr + posN);
-                std::uninitialized_copy(mid, lastPtr, _last);
-                _last += n - posN;
-                std::uninitialized_copy(posPtr, oldLast, _last);
-                _last += posN;
-                std::copy(firstPtr, mid, posPtr);
+                pointer mid(first_ptr + pos_n);
+                _last = std::uninitialized_copy(mid, last_ptr, _last);
+                _last = std::uninitialized_copy(pos_ptr, old_last, _last);
+                std::copy(first_ptr, mid, pos_ptr);
             }
         }
     }
