@@ -5,6 +5,7 @@
 
 #include <stdexcept>
 #include <memory>
+#include <algorithm>
 #include "../iterators/random_access_iter.hpp"
 #include "../iterators/reverse_iter.hpp"
 #include "../type_traits/type_traits.hpp"
@@ -103,24 +104,33 @@ class vector {
     is_integral<T>      _is_integral;
 
     pointer             _allocate(size_type);
-    pointer             _construct(pointer, pointer, const value_type&);
-    template <class InputIter>
-    pointer             _construct(InputIter, InputIter, pointer);
+
+    void                _fill(pointer, const_reference, size_type);
+
     void                _destroy(pointer, pointer);
+
     void                _full_destroy_and_deallocate(void);
-    void                _init_dispatch(size_type, const value_type&, true_type);
+
+    void                _fill_initialiaze(size_type, const_reference);
+
+    void                _init_dispatch(size_type, const_reference, true_type);
+
     template <class InputIter>
     void                _init_dispatch(InputIter, InputIter, false_type);
-    void                _assign_dispatch(size_type, const value_type&,
-                                         true_type);
+
+    void                _assign_dispatch(size_type, const_reference, true_type);
+
     template <class InputIter>
     void                _assign_dispatch(InputIter, InputIter, false_type);
+
     template <class Integer>
     void                _insert_dispatch(iterator, size_type, const Integer&,
                                          true_type);
+
     template <class InputIter>
-    void                _insert_dispatch(iterator, InputIter, InputIter,
-                                         false_type);
+    void                _insert_dispatch(iterator, InputIter, InputIter, false_type);
+
+    void                _insert_dispatch(pointer, pointer, pointer);
 }; /* class vector */
 
 /*                          Relational Operators                      */
