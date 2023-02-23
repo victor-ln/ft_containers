@@ -36,12 +36,12 @@ class reverse_iter
     }
 
     /*                   Accessors operators                    */
-    reference   operator*(void) {
+    reference   operator*(void) const {
         T tmp = current;
         return *--tmp;
     }
-    pointer     operator->(void) {
-        return &this->operator*();
+    pointer     operator->(void) const {
+        return &operator*();
     }
     iterator_type base(void) const {
         return current;
@@ -104,22 +104,22 @@ class reverse_iter
     template< class Iterator1, class Iterator2 >
     bool operator<(const reverse_iter<Iterator1>& lhs,
                     const reverse_iter<Iterator2>& rhs) {
-        return (lhs.base() < rhs.base());
+        return (rhs.base() < lhs.base());
     }
     template< class Iterator1, class Iterator2 >
     bool operator<=(const reverse_iter<Iterator1>& lhs,
                     const reverse_iter<Iterator2>& rhs) {
-        return (lhs.base() <= rhs.base());
+        return (rhs.base() <= lhs.base());
     }
     template< class Iterator1, class Iterator2 >
     bool operator>(const reverse_iter<Iterator1>& lhs,
                     const reverse_iter<Iterator2>& rhs) {
-        return (lhs.base() > rhs.base());
+        return (rhs.base() > lhs.base());
     }
     template< class Iterator1, class Iterator2 >
     bool operator>=(const reverse_iter<Iterator1>& lhs,
                     const reverse_iter<Iterator2>& rhs) {
-        return (lhs.base() >= rhs.base());
+        return (rhs.base() >= lhs.base());
     }
 
     /*                   Increment operator                    */
