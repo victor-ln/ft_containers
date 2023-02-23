@@ -35,10 +35,10 @@ class random_access_iter : iterator<std::random_access_iterator_tag, Tp> {
     }
 
     /*                   Accessors operators                    */
-    reference   operator*(void) {
+    reference   operator*(void) const {
         return *current;
     }
-    pointer     operator->(void) {
+    pointer     operator->(void) const {
         return current;
     }
     const Tp& base() const {
