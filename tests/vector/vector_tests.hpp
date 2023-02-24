@@ -41,8 +41,15 @@
 #define EXCEPT_MSG_06 "Error: assign() should have thrown an exception\n"
 #define EXCEPT_MSG_07 "Error: resize() should have thrown an exception\n"
 
-typedef std::vector<int>::iterator  stdIterator;
-typedef ft::vector<int>::iterator   ftIterator;
+typedef std::vector<int>::iterator                  stdIterator;
+typedef ft::vector<int>::iterator                   ftIterator;
+typedef std::vector<int>::const_iterator            stdConstIterator;
+typedef ft::vector<int>::const_iterator             ftConstIterator;
+
+typedef std::vector<int>::reverse_iterator          stdReverseIterator;
+typedef ft::vector<int>::reverse_iterator           ftReverseIterator;
+typedef std::vector<int>::const_reverse_iterator    stdConstReverseIterator;
+typedef ft::vector<int>::const_reverse_iterator     ftConstReverseIterator;
 
 int     comp(const int, const int);
 void    printStatus(int);

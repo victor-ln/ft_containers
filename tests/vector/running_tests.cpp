@@ -166,48 +166,232 @@ static void iteratorTest(void) {
     int a[] = { 1, 2, 3, 4, 5 };
     ft::vector<int>                     ftV(a, a + 5);
     std::vector<int>                    stdV(a, a + 5);
+    const ft::vector<int>               constFtV(a, a + 5);
+
     printColor(CYAN, "\n[ ITERATORS ]\n");
     {
-        printColor(BGWHITE, "\n├─ Iterator vs const iterator\n");
-        const ft::vector<int>       constFtV(a, a + 5);
+        printColor(CYAN, "\n  { random_access_iterator }\n");
+        printColor(CYAN, "\n    ( member functions )\n");
+        ftIterator                      ftIt = ftV.begin() + 2;
+        stdIterator                     stdIt = stdV.begin() + 2;
+        {
+            ftConstIterator             ftConstIt = constFtV.begin() + 2;
+            stdConstIterator            stdConstIt = stdV.begin() + 2;
 
-        printStatus(*ftV.begin() == *constFtV.begin());
-        printStatus(*ftV.end() == *constFtV.end());
-        printStatus(*ftV.rbegin() == *constFtV.rbegin());
-        printStatus(*ftV.rend() == *constFtV.rend());
+            printColor(BGWHITE, "\n├─ iterator::base()\n");
+            printStatus(*ftIt.base() == *stdIt.base());
+            printStatus(*ftConstIt.base() == *stdConstIt.base());
+
+            printColor(BGWHITE, "\n├─ iterator::operator[]\n");
+            printStatus(ftIt[0] == stdIt[0]);
+            printStatus(ftConstIt[0] == stdConstIt[0]);
+
+            ftIt[0] = 10;
+            stdIt[0] = 10;
+            printStatus(ftIt[0] == stdIt[0]);
+    
+            printColor(BGWHITE, "\n├─ iterator::operator*\n");
+            *ftIt = 1;
+            *stdIt = 1;
+            printStatus(*ftIt == *stdIt);
+        }
+
+        printColor(BGWHITE, "\n├─ iterator::operator++\n");
+        printStatus(*ftIt++ == *stdIt++);
+        printStatus(*ftIt == *stdIt);
+        printStatus(*++ftIt == *++stdIt);
+
+        printColor(BGWHITE, "\n├─ iterator::operator--\n");
+        printStatus(*ftIt-- == *stdIt--);
+        printStatus(*ftIt == *stdIt);
+        printStatus(*--ftIt == *--stdIt);
+
+        printColor(BGWHITE, "\n├─ iterator::operator+=\n");
+        printStatus(*(ftIt += 2) == *(stdIt += 2));
+
+        printColor(BGWHITE, "\n├─ iterator::operator-=\n");
+        printStatus(*(ftIt -= 2) == *(stdIt -= 2));
+
+        printColor(BGWHITE, "\n├─ iterator::operator+\n");
+        printStatus(*(ftIt + 2) == *(stdIt + 2));
+
+        printColor(BGWHITE, "\n├─ iterator::operator-\n");
+        printStatus(*(ftIt - 2) == *(stdIt - 2));
+
+        printColor(BGWHITE, "\n├─ iterator::operator->\n");
+        std::vector<std::string>        stdStrV(1, "Hello");
+        ft::vector<std::string>         ftStrV(1, "Hello");
+        const ft::vector<std::string>   ftConstStrV(1, "Hello");
+
+        printStatus(stdStrV.begin()->size() == ftStrV.begin()->size());
+        printStatus(stdStrV.begin()->size() == ftConstStrV.begin()->size());
+
+        printColor(CYAN, "\n    ( non-member functions )\n");
+        {
+            ftIterator   ftCmpIt(ftIt);
+            stdIterator  stdCmpIt(stdIt);
+
+            printColor(BGWHITE, "\n├─ iterator::operator==\n");
+            printStatus((ftIt == ftCmpIt) == (stdIt == stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator!=\n");
+            printStatus((++ftIt != ftCmpIt) == (++stdIt != stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator>\n");
+            printStatus((ftIt > ftCmpIt) == (stdIt > stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator>=\n");
+            printStatus((ftIt >= ftCmpIt && ftIt != ftCmpIt) == \
+                        (stdIt >= stdCmpIt && stdIt != stdCmpIt));
+            ++ftCmpIt;
+            ++stdCmpIt;
+            printStatus((ftIt >= ftCmpIt && ftIt == ftCmpIt) == \
+                        (stdIt >= stdCmpIt && stdIt == stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator<\n");
+            ++ftCmpIt;
+            ++stdCmpIt;
+            printStatus((ftIt < ftCmpIt) == (stdIt < stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator<=\n");
+            printStatus((ftIt <= ftCmpIt && ftIt != ftCmpIt) == \
+                        (stdIt <= stdCmpIt && stdIt != stdCmpIt));
+            --ftCmpIt;
+            --stdCmpIt;
+            printStatus((ftIt <= ftCmpIt && ftIt == ftCmpIt) == \
+                        (stdIt <= stdCmpIt && stdIt == stdCmpIt));
+        }
+    }
+    {
+        ftReverseIterator               ftIt = ftV.rbegin() + 2;
+        stdReverseIterator              stdIt = stdV.rbegin() + 2;
+        {
+            ftConstReverseIterator      ftConstIt = constFtV.rbegin() + 2;
+            stdConstReverseIterator     stdConstIt = stdV.rbegin() + 2;
+
+            printColor(CYAN, "\n  { reverse_iterator }\n");
+            printColor(CYAN, "\n    ( member functions )\n");
+            printColor(BGWHITE, "\n├─ reverse_iterator::base()\n");
+            printStatus(*ftIt.base() == *stdIt.base());
+            printStatus(*ftConstIt.base() == *stdConstIt.base());
+
+            printColor(BGWHITE, "\n├─ reverse_iterator::operator[]\n");
+            printStatus(ftIt[0] == stdIt[0]);
+            printStatus(ftConstIt[0] == ftConstIt[0]);
+            ftIt[0] = 10;
+            stdIt[0] = 10;
+            printStatus(ftIt[0] == stdIt[0]);
+
+            printColor(BGWHITE, "\n├─ reverse_iterator::operator*\n");
+            *ftIt = 1;
+            *stdIt = 1;
+            printStatus(*ftIt == *stdIt);
+        }
+
+        printColor(BGWHITE, "\n├─ reverse_iterator::operator++\n");
+        printStatus(*ftIt++ == *stdIt++);
+        printStatus(*ftIt == *stdIt);
+        printStatus(*++ftIt == *++stdIt);
+
+        printColor(BGWHITE, "\n├─ reverse_iterator::operator--\n");
+        printStatus(*ftIt-- == *stdIt--);
+        printStatus(*ftIt == *stdIt);
+        printStatus(*--ftIt == *--stdIt);
+
+        printColor(BGWHITE, "\n├─ reverse_iterator::operator+=\n");
+        printStatus(*(ftIt += 2) == *(stdIt += 2));
+
+        printColor(BGWHITE, "\n├─ reverse_iterator::operator-=\n");
+        printStatus(*(ftIt -= 2) == *(stdIt -= 2));
+
+        printColor(BGWHITE, "\n├─ reverse_iterator::operator+\n");
+        printStatus(*(ftIt + 2) == *(stdIt + 2));
+
+        printColor(BGWHITE, "\n├─ reverse_iterator::operator-\n");
+        printStatus(*(ftIt - 2) == *(stdIt - 2));
+
+        printColor(BGWHITE, "\n├─ reverse_iterator::operator->\n");
+        std::vector<std::string>        stdStrV(1, "Hello");
+        ft::vector<std::string>         ftStrV(1, "Hello");
+        const ft::vector<std::string>   ftConstStrV(1, "Hello");
+
+        printStatus(stdStrV.rbegin()->size() == ftStrV.rbegin()->size());
+        printStatus(stdStrV.rbegin()->size() == ftConstStrV.rbegin()->size());
+        printColor(CYAN, "\n    ( non-member functions )\n");
+        {
+            ftReverseIterator   ftCmpIt(ftIt);
+            stdReverseIterator  stdCmpIt(stdIt);
+
+            printColor(BGWHITE, "\n├─ iterator::operator==\n");
+            printStatus((ftIt == ftCmpIt) == (stdIt == stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator!=\n");
+            printStatus((++ftIt != ftCmpIt) == (++stdIt != stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator>\n");
+            printStatus((ftIt > ftCmpIt) == (stdIt > stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator>=\n");
+            printStatus((ftIt >= ftCmpIt && ftIt != ftCmpIt) == \
+                        (stdIt >= stdCmpIt && stdIt != stdCmpIt));
+            ++ftCmpIt;
+            ++stdCmpIt;
+            printStatus((ftIt >= ftCmpIt && ftIt == ftCmpIt) == \
+                        (stdIt >= stdCmpIt && stdIt == stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator<\n");
+            ++ftCmpIt;
+            ++stdCmpIt;
+            printStatus((ftIt < ftCmpIt) == (stdIt < stdCmpIt));
+
+            printColor(BGWHITE, "\n├─ iterator::operator<=\n");
+            printStatus((ftIt <= ftCmpIt && ftIt != ftCmpIt) == \
+                        (stdIt <= stdCmpIt && stdIt != stdCmpIt));
+            --ftCmpIt;
+            --stdCmpIt;
+            printStatus((ftIt <= ftCmpIt && ftIt == ftCmpIt) == \
+                        (stdIt <= stdCmpIt && stdIt == stdCmpIt));
+        }
     }
     {
         printColor(BGWHITE, "\n├─ begin()\n");
-        ft::vector<int>::const_iterator     ftIt = ftV.begin();
+        ftConstIterator                 ftConstIt = constFtV.begin();
+        ftIterator                      ftIt = ftV.begin();
+        stdIterator                     stdIt = stdV.begin();
 
-        printStatus(*ftV.begin() == *stdV.begin());
-        printStatus(*ftIt == *ftV.begin());
-        printStatus(*ftIt == *stdV.begin());
+        printStatus(*ftIt == *stdIt);
+        printStatus(*ftConstIt == *ftIt);
+        printStatus(*ftConstIt == *stdIt);
     }
-
     {
         printColor(BGWHITE, "\n├─ rbegin()\n");
-        ft::vector<int>::const_reverse_iterator     ftIt = ftV.rbegin();
+        ftConstReverseIterator          ftConstIt = constFtV.rbegin();
+        ftReverseIterator               ftIt = ftV.rbegin();
+        stdReverseIterator              stdIt = stdV.rbegin();
 
-        printStatus(*ftV.rbegin() == *stdV.rbegin());
-        printStatus(*ftIt == *ftV.rbegin());
-        printStatus(*ftIt == *stdV.rbegin());
+        printStatus(*ftIt == *stdIt);
+        printStatus(*ftConstIt == *ftIt);
+        printStatus(*ftConstIt == *stdIt);
     }
     {
         printColor(BGWHITE, "\n├─ end()\n");
-        ft::vector<int>::const_iterator     ftIte = ftV.end();
+        ftConstIterator                 ftConstIte = constFtV.end();
+        ftIterator                      ftIte = ftV.end();
+        stdIterator                     stdIte = stdV.end();
 
-        printStatus(*ftV.end() == *stdV.end());
-        printStatus(*ftIte == *ftV.end());
-        printStatus(*ftIte == *stdV.end());
+        printStatus(*ftIte == *stdIte);
+        printStatus(*ftConstIte == *ftIte);
+        printStatus(*ftConstIte == *stdIte);
     }
     {
         printColor(BGWHITE, "\n├─ rend()\n");
-        ft::vector<int>::const_reverse_iterator     ftIte = ftV.rend();
+        ftConstReverseIterator          ftConstIte = constFtV.rend();
+        ftReverseIterator               ftIte = ftV.rend();
+        stdReverseIterator              stdIte = stdV.rend();
 
-        printStatus(*ftV.rend() == *stdV.rend());
-        printStatus(*ftIte == *ftV.rend());
-        printStatus(*ftIte == *stdV.rend());
+        printStatus(*ftIte == *stdIte);
+        printStatus(*ftConstIte == *ftIte);
+        printStatus(*ftConstIte == *stdIte);
     }
 }
 

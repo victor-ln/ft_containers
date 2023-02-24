@@ -82,6 +82,10 @@ static void swapTest(void) {
     v1.swap(v2);
     printVector(v1);
     printVector(v2);
+
+    swap(v1, v2);
+    printVector(v1);
+    printVector(v2);
 }
 
 static void relationalOperatorsTest(void) {
