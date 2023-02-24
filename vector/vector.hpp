@@ -146,6 +146,8 @@ template <class T, class Alloc>
 bool operator> (const vector<T, Alloc>&, const vector<T, Alloc>&);
 template <class T, class Alloc>
 bool operator>=(const vector<T, Alloc>&, const vector<T, Alloc>&);
+template< class T, class Alloc >
+void swap(vector<T, Alloc>&, vector<T, Alloc>&);
 }  /* namespace ft */
 
 #include "./vector.tpp"

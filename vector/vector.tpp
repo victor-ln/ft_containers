@@ -48,16 +48,17 @@ namespace ft {
                 _full_destroy_and_deallocate();
                 _first = _allocate(src_size);
                 _last = std::uninitialized_copy(src._first, src._last, _first);
-                _end_of_storage = _first + src_size;
+                _end_of_storage = _last;
             } else {
-                size_type oldSize(size());
-                if (oldSize >= src_size) {
+                size_type old_size(size());
+                if (old_size >= src_size) {
                     _destroy(std::copy(src._first, src._last, _first), _last);
                 } else {
-                    std::copy(src._first, src._first + oldSize, _first);
-                    std::uninitialized_copy(src._first + oldSize, src._last, _last);
+                    std::copy(src._first, src._first + old_size, _first);
+                    std::uninitialized_copy(src._first + old_size, src._last, _last);
                 }
             }
+            _last = _first + src_size;
         }
         return *this;
     }
@@ -137,7 +138,7 @@ namespace ft {
         if (new_capacity <= capacity()) { return; }
         pointer new_first = _allocate(new_capacity);
         pointer new_last = new_first;
-        if (size()) {
+        if (_first) {
             new_last = std::uninitialized_copy(_first, _last, new_first);
             _full_destroy_and_deallocate();
         }
@@ -506,5 +507,10 @@ namespace ft {
     template <class T, class Alloc>
     bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
         return !(lhs < rhs);
+    }
+
+    template<class T, class Alloc>
+    void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) {
+        lhs.swap(rhs);
     }
 }   // namespace ft
