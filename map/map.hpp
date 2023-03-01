@@ -5,43 +5,37 @@
 
 #include <functional>
 
-#include "../utility/pair.hpp"
 #include "../rb_tree/rb_tree.hpp"
 
-#define MAP_TEMPLATE typename Key, \
-   typename T, \
-   typename Compare, \
-   typename Allocator \
-
-#define MAP_CLASS ft::map<Key, T, Compare, Allocator>
+#define MAP_TEMPLATE typename Key, typename T, typename Compare, typename AllocTp
+#define MAP_CLASS ft::map<Key, T, Compare, AllocTp>
 
 namespace ft {
 
-template <
-   typename Key,
-   typename T,
-   typename Compare = std::less<Key>,
-   typename Allocator = std::allocator<ft::pair<const Key, T> > >
+template <typename Key, typename T, typename Compare = std::less<Key>,
+   typename AllocTp = std::allocator<ft::pair<const Key, T> > >
 class map {
- public:
-    typedef Key                                     key_type;
-    typedef	T                                       mapped_type;
-    typedef ft::pair<const Key, T>                  value_type;
-    typedef std::size_t                             size_type;
-    typedef std::ptrdiff_t                          difference_type;
-    typedef Compare                                 key_compare;
-    typedef Allocator                               allocator_type;
-    typedef value_type&                             reference;
-    typedef const value_type&                       const_reference;
-    typedef Allocator::pointer                      pointer;
-    typedef Allocator::const_pointer                const_pointer;
-    typedef ft::map_iterator<value_type>            iterator;
-    typedef ft::map_iterator<value_type>            const_iterator;
-    typedef ft::reverse_iterator<iterator>          reverse_iterator;
-    typedef ft::reverse_iterator<const_iterator>    const_reverse_iterator;
+ private:
+    typedef rb_tree<Key, T, Compare, AllocTp>   _rbTreeBase;
+    typedef _rbTreeBase*                        _rbTree;
 
-    map(Allocator alloc = Allocator());
-    ~map(void);
+    _rbTree    _rbTreeBase;
+ public:
+    using typename _rbTreeBase::key_type;
+    using typename _rbTreeBase::mapped_type;
+    using typename _rbTreeBase::value_type;
+    using typename _rbTreeBase::size_type;
+    using typename _rbTreeBase::difference_type;
+    using typename _rbTreeBase::key_compare;
+    using typename _rbTreeBase::allocator_type;
+    using typename _rbTreeBase::reference;
+    using typename _rbTreeBase::const_reference;
+    using typename _rbTreeBase::pointer;
+    using typename _rbTreeBase::const_pointer;
+    using typename _rbTreeBase::iterator;
+    using typename _rbTreeBase::const_iterator;
+    using typename _rbTreeBase::reverse_iterator;
+    using typename _rbTreeBase::const_reverse_iterator;
 
     class value_compare : std::binary_function<value_type, value_type, bool> {
      protected:
@@ -55,12 +49,49 @@ class map {
         }
     };
 
- private:
-    typedef rbTree<value_type, Allocator>* rbTreePtr;
+    map(AllocTp alloc = AllocTp());
+    ~map(void);
 
-    size_type        _size;
-    allocator_type   _allocator;
-    rbTreePtr        _rbTree;
+    /*                              Iterators:                            */
+    iterator               begin(void);
+    iterator               end(void);
+    const_iterator         begin(void) const;
+    const_iterator         end(void) const;
+
+    reverse_iterator       rbegin(void);
+    reverse_iterator       rend(void);
+    const_reverse_iterator rbegin(void) const;
+    const_reverse_iterator rend(void) const;
+
+    /*                              Capacity:                             */
+    size_type           size(void) const;
+    size_type           max_size(void) const;
+    bool                empty(void) const;
+
+    /*                          Element access:                           */
+    reference           operator[](size_type);
+    const_reference     operator[](size_type) const;
+    reference           at(size_type);
+    const_reference     at(size_type) const;
+
+    insert();
+    erase();
+    swap();
+    clear();
+    emplace();
+    emplace_hint();
+
+    key_comp();
+    value_comp();
+
+    find();
+    count();
+    lower_bound();
+    upper_bound();
+    equal_range();
+
+    /*                              Allocator:                            */
+    allocator_type      get_allocator(void) const;
 };
 
 }   // namespace ft

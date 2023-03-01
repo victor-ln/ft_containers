@@ -4,7 +4,7 @@
 
 namespace ft {
     template<MAP_TEMPLATE>
-    MAP_CLASS::map(Allocator alloc = Allocator()) {}
+    MAP_CLASS::map(AllocTp alloc = AllocTp()) {}
 
     template<MAP_TEMPLATE>
     MAP_CLASS::~map(void) {}
