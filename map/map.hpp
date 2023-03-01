@@ -64,31 +64,42 @@ class map {
     const_reverse_iterator rend(void) const;
 
     /*                              Capacity:                             */
-    size_type           size(void) const;
-    size_type           max_size(void) const;
-    bool                empty(void) const;
+    size_type              size(void) const;
+    size_type              max_size(void) const;
+    bool                   empty(void) const;
 
     /*                          Element access:                           */
-    reference           operator[](size_type);
-    const_reference     operator[](size_type) const;
-    reference           at(size_type);
-    const_reference     at(size_type) const;
+    reference              operator[](size_type);
+    const_reference        operator[](size_type) const;
+    reference              at(size_type);
+    const_reference        at(size_type) const;
 
-    insert();
-    erase();
-    swap();
-    clear();
-    emplace();
-    emplace_hint();
+    /*                              Modifiers:                            */
+    pair<iterator, bool>   insert(const value_type&);
+    iterator               insert(iterator, const value_type&);
+    template <class InputIterator>
+    void                   insert(InputIterator, InputIterator);
+    void                   erase(iterator);
+    size_type              erase(const key_type&);
+    void                   erase(iterator, iterator);
+    void                   swap(map& x);
+    void                   clear(void);
 
-    key_comp();
-    value_comp();
 
-    find();
-    count();
-    lower_bound();
-    upper_bound();
-    equal_range();
+    /*                              Observers:                            */
+    key_compare            key_comp(void);
+    value_compare          value_comp(void);
+
+    /*                              Lookup:                               */
+    iterator               find(const key_type&);
+    const_iterator         find(const key_type&) const;
+    size_type              count(const key_type&) const;
+    iterator               lower_bound(const key_type&);
+    const_iterator         lower_bound(const key_type&) const;
+    iterator               upper_bound(const key_type&);
+    const_iterator         upper_bound(const key_type&) const;
+    ft::pair<iterator,iterator>              equal_range(const key_type&);
+    ft::pair<const_iterator,const_iterator>  equal_range(const key_type&) const
 
     /*                              Allocator:                            */
     allocator_type      get_allocator(void) const;
