@@ -3,10 +3,9 @@
 #ifndef TESTS_VECTOR_VECTOR_TESTS_HPP_
 #define TESTS_VECTOR_VECTOR_TESTS_HPP_
 
-#include <iostream>
 #include <vector>
-#include <limits>
-#include <cstdlib>
+
+#include "../utils/utils.hpp"
 
 #if STD == 1
     namespace ft = std;
@@ -15,13 +14,6 @@
     #include "../../algorithm/equal.hpp"
     #include "../../algorithm/lexicographical_compare.hpp"
 #endif
-
-#define OK      "├── \x1b[32mOK\x1b[0m\n"
-#define KO      "├── \x1b[31mKO\x1b[0m\n"
-#define CYAN    "\033[1;36m"
-#define BGWHITE "\033[1;37m"
-#define RESET   "\033[0m"
-#define RESULT  2
 
 #define EXCEPT_MSG_01 \
 "Error: accessing out of range element didn't throw an exception\n"
@@ -50,10 +42,6 @@ typedef std::vector<int>::reverse_iterator          stdReverseIterator;
 typedef ft::vector<int>::reverse_iterator           ftReverseIterator;
 typedef std::vector<int>::const_reverse_iterator    stdConstReverseIterator;
 typedef ft::vector<int>::const_reverse_iterator     ftConstReverseIterator;
-
-int     comp(const int, const int);
-void    printStatus(int);
-void    printColor(const char* code, const char* message);
 
 #include "vector_tests.tpp"
 

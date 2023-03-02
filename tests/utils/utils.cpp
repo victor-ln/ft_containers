@@ -1,6 +1,6 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "vector_tests.hpp"
+#include "utils.hpp"
 
 void printColor(const char* code, const char* message) {
     std::cout << code << message << RESET;
