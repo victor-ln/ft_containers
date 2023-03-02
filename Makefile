@@ -16,9 +16,16 @@ HEADERS =	algorithm/equal.hpp \
 			stack/stack.hpp \
 			utility/pair.hpp \
 
-VECTOR_UTILS = tests/vector/utils.cpp
+UTILS = tests/utils/utils.cpp
+
 VECTOR1	=	tests/vector/running_tests.cpp
 VECTOR2	=	tests/vector/output_tests.cpp
+
+MAP1	=	tests/map/running_tests.cpp
+MAP2	=	tests/map/output_tests.cpp
+
+SET1	=	tests/set/running_tests.cpp
+SET2	=	tests/set/output_tests.cpp
 
 CC		=	c++
 CFLAGS	=	-Wno-long-long -Wall -Wextra -Werror -std=c++98 -pedantic-errors
@@ -45,15 +52,55 @@ $(NAME):			$(OBJ_DIR) $(OBJECT)
 	$(CC) $(CFLAGS) $(OBJECT) -o $(NAME)
 
 vector1:
-	$(CC) $(CFLAGS) $(VECTOR_UTILS) $(VECTOR1) -o vector_running_tests
+	$(CC) $(CFLAGS) $(UTILS) $(VECTOR1) -o vector_running_tests
 	clear
 	./vector_running_tests
 
 vector2:
-	@$(CC) $(CFLAGS) $(VECTOR_UTILS) $(VECTOR2) -g3 -o ftvector_output_tests
-	@$(CC) $(CFLAGS) -D STD=1 $(VECTOR_UTILS) $(VECTOR2) -o stdvector_output_tests
+	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -g3 -o ftvector_output_tests
+	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(VECTOR2) -o stdvector_output_tests
 	@./ftvector_output_tests > ftOutput.txt
 	@./stdvector_output_tests > stdOutput.txt
+	clear
+
+	@diff -u ftOutput.txt stdOutput.txt > diffOutput.txt; \
+	if test -s diffOutput.txt; then \
+		$(PRINT) $(BOLD_RED) "Test failed\n"$(RESET_COLOR); \
+		cat diffOutput.txt; \
+	else \
+		$(PRINT) $(BOLD_GREEN) "Test passed!"$(RESET_COLOR); \
+	fi
+
+map1:
+	$(CC) $(CFLAGS) $(UTILS) $(map1) -o map_running_tests
+	clear
+	./map_running_tests
+
+map2:
+	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -g3 -o ftmap_output_tests
+	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(VECTOR2) -o stdmap_output_tests
+	@./ftmap_output_tests > ftOutput.txt
+	@./stdmap_output_tests > stdOutput.txt
+	clear
+
+	@diff -u ftOutput.txt stdOutput.txt > diffOutput.txt; \
+	if test -s diffOutput.txt; then \
+		$(PRINT) $(BOLD_RED) "Test failed\n"$(RESET_COLOR); \
+		cat diffOutput.txt; \
+	else \
+		$(PRINT) $(BOLD_GREEN) "Test passed!"$(RESET_COLOR); \
+	fi
+
+set1:
+	$(CC) $(CFLAGS) $(UTILS) $(SET1) -o set_running_tests
+	clear
+	./set_running_tests
+
+set2:
+	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -g3 -o ftset_output_tests
+	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(VECTOR2) -o stdset_output_tests
+	@./ftset_output_tests > ftOutput.txt
+	@./stdset_output_tests > stdOutput.txt
 	clear
 
 	@diff -u ftOutput.txt stdOutput.txt > diffOutput.txt; \
