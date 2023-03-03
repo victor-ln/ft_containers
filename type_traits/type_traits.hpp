@@ -44,6 +44,6 @@ struct enable_if {};
 template<class T>
 struct enable_if<true, T> { typedef T type; };
 
-}   // namespace ft
+}   /* namespace ft */
 
-#endif  // TYPE_TRAITS_TYPE_TRAITS_HPP_
+#endif  /* TYPE_TRAITS_TYPE_TRAITS_HPP_ */

@@ -28,6 +28,6 @@ inline bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2,
     return true;
 }
 
-}   // namespace ft
+}   /* namespace ft */
 
-#endif  // ALGORITHM_EQUAL_HPP_
+#endif  /* ALGORITHM_EQUAL_HPP_ */

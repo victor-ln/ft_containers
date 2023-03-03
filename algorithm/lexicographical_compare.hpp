@@ -35,6 +35,6 @@ bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2,
     return (first1 == last1) && (first2 != last2);
 }
 
-}   // namespace ft
+}   /* namespace ft */
 
-#endif  // ALGORITHM_LEXICOGRAPHICAL_COMPARE_HPP_
+#endif  /* ALGORITHM_LEXICOGRAPHICAL_COMPARE_HPP_ */
