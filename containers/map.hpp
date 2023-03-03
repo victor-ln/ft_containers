@@ -7,9 +7,6 @@
 
 #include "../rb_tree/rb_tree.hpp"
 
-#define MAP_TEMPLATE typename Key, typename T, typename Compare, typename AllocTp
-#define MAP_CLASS ft::map<Key, T, Compare, AllocTp>
-
 namespace ft {
 
 template <typename Key, typename T, typename Compare = std::less<Key>,
@@ -65,6 +62,7 @@ class map {
     map&                   operator=(const map&) {}
 
     /*                              Iterators:                            */
+
     iterator               begin(void) {}
     iterator               end(void) {}
     const_iterator         begin(void) const {}
@@ -76,17 +74,20 @@ class map {
     const_reverse_iterator rend(void) const {}
 
     /*                              Capacity:                             */
+
     size_type              size(void) const {}
     size_type              max_size(void) const {}
     bool                   empty(void) const {}
 
     /*                          Element access:                           */
+
     mapped_type&           operator[](const key_type& k) {}
     const mapped_type&     operator[](const key_type& k) const {}
     mapped_type&           at(const key_type& k) {}
     const mapped_type&     at(const key_type& k) const {}
 
     /*                              Modifiers:                            */
+
     pair<iterator, bool>   insert(const value_type&) {}
     iterator               insert(iterator, const value_type&) {}
     template <class InputIterator>
@@ -99,10 +100,12 @@ class map {
 
 
     /*                              Observers:                            */
+
     key_compare            key_comp(void) const {}
     value_compare          value_comp(void) const {}
 
     /*                              Lookup:                               */
+
     iterator               find(const key_type&) {}
     const_iterator         find(const key_type&) const {}
     size_type              count(const key_type&) const {}
@@ -114,9 +117,9 @@ class map {
     ft::pair<const_iterator, const_iterator>  equal_range(const key_type&) const {}
 
     /*                              Allocator:                            */
-    allocator_type      get_allocator(void) const {}
+    allocator_type         get_allocator(void) const {}
 };
 
-}   // namespace ft
+}  /* namespace ft */
 
-#endif  // CONTAINERS_MAP_HPP_
+#endif   /* CONTAINERS_MAP_HPP_ */
