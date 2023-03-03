@@ -7,11 +7,11 @@
 
 namespace ft {
 
-template<typename Category, typename Tp, typename Distance = std::ptrdiff_t,
- typename Pointer = Tp*, typename Reference = Tp&>
+template<typename Category, typename T, typename Distance = std::ptrdiff_t,
+ typename Pointer = T*, typename Reference = T&>
 struct iterator {
     typedef Category                                   iterator_category;
-    typedef Tp                                         value_type;
+    typedef T                                          value_type;
     typedef Distance                                   difference_type;
     typedef Pointer                                    pointer;
     typedef Reference                                  reference;

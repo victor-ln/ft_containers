@@ -8,34 +8,40 @@
 namespace ft {
 
 template <typename T>
-class reverse_iter
-      : public ft::iterator<typename ft::iterator_traits<T>::iterator_category,
-                        typename ft::iterator_traits<T>::value_type,
-                        typename ft::iterator_traits<T>::difference_type,
-                        typename ft::iterator_traits<T>::pointer,
-                        typename ft::iterator_traits<T>::reference> {
+class reverse_iter {
  protected:
     T       current;
 
- public:
-    typedef T                                                   iterator_type;
-    typedef typename ft::iterator_traits<T>::difference_type    difference_type;
-    typedef typename ft::iterator_traits<T>::reference          reference;
-    typedef typename ft::iterator_traits<T>::pointer            pointer;
+    typedef ft::iterator_traits<T>                      _iter_traits;
 
-    reverse_iter(void) : current() {}
-    explicit reverse_iter(iterator_type x) : current(x) {}
-    template< class U >
+ public:
+    typedef T                                           iterator_type;
+    typedef typename _iter_traits::iterator_category    iterator_category;
+    typedef typename _iter_traits::value_type           value_type;
+    typedef typename _iter_traits::difference_type      difference_type;
+    typedef typename _iter_traits::reference            reference;
+    typedef typename _iter_traits::pointer              pointer;
+
+    reverse_iter() : current(0) {}
+
+    explicit reverse_iter(const T& x) : current(x) {}
+
+    reverse_iter(const reverse_iter& x) : current(x.base()) {}
+
+    template<typename U>
     reverse_iter(const reverse_iter<U>& x) : current(x.base()) {}
-    ~reverse_iter(void) {}
+
+    ~reverse_iter() {}
 
     /*                   Assignment operator                    */
+
     reverse_iter&   operator=(const reverse_iter& rhs) {
         current = rhs.current;
         return *this;
     }
 
     /*                   Accessors operators                    */
+
     reference   operator*(void) const {
         T tmp = current;
         return *--tmp;
@@ -51,6 +57,7 @@ class reverse_iter
     }
 
     /*                   Increment operators                    */
+
     reverse_iter&   operator++(void) {
         --current;
         return *this;
@@ -70,6 +77,7 @@ class reverse_iter
     }
 
     /*                   Decrement operators                    */
+
     reverse_iter&   operator--(void) {
         ++current;
         return *this;
@@ -87,56 +95,51 @@ class reverse_iter
         current += n;
         return *this;
     }
-};
-    /******************** Non-member function overloads ***********************/
 
-    /*                   Relational operators                   */
-    template< class Iterator1, class Iterator2 >
-    bool operator==(const reverse_iter<Iterator1>& lhs,
-                    const reverse_iter<Iterator2>& rhs) {
-        return (lhs.base() == rhs.base());
-    }
-    template< class Iterator1, class Iterator2 >
-    bool operator!=(const reverse_iter<Iterator1>& lhs,
-                    const reverse_iter<Iterator2>& rhs) {
-        return (lhs.base() != rhs.base());
-    }
-    template< class Iterator1, class Iterator2 >
-    bool operator<(const reverse_iter<Iterator1>& lhs,
-                    const reverse_iter<Iterator2>& rhs) {
-        return (rhs.base() < lhs.base());
-    }
-    template< class Iterator1, class Iterator2 >
-    bool operator<=(const reverse_iter<Iterator1>& lhs,
-                    const reverse_iter<Iterator2>& rhs) {
-        return (rhs.base() <= lhs.base());
-    }
-    template< class Iterator1, class Iterator2 >
-    bool operator>(const reverse_iter<Iterator1>& lhs,
-                    const reverse_iter<Iterator2>& rhs) {
-        return (rhs.base() > lhs.base());
-    }
-    template< class Iterator1, class Iterator2 >
-    bool operator>=(const reverse_iter<Iterator1>& lhs,
-                    const reverse_iter<Iterator2>& rhs) {
-        return (rhs.base() >= lhs.base());
-    }
+};  /* class reverse_iter */
 
-    /*                   Increment operator                    */
-    template<class T>
-    reverse_iter<T>  operator+(
-        typename reverse_iter<T>::difference_type n,
-        const reverse_iter<T>& it) {
-        return reverse_iter<T>(it.base() - n);
-    }
+/*                   Relational operators                   */
 
-    /*                   Decrement operators                    */
-    template<class Iterator1, class Iterator2>
-    typename reverse_iter<Iterator1>::difference_type   operator-(
-        const reverse_iter<Iterator1>& lhs,
-        const reverse_iter<Iterator2>& rhs) {
-        return rhs.base() - lhs.base();
-    }
+template<class T1, class T2>
+bool operator==(const reverse_iter<T1>& lhs, const reverse_iter<T2>& rhs) {
+    return (lhs.base() == rhs.base());
+}
+template<class T1, class T2>
+bool operator!=(const reverse_iter<T1>& lhs, const reverse_iter<T2>& rhs) {
+    return (lhs.base() != rhs.base());
+}
+template<class T1, class T2>
+bool operator<(const reverse_iter<T1>& lhs, const reverse_iter<T2>& rhs) {
+    return (rhs.base() < lhs.base());
+}
+template<class T1, class T2>
+bool operator<=(const reverse_iter<T1>& lhs, const reverse_iter<T2>& rhs) {
+    return (rhs.base() <= lhs.base());
+}
+template<class T1, class T2>
+bool operator>(const reverse_iter<T1>& lhs, const reverse_iter<T2>& rhs) {
+    return (rhs.base() > lhs.base());
+}
+template<class T1, class T2>
+bool operator>=(const reverse_iter<T1>& lhs, const reverse_iter<T2>& rhs) {
+    return (rhs.base() >= lhs.base());
+}
+
+/*                   Increment operator                     */
+
+template<class T>
+reverse_iter<T> operator+(typename reverse_iter<T>::difference_type n,
+                          const reverse_iter<T>& it) {
+    return reverse_iter<T>(it.base() - n);
+}
+
+/*                   Decrement operators                    */
+
+template<class T1, class T2>
+typename reverse_iter<T1>::difference_type
+        operator-(const reverse_iter<T1>& lhs, const reverse_iter<T2>& rhs) {
+    return rhs.base() - lhs.base();
+}
 
 }   /* namespace ft */
 
