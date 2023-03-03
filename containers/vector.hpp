@@ -1,7 +1,7 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#ifndef VECTOR_VECTOR_HPP_
-#define VECTOR_VECTOR_HPP_
+#ifndef CONTAINERS_VECTOR_HPP_
+#define CONTAINERS_VECTOR_HPP_
 
 #include <stdexcept>
 #include <memory>
@@ -413,7 +413,7 @@ bool  operator!=(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
 }
 
 template <class T, class Alloc>
-bool  operator< (const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
+bool  operator<(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
     return ft::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
 }
 
@@ -423,7 +423,7 @@ bool  operator<=(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
 }
 
 template <class T, class Alloc>
-bool  operator> (const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
+bool  operator>(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
     return y < x;
 }
 
@@ -432,6 +432,8 @@ bool  operator>=(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
     return !(x < y);
 }
 
+/*                          Non member functions                      */
+
 template<class T, class Alloc>
 void  swap(vector<T, Alloc>& x, vector<T, Alloc>& y) {
     x.swap(y);
@@ -439,4 +441,4 @@ void  swap(vector<T, Alloc>& x, vector<T, Alloc>& y) {
 
 }  /* namespace ft */
 
-#endif /* VECTOR_VECTOR_HPP_ */
+#endif /* CONTAINERS_VECTOR_HPP_ */
