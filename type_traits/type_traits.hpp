@@ -5,11 +5,11 @@
 
 namespace ft {
 
-template<typename Tp, Tp v>
+template<typename T, T v>
 struct integral_constant {
-    static const Tp                      value = v;
-    typedef Tp                           value_type;
-    typedef integral_constant<Tp, v>     type;
+    static const T                      value = v;
+    typedef T                           value_type;
+    typedef integral_constant<T, v>     type;
 
     operator bool() const { return value; }
     value_type operator()() const { return value; }
