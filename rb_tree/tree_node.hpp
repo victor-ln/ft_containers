@@ -7,16 +7,16 @@ namespace ft {
 
 enum nodeColor { black, red };
 
-template <typename Tp>
+template <typename T>
 struct node {
-    typedef struct node<Tp>*                               nodePtr;
-    typedef const struct node<Tp>*                         constNodePtr;
+    typedef struct node<T>*                               nodePtr;
+    typedef const struct node<T>*                         constNodePtr;
 
-    Tp        data;
-    nodePtr   left;
-    nodePtr   right;
-    nodePtr   parent;
-    nodeColor color;
+    T           data;
+    nodePtr     left;
+    nodePtr     right;
+    nodePtr     parent;
+    nodeColor   color;
 
     nodePtr maximum(nodePtr node) {
         while (node->right) {
@@ -47,6 +47,6 @@ struct node {
     }
 };
     
-} // namespace ft
+}   /* namespace ft */
 
-#endif  // RBTREE_TREE_NODE_HPP_
+#endif  /* RBTREE_TREE_NODE_HPP_ */
