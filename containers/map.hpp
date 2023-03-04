@@ -19,9 +19,8 @@ class map {
 
  private:
     typedef rb_tree<value_type, Compare, AllocTp>     _rbTreeBase;
-    typedef _rbTreeBase*                              _rbTree;
 
-    _rbTree    _rbTree;
+    _rbTreeBase   _rbTree;
  public:
     using typename _rbTreeBase::size_type;
     using typename _rbTreeBase::difference_type;
@@ -48,36 +47,44 @@ class map {
         }
     };
 
-    map() : _rbTree(0) {}
+    map() {}
 
-    map(const Compare&, AllocTp alloc = AllocTp()) : _rbTree(0) {}
+    map(const Compare&, AllocTp alloc = AllocTp()) {}
 
     template<class InputIt>
-    map(InputIt, InputIt, const Compare& comp = Compare(),
-                   const AllocTp& alloc = AllocTp()) {}
-    map(const map&) {}
+    map(InputIt first, InputIt last, const Compare& comp = Compare(),
+                   const AllocTp& alloc = AllocTp()) {
+         insert(first, last);
+    }
+    map(const map& src) {}
 
     ~map() {}
 
-    map&                   operator=(const map&) {}
+    map&                   operator=(const map& src) {
+        _rbTree = src._rbTree;
+    }
 
     /*                              Iterators:                            */
 
-    iterator               begin(void) {}
-    iterator               end(void) {}
-    const_iterator         begin(void) const {}
-    const_iterator         end(void) const {}
+    iterator               begin(void) { return _rbTree.begin(); }
+    iterator               end(void) { return _rbTree.end(); }
+    const_iterator         begin(void) const { return _rbTree.begin(); }
+    const_iterator         end(void) const { return _rbTree.end(); }
 
-    reverse_iterator       rbegin(void) {}
-    reverse_iterator       rend(void) {}
-    const_reverse_iterator rbegin(void) const {}
-    const_reverse_iterator rend(void) const {}
+    reverse_iterator       rbegin(void) { return reverse_iterator(end()); }
+    reverse_iterator       rend(void) { return reverse_iterator(begin()); }
+    const_reverse_iterator rbegin(void) const {
+        return const_reverse_iterator(end());
+    }
+    const_reverse_iterator rend(void) const {
+        return const_reverse_iterator(begin());
+    }
 
     /*                              Capacity:                             */
 
-    size_type              size(void) const {}
-    size_type              max_size(void) const {}
-    bool                   empty(void) const {}
+    size_type              size(void) const { _rbTree.size() }
+    size_type              max_size(void) const { _rbTree.max_size() }
+    bool                   empty(void) const { !_rbTree.size() }
 
     /*                          Element access:                           */
 
@@ -88,10 +95,27 @@ class map {
 
     /*                              Modifiers:                            */
 
-    pair<iterator, bool>   insert(const value_type&) {}
-    iterator               insert(iterator, const value_type&) {}
+    pair<iterator, bool>   insert(const value_type& pair) {
+        iterator it = find(pair.first);
+        if (it != end()) {
+            return make_pair(it, false);
+        }
+        _rbTree.insert(pair);
+        it = find(pair.first);
+        return make_pair(it, true);
+    }
+
+    iterator               insert(iterator pos, const value_type& pair) {
+        
+    }
+
     template <class InputIterator>
-    void                   insert(InputIterator, InputIterator) {}
+    void                   insert(InputIterator first, InputIterator last) {
+        while (first != last) {
+            insert(first);
+            ++first;
+        }
+    }
     iterator               erase(iterator) {}
     iterator               erase(iterator, iterator) {}
     size_type              erase(const key_type&) {}
@@ -117,7 +141,7 @@ class map {
     ft::pair<const_iterator, const_iterator>  equal_range(const key_type&) const {}
 
     /*                              Allocator:                            */
-    allocator_type         get_allocator(void) const {}
+    AllocTp                get_allocator(void) const { return AllocTp(); }
 };
 
 }  /* namespace ft */
