@@ -29,17 +29,19 @@ class rb_tree {
     typedef ft::reverse_iter<iterator>                reverse_iterator;
     typedef ft::reverse_iter<const_iterator>          const_reverse_iterator;
 
-    rb_tree() : _root(0) {}
+    rb_tree() {
+        _root = _create_new_node(0, black);
+    }
 
-    void insert(pointer new_data, bool replace = false) {
+    void insert(reference new_data, bool replace = false) {
         if (!_root) {
             _root = _create_new_node(new_data, black);
         } else {
             nodePtr x = _root;
             while (x->data) {
-                if (_comp(*new_data, *x->data)) {
+                if (_comp(new_data, *x->data)) {
                     x = x->left;
-                } else if (_comp(*x->data, *new_data)) {
+                } else if (_comp(*x->data, new_data)) {
                     x = x->right;
                 } else if (!replace) {
                     return;
@@ -48,12 +50,12 @@ class rb_tree {
                 }
             }
             if (x->data) {
-                _pair_alloc.destroy(x->data);
-                _pair_alloc.deallocate(x->data);
+                _data_alloc.destroy(x->data);
+                _data_alloc.deallocate(x->data);
             } else {
                 _create_leaf_nodes(x);
             }
-            x->data = new_data;
+            x->data = _allocate_data(new_data);
             _balanceTree(x);
         }
     }
@@ -76,15 +78,21 @@ class rb_tree {
     }
 
  private:
-    typedef node<value_type>*   nodePtr;
-
-    typedef typename AllocTp::rebind<nodePtr>::other  nodeAllocator;
+    typedef node<value_type>*                           nodePtr;
+    typedef node<value_type>                            nodeBase;
+    typedef typename AllocTp::rebind<nodePtr>::other    nodeAllocator;
 
     nodePtr         _root;
     nodeAllocator   _node_alloc;
-    AllocTp         _pair_alloc;
+    allocator_type  _data_alloc;
     Compare         _comp;
     size_type       _size;
+
+    pointer _allocate_data(reference pair) {
+        pointer new_data = _data_alloc.allocate(1);
+        _data_alloc.construct(new_data, pair);
+        return new_data;
+    }
 
     nodePtr    _create_new_node(pointer new_data, nodeColor node_color = red) {
         nodePtr new_node = _node_alloc.allocate(1);
