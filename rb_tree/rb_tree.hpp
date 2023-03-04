@@ -29,93 +29,134 @@ class rb_tree {
     typedef ft::reverse_iter<iterator>                reverse_iterator;
     typedef ft::reverse_iter<const_iterator>          const_reverse_iterator;
 
-    explicit rb_tree(const value_type& val) {
-        _root = _TNULL = _allocator.allocate(1);
-        _root->color = black;
-        _root->left = 0;
-        _root->right = 0;
-        _root->data = val;
+    rb_tree() : _root(0) {}
+
+    void insert(pointer new_data, bool replace = false) {
+        if (!_root) {
+            _root = _create_new_node(new_data, black);
+        } else {
+            nodePtr x = _root;
+            while (x->data) {
+                if (_comp(*new_data, *x->data)) {
+                    x = x->left;
+                } else if (_comp(*x->data, *new_data)) {
+                    x = x->right;
+                } else if (!replace) {
+                    return;
+                } else {
+                    break;
+                }
+            }
+            if (x->data) {
+                _pair_alloc.destroy(x->data);
+                _pair_alloc.deallocate(x->data);
+            } else {
+                _create_leaf_nodes(x);
+            }
+            x->data = new_data;
+            _balanceTree(x);
+        }
     }
 
-    void insert(const value_type& val) {
-        nodePtr node = _allocator.allocate(1);
-        _allocator.construct(&node->data, val);
-        node->parent = 0;
-        node->left = _TNULL;
-        node->right = _TNULL;
-        node->color = red;
-
-        NodePtr y = 0;
-        NodePtr x = this->root;
-
-        while (x != _TNULL) {
-            y = x;
-            if (node->data < x->data) {
+    nodePtr search(const_reference data) {
+        if (!_root) {
+            return 0;
+        }
+        nodePtr x = _root;
+        while (x->data) {
+            if (_comp(data, *x->data)) {
                 x = x->left;
-            } else {
+            } else if (_comp(*x->data, data)) {
                 x = x->right;
+            } else {
+                return x;
             }
         }
-
-        node->parent = y;
-        if (!y) {
-            root = node;
-        } else if (node->data < y->data) {
-            y->left = node;
-        } else {
-            y->right = node;
-        }
-        if (!node->parent) {
-            node->color = black;
-            return;
-        }
-        if (!node->parent->parent) {
-            return;
-        }
-        insertFix(node);
-    }
-
-    nodePtr search(const value_type& val) {
-        return searchTreeHelper(this->root, KeyOfValue()(val));
+        return 0;
     }
 
  private:
-    using typename node<value_type>::nodePtr;
+    typedef node<value_type>*   nodePtr;
 
     typedef typename AllocTp::rebind<nodePtr>::other  nodeAllocator;
 
-    nodePtr    _root;
-    nodePtr    _TNULL;
-    AllocTp    _allocator;
-    Compare    _comp;
-    size_type  _size;
+    nodePtr         _root;
+    nodeAllocator   _node_alloc;
+    AllocTp         _pair_alloc;
+    Compare         _comp;
+    size_type       _size;
 
-    template <typename Key>
-    struct KeyOfValue {
-       const Key& operator()(const value_type& x) const {
-          return (x.first);
-       }
-    };
-
-    template <typename Key>
-    nodePtr _searchHelper(nodePtr node, const Key& key) {
-        if (node == _TNULL || key == node->data) {
-            return node;
-        }
-        if (key < node->data) {
-            return searchHelper(node->left, key);
-        }
-        return searchHelper(node->right, key);
+    nodePtr    _create_new_node(pointer new_data, nodeColor node_color = red) {
+        nodePtr new_node = _node_alloc.allocate(1);
+        _node_alloc.construct(new_node, node<value_type>(new_data, node_color));
+        _create_leaf_nodes(new_node);
+        return new_node;
     }
 
-    void  _leftRotate(nodePtr x) {
+    void        _create_leaf_nodes(nodePtr new_node) {
+        new_node->left = _node_alloc.allocate(1);
+        _node_alloc.construct(new_node->left, node<value_type>());
+        new_node->right = _node_alloc.allocate(1);
+        _node_alloc.construct(new_node->right, node<value_type>());
+    }
+
+    void    _balanceTree(nodePtr node) {
+        nodePtr parent = node->parent;
+        nodePtr grand_parent = parent->parent;
+        nodePtr sibling;
+
+        if (parent->color == red) {
+            if (parent == grand_parent->right) {
+                sibling = grand_parent->left;
+                if (sibling->color == red) {
+                    sibling->color = black;
+                    parent->color = black;
+                    grand_parent->color = red;
+                    _balanceTree(grand_parent);
+                } else {
+                    if (node == parent->left) {
+                        _rightRotate(parent);
+                    }
+                    parent->color = black;
+                    grand_parent->color = red;
+                    _leftRotate(grand_parent);
+                    return;
+                }
+            } else {
+                sibling = grand_parent->right;
+                if (sibling->color == red) {
+                    sibling->color = black;
+                    parent->color = black;
+                    grand_parent->color = red;
+                    _balanceTree(grand_parent);
+                } else {
+                    if (node == parent->right) {
+                        _leftRotate(parent);
+                    }
+                    parent->color = black;
+                    grand_parent->color = red;
+                    _rightRotate(grand_parent);
+                    return;
+                }
+            }
+        }
+        if (!grand_parent) {
+            _root->color = black;
+            return;
+        }
+        _balanceTree(parent);
+    }
+
+    
+    void _leftRotate(nodePtr x) {
         nodePtr y = x->right;
+
         x->right = y->left;
-        if (y->left != _TNULL) {
+        if (y->left) {
             y->left->parent = x;
         }
         y->parent = x->parent;
-        if (x->parent == _TNULL) {
+        if (!x->parent) {
             _root = y;
         } else if (x == x->parent->left) {
             x->parent->left = y;
@@ -126,14 +167,15 @@ class rb_tree {
         x->parent = y;
     }
 
-    void  _rightRotate(nodePtr x) {
+    void _rightRotate(nodePtr x) {
         nodePtr y = x->left;
+
         x->left = y->right;
-        if (y->right != _TNULL) {
+        if (y->right) {
             y->right->parent = x;
         }
         y->parent = x->parent;
-        if (x->parent == _TNULL) {
+        if (!x->parent) {
             _root = y;
         } else if (x == x->parent->right) {
             x->parent->right = y;
@@ -142,50 +184,6 @@ class rb_tree {
         }
         y->right = x;
         x->parent = y;
-    }
-
-    void  _insertFix(nodePtr x) {
-        nodePtr u;
-        while (x->parent->color == red) {
-            if (x->parent == x->parent->parent->right) {
-                u = x->parent->parent->left;
-                if (u->color == red) {
-                    u->color = black;
-                    x->parent->color = black;
-                    x->parent->parent->color = red;
-                    x = x->parent->parent;
-                } else {
-                    if (x == x->parent->left) {
-                        x = x->parent;
-                        _rightRotate(x);
-                    }
-                    x->parent->color = black;
-                    x->parent->parent->color = red;
-                    _leftRotate(x->parent->parent);
-                }
-            } else {
-                u = x->parent->parent->right;
-
-                if (u->color == red) {
-                    u->color = black;
-                    x->parent->color = black;
-                    x->parent->parent->color = red;
-                    x = x->parent->parent;
-                } else {
-                    if (x == x->parent->right) {
-                        x = x->parent;
-                        _leftRotate(x);
-                    }
-                    x->parent->color = black;
-                    x->parent->parent->color = red;
-                    _rightRotate(x->parent->parent);
-                }
-            }
-            if (x == root) {
-                break;
-            }
-        }
-        root->color = black;
     }
 };
 
