@@ -17,7 +17,6 @@ class rb_tree {
  public:
     typedef size_t                                    size_type;
     typedef ptrdiff_t                                 difference_type;
-    typedef Compare                                   key_compare;
     typedef AllocTp                                   allocator_type;
     typedef value_type&                               reference;
     typedef const value_type&                         const_reference;
@@ -29,41 +28,39 @@ class rb_tree {
     typedef ft::reverse_iter<iterator>                reverse_iterator;
     typedef ft::reverse_iter<const_iterator>          const_reverse_iterator;
 
-    rb_tree() {
-        _root = _create_new_node(0, black);
+    rb_tree() : size(0) {
+        _root = _create_root_node(0, black);
     }
 
-    void insert(reference new_data, bool replace = false) {
-        if (!_root) {
-            _root = _create_new_node(new_data, black);
-        } else {
-            nodePtr x = _root;
-            while (x->data) {
-                if (_comp(new_data, *x->data)) {
-                    x = x->left;
-                } else if (_comp(*x->data, new_data)) {
-                    x = x->right;
-                } else if (!replace) {
-                    return;
-                } else {
-                    break;
-                }
-            }
-            if (x->data) {
-                _data_alloc.destroy(x->data);
-                _data_alloc.deallocate(x->data);
+    void insert(reference new_data, insertMode mode = noReplace, nodePtr from = 0) {
+        if (!from) {
+            from = _root;
+        }
+        while (from->data) {
+            if (_comp(new_data, *from->data)) {
+                from = from->left;
+            } else if (_comp(*from->data, new_data)) {
+                from = from->right;
+            } else if (!mode) {
+                return;
             } else {
-                _create_leaf_nodes(x);
+                break;
             }
-            x->data = _allocate_data(new_data);
-            _balanceTree(x);
         }
+        if (from->data) {
+            _data_alloc.destroy(from->data);
+            _data_alloc.deallocate(from->data, 1);
+        } else {
+            ++_size;
+        }
+        if (!from->left) {
+            _create_leaf_nodes(from);
+        }
+        from->data = _allocate_data(new_data);
+        _balanceTree(from);
     }
 
-    nodePtr search(const_reference data) {
-        if (!_root) {
-            return 0;
-        }
+    iterator search(const_reference data) {
         nodePtr x = _root;
         while (x->data) {
             if (_comp(data, *x->data)) {
@@ -71,10 +68,10 @@ class rb_tree {
             } else if (_comp(*x->data, data)) {
                 x = x->right;
             } else {
-                return x;
+                return iterator(x);
             }
         }
-        return 0;
+        return end();
     }
 
     iterator begin() {
@@ -110,7 +107,7 @@ class rb_tree {
         return new_data;
     }
 
-    nodePtr    _create_new_node(pointer new_data, nodeColor node_color = red) {
+    nodePtr    _create_root_node(pointer new_data, nodeColor node_color = red) {
         nodePtr new_node = _node_alloc.allocate(1);
         _node_alloc.construct(new_node, node<value_type>(new_data, node_color));
         _create_leaf_nodes(new_node);
