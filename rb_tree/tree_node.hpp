@@ -23,14 +23,14 @@ struct node {
         : data(new_data), left(0), right(0), parent(0), color(new_color) {}
 
     static nodePtr maximum(nodePtr node) {
-        while (node->data) {
+        while (node->right->data) {
             node = node->right;
         }
         return node;
     }
 
     static nodePtr minimum(nodePtr node) {
-        while (node->data) {
+        while (node->left->data) {
             node = node->left;
         }
         return node;
