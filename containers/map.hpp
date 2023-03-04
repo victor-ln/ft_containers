@@ -32,7 +32,7 @@ class map {
 
  private:
     typedef rb_tree<value_type, value_compare, AllocTp>     _rbTreeBase;
-    using typename _rbTreeBase::insertMode;
+    using typename _rbTreeBase::nodePtr;
 
     _rbTreeBase   _rbTree;
  public:
@@ -144,24 +144,48 @@ class map {
         }
     }
 
-    iterator               erase(iterator) {}
-    iterator               erase(iterator, iterator) {}
-    size_type              erase(const key_type&) {}
-    void                   swap(map& x) {}
-    void                   clear(void) {}
+    void erase(iterator pos) {
+        _rbTree.remove(*pos);
+    }
+
+    size_type  erase(const key_type& key) {
+        return _rbTree.remove(make_pair(key, mapped_type()));
+    }
+
+    void erase(iterator first, iterator last) {
+        while (first != last) {
+            _rbTree.remove(*first);
+            ++first;
+        }
+    }
+
+    void swap(map& x) { _rbTree.swap(x._rbTree); }
+    void clear(void) { _rbTree.clear(); }
 
 
     /*                              Observers:                            */
 
-    key_compare            key_comp(void) const {}
-    value_compare          value_comp(void) const {}
+    key_compare            key_comp(void) const {
+        return Compare();
+    }
+    value_compare          value_comp(void) const {
+        return value_compare(Compare());
+    }
 
     /*                              Lookup:                               */
 
     iterator               find(const key_type& key) {
-        return _rbTree.search(make_pair(key, mapped_type()));
+        nodePtr node = _rbTree.search(make_pair(key, mapped_type()));
+        if (!node)
+            return _rbTree.end();
+        return iterator(node);
     }
-    const_iterator         find(const key_type&) const {}
+    const_iterator         find(const key_type& key) const {
+        nodePtr node = _rbTree.search(make_pair(key, mapped_type()));
+        if (!node)
+            return _rbTree.end();
+        return const_iterator(node);
+    }
     size_type              count(const key_type&) const {}
     iterator               lower_bound(const key_type&) {}
     const_iterator         lower_bound(const key_type&) const {}
