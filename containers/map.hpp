@@ -16,24 +16,7 @@ class map {
     typedef Key                                       key_type;
     typedef	T                                         mapped_type;
     typedef ft::pair<const Key, T>                    value_type;
-
- private:
-    typedef rb_tree<value_type, Compare, AllocTp>     _rbTreeBase;
-
-    _rbTreeBase   _rbTree;
- public:
-    using typename _rbTreeBase::size_type;
-    using typename _rbTreeBase::difference_type;
-    using typename _rbTreeBase::key_compare;
-    using typename _rbTreeBase::allocator_type;
-    using typename _rbTreeBase::reference;
-    using typename _rbTreeBase::const_reference;
-    using typename _rbTreeBase::pointer;
-    using typename _rbTreeBase::const_pointer;
-    using typename _rbTreeBase::iterator;
-    using typename _rbTreeBase::const_iterator;
-    using typename _rbTreeBase::reverse_iterator;
-    using typename _rbTreeBase::const_reverse_iterator;
+    typedef Compare                                   key_compare;
 
     class value_compare : std::binary_function<value_type, value_type, bool> {
      protected:
@@ -46,6 +29,24 @@ class map {
             return comp(lhs.first, rhs.first);
         }
     };
+
+ private:
+    typedef rb_tree<value_type, value_compare, AllocTp>     _rbTreeBase;
+    using typename _rbTreeBase::insertMode;
+
+    _rbTreeBase   _rbTree;
+ public:
+    using typename _rbTreeBase::size_type;
+    using typename _rbTreeBase::difference_type;
+    using typename _rbTreeBase::allocator_type;
+    using typename _rbTreeBase::reference;
+    using typename _rbTreeBase::const_reference;
+    using typename _rbTreeBase::pointer;
+    using typename _rbTreeBase::const_pointer;
+    using typename _rbTreeBase::iterator;
+    using typename _rbTreeBase::const_iterator;
+    using typename _rbTreeBase::reverse_iterator;
+    using typename _rbTreeBase::const_reverse_iterator;
 
     map() {}
 
@@ -82,16 +83,32 @@ class map {
 
     /*                              Capacity:                             */
 
-    size_type              size(void) const { _rbTree.size() }
-    size_type              max_size(void) const { _rbTree.max_size() }
-    bool                   empty(void) const { !_rbTree.size() }
+    size_type              size(void) const { return _rbTree.size(); }
+    size_type              max_size(void) const { return _rbTree.max_size(); }
+    bool                   empty(void) const { !return _rbTree.size(); }
 
     /*                          Element access:                           */
 
-    mapped_type&           operator[](const key_type& k) {}
-    const mapped_type&     operator[](const key_type& k) const {}
-    mapped_type&           at(const key_type& k) {}
-    const mapped_type&     at(const key_type& k) const {}
+    mapped_type&           operator[](const key_type& key) {
+        iterator insert_ret = find(ft::make_pair(key, mapped_type()));
+
+        return insert_ret->second;
+    }
+    const mapped_type&     operator[](const key_type& key) const {
+        iterator insert_ret = find(ft::make_pair(key, mapped_type()));
+
+        return insert_ret->second;
+    }
+    mapped_type&           at(const key_type& key) {
+        iterator insert_ret = find(ft::make_pair(key, mapped_type()));
+
+        return insert_ret->second;
+    }
+    const mapped_type&     at(const key_type& key) const {
+        iterator insert_ret = find(ft::make_pair(key, mapped_type()));
+
+        return insert_ret->second;
+    }
 
     /*                              Modifiers:                            */
 
@@ -101,21 +118,32 @@ class map {
             return make_pair(it, false);
         }
         _rbTree.insert(pair);
-        it = find(pair.first);
         return make_pair(it, true);
     }
 
-    iterator               insert(iterator pos, const value_type& pair) {
-        
+    iterator   insert(iterator pos, const value_type& pair) {
+        iterator ite = end();
+        if (pos == ite) {
+            return insert(pair);
+        }
+        if (key_compare(pair, *pos) && pos.base()->left->data) {
+           return ite;
+        }
+        if (key_compare(*pos, pair) && pos.base()->right->data) {
+           return ite;
+        }
+        _rbTree.insert(pair, noReplace, pos.base());
+        return find(pair.first);
     }
 
     template <class InputIterator>
-    void                   insert(InputIterator first, InputIterator last) {
+    void insert(InputIterator first, InputIterator last) {
         while (first != last) {
             insert(first);
             ++first;
         }
     }
+
     iterator               erase(iterator) {}
     iterator               erase(iterator, iterator) {}
     size_type              erase(const key_type&) {}
@@ -130,7 +158,9 @@ class map {
 
     /*                              Lookup:                               */
 
-    iterator               find(const key_type&) {}
+    iterator               find(const key_type& key) {
+        return _rbTree.search(make_pair(key, mapped_type()));
+    }
     const_iterator         find(const key_type&) const {}
     size_type              count(const key_type&) const {}
     iterator               lower_bound(const key_type&) {}
