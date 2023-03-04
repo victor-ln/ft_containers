@@ -57,7 +57,9 @@ class rb_tree {
             _create_leaf_nodes(from);
         }
         from->data = _allocate_data(new_data);
-        _balanceTree(from);
+        if (from != _root) {
+            _balanceTree(from);
+        }
     }
 
     iterator search(const_reference data) {
