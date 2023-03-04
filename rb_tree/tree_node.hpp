@@ -3,9 +3,9 @@
 #ifndef RBTREE_TREE_NODE_HPP_
 #define RBTREE_TREE_NODE_HPP_
 
-namespace ft {
+#include "enums.hpp"
 
-enum nodeColor { black, red };
+namespace ft {
 
 template <typename T>
 struct node {
