@@ -32,6 +32,43 @@ class rb_tree {
         _root = _create_root_node(0, black);
     }
 
+    void swap(rb_tree& src) {
+        nodePtr         tmp_root(src._root);
+        nodeAllocator   tmp_node_alloc(src._node_alloc);
+        allocator_type  tmp_data_alloc(src._data_alloc);
+        Compare         tmp_comp(src._comp);
+        size_type       tmp_size(src._size);
+
+        src._root = _root;
+        src._node_alloc = _node_alloc;
+        src._data_alloc = _data_alloc;
+        src._comp = _comp;
+        src._size = _size;
+
+        _root = tmp_root;
+        _node_alloc = tmp_node_alloc;
+        _data_alloc = tmp_data_alloc;
+        _comp = tmp_comp;
+        _size = tmp_size;
+    }
+
+    void clear(void) {
+        clear_recursive(_root);
+    }
+
+    void clear_recursive(nodePtr node) {
+        if (node) {
+            clear_recursive(node->left);
+            clear_recursive(node->right);
+            if (node->data) {
+                _data_alloc.deallocate(node->data);
+                _data_alloc.destroy(node->data, 1);
+            }
+            _node_alloc.deallocate(node);
+            _node_alloc.destroy(node, 1);
+        }
+    }
+
     void insert(reference new_data, insertMode mode = noReplace, nodePtr from = 0) {
         if (!from) {
             from = _root;
@@ -58,11 +95,49 @@ class rb_tree {
         }
         from->data = _allocate_data(new_data);
         if (from != _root) {
-            _balanceTree(from);
+            _balance_tree(from);
         }
     }
 
-    iterator search(const_reference data) {
+    bool    remove(const_reference data) {
+        nodePtr node_to_delete = search(data);
+        if (!node_to_delete) {
+            return false;
+        }
+        nodePtr x, y = node_to_delete;
+        nodeColor y_color = y->color;
+        if (!node_to_delete->left) {
+            x = node_to_delete->right;
+            _transplant(node_to_delete, node_to_delete->right);
+        } else if (!node_to_delete->right) {
+            x = node_to_delete->left;
+            _transplant(node_to_delete, node_to_delete->left);
+        } else {
+            y = nodeBase::minimum(node_to_delete->right);
+            y_color = y->color;
+            x = y->right;
+            if (node_to_delete != node_to_delete->right) {
+                _transplant(y, y->right);
+                y->right = node_to_delete->right;
+                y->right->parent = y;
+            } else {
+                x->parent = y;
+            }
+            _transplant(node_to_delete, y);
+            y->left = node_to_delete->left;
+            y->left->parent = y;
+            y->color = node_to_delete->color;
+        }
+        _node_alloc.destroy(node_to_delete);
+        _node_alloc.deallocate(node_to_delete, 1);
+        if (y_color == black) {
+            remove_fix(x);
+        }
+        --_size;
+        return true;
+    }
+
+    nodePtr search(const_reference data) {
         nodePtr x = _root;
         while (x->data) {
             if (_comp(data, *x->data)) {
@@ -70,10 +145,10 @@ class rb_tree {
             } else if (_comp(*x->data, data)) {
                 x = x->right;
             } else {
-                return iterator(x);
+                return x;
             }
         }
-        return end();
+        return 0;
     }
 
     iterator begin() {
@@ -123,7 +198,18 @@ class rb_tree {
         _node_alloc.construct(new_node->right, node<value_type>());
     }
 
-    void    _balanceTree(nodePtr node) {
+    void _transplant(NodePtr u, NodePtr v) {
+        if (u->parent == 0) {
+            _root = v;
+        } else if (u == u->parent->left) {
+            u->parent->left = v;
+        } else {
+            u->parent->right = v;
+        }
+        v->parent = u->parent;
+    }
+
+    void    _balance_tree(nodePtr node) {
         nodePtr parent = node->parent;
         nodePtr grand_parent = parent->parent;
         nodePtr sibling;
@@ -135,14 +221,14 @@ class rb_tree {
                     sibling->color = black;
                     parent->color = black;
                     grand_parent->color = red;
-                    _balanceTree(grand_parent);
+                    _balance_tree(grand_parent);
                 } else {
                     if (node == parent->left) {
-                        _rightRotate(parent);
+                        _right_rotate(parent);
                     }
                     parent->color = black;
                     grand_parent->color = red;
-                    _leftRotate(grand_parent);
+                    _left_rotate(grand_parent);
                     return;
                 }
             } else {
@@ -151,14 +237,14 @@ class rb_tree {
                     sibling->color = black;
                     parent->color = black;
                     grand_parent->color = red;
-                    _balanceTree(grand_parent);
+                    _balance_tree(grand_parent);
                 } else {
                     if (node == parent->right) {
-                        _leftRotate(parent);
+                        _left_rotate(parent);
                     }
                     parent->color = black;
                     grand_parent->color = red;
-                    _rightRotate(grand_parent);
+                    _right_rotate(grand_parent);
                     return;
                 }
             }
@@ -167,11 +253,58 @@ class rb_tree {
             _root->color = black;
             return;
         }
-        _balanceTree(parent);
+        _balance_tree(parent);
     }
 
-    
-    void _leftRotate(nodePtr x) {
+    void remove_fix(nodePtr node) {
+        if (!node || node->color == red) {
+            return;
+        }
+        nodePtr parent = node->parent;
+        nodePtr sibling = (node == parent->left) ? parent->right : parent->left;
+
+        if (sibling->color == red) {
+            sibling->color = black;
+            parent->color = red;
+            if (node == parent->left) {
+                _left_rotate(parent);
+            } else {
+                _right_rotate(parent);
+            }
+            sibling = (node == parent->left) ? parent->right : parent->left;
+        }
+        if ((!sibling->left || sibling->left->color == black) &&
+            (!sibling->right || sibling->right->color == black)) {
+            sibling->color = red;
+            _remove_fix(parent);
+        } else {
+            if (node == parent->left &&
+                (!sibling->right || sibling->right->color == black)) {
+                sibling->left->color = black;
+                sibling->color = red;
+                _right_rotate(sibling);
+                sibling = parent->right;
+            } else if (node == parent->right &&
+                        (!sibling->left || sibling->left->color == black)) {
+                sibling->right->color = black;
+                sibling->color = red;
+                _left_rotate(sibling);
+                sibling = parent->left;
+            }
+
+            sibling->color = parent->color;
+            parent->color = black;
+            if (node == parent->left) {
+                sibling->right->color = black;
+                _left_rotate(parent);
+            } else {
+                sibling->left->color = black;
+                _right_rotate(parent);
+            }
+        }
+    }
+
+    void _left_rotate(nodePtr x) {
         nodePtr y = x->right;
 
         x->right = y->left;
@@ -190,7 +323,7 @@ class rb_tree {
         x->parent = y;
     }
 
-    void _rightRotate(nodePtr x) {
+    void _right_rotate(nodePtr x) {
         nodePtr y = x->left;
 
         x->left = y->right;
