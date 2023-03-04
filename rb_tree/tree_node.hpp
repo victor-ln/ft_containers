@@ -9,44 +9,56 @@ enum nodeColor { black, red };
 
 template <typename T>
 struct node {
-    typedef struct node<T>*                               nodePtr;
-    typedef const struct node<T>*                         constNodePtr;
+    typedef struct node<T>*     nodePtr;
 
-    T           data;
+    T*          data;
     nodePtr     left;
     nodePtr     right;
     nodePtr     parent;
     nodeColor   color;
 
-    nodePtr maximum(nodePtr node) {
-        while (node->right) {
+    node() : data(0), left(0), right(0), parent(0), color(black) {}
+
+    node(const T* new_data, nodeColor new_color)
+        : data(new_data), left(0), right(0), parent(0), color(new_color) {}
+
+    static nodePtr maximum(nodePtr node) {
+        while (node->data) {
             node = node->right;
         }
         return node;
     }
 
-    constNodePtr maximum(constNodePtr node) {
-        while (node->right) {
-            node = node->right;
-        }
-        return node;
-    }
-
-    nodePtr minimum(nodePtr node) {
-        while (node->left) {
+    static nodePtr minimum(nodePtr node) {
+        while (node->data) {
             node = node->left;
         }
         return node;
     }
 
-    constNodePtr minimum(constNodePtr node) {
-        while (node->left) {
-            node = node->left;
+    nodePtr successor(void) {
+        if (right) {
+            return minimum(right);
         }
-        return node;
+        nodePtr x = this;
+        while (x->parent && x == x->parent->right) {
+            x = x->parent;
+        }
+        return x->parent;
+    }
+
+    nodePtr predecessor(void) {
+        if (left) {
+            return maximum(left);
+        }
+        nodePtr x = this;
+        while (x->parent && x == x->parent->left) {
+            x = x->parent;
+        }
+        return x->parent;
     }
 };
-    
+
 }   /* namespace ft */
 
 #endif  /* RBTREE_TREE_NODE_HPP_ */
