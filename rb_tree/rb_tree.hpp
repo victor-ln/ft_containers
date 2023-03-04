@@ -77,6 +77,22 @@ class rb_tree {
         return 0;
     }
 
+    iterator begin() {
+        return nodeBase::minimum(_root);
+    }
+
+    iterator end() {
+        return nodeBase::maximum(_root)->right;
+    }
+
+    const_iterator begin() const {
+        return nodeBase::minimum(_root);
+    }
+    
+    const_iterator end() const {
+        return nodeBase::maximum(_root)->right;
+    }
+
  private:
     typedef node<value_type>*                           nodePtr;
     typedef node<value_type>                            nodeBase;
