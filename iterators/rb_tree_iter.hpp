@@ -9,11 +9,8 @@ namespace ft {
 
 template <typename T>
 class rb_tree_iter {
- protected:
-    using typename node<value_type>::nodePtr;
-    nodePtr       current;
-
     typedef ft::iterator_traits<T>                      _iter_traits;
+
  public:
     typedef T                                           iterator_type;
     typedef std::bidirectional_iterator_tag             iterator_category;
@@ -22,58 +19,67 @@ class rb_tree_iter {
     typedef typename _iter_traits::reference            reference;
     typedef typename _iter_traits::pointer              pointer;
 
-    rb_tree_iter() : current(0) {}
+ protected:
+    typedef ft::node<value_type>                       node_base;
+    typedef node_base*                                 node_pointer;
 
-    explicit rb_tree_iter(const T& x) : current(x) {}
+    node_pointer       _current;
 
-    rb_tree_iter(const rb_tree_iter& x) : current(x.base()) {}
+ public:
+
+    rb_tree_iter() : _current(0) {}
+
+    explicit rb_tree_iter(node_pointer x) : _current(x) {}
+
+    rb_tree_iter(const rb_tree_iter& x) : _current(x.base()) {}
 
     template <typename U>
-    rb_tree_iter(const rb_tree_iter<U>& x) : current(x.base()) {}
+    rb_tree_iter(const rb_tree_iter<U>& x) : _current(x.base()) {}
 
     ~rb_tree_iter() {}
 
     /*                   Assignment operator                    */
 
     rb_tree_iter&   operator=(const rb_tree_iter& rhs) {
-        current = rhs.base();
+        _current = rhs.base();
         return *this;
     }
 
     /*                   Accessors operators                    */
 
-    reference   operator*(void) const { return current->data; }
-    pointer     operator->(void) const { return &operator*(); }
-    const T&    base(void) const { return current; }
+    reference   operator*(void) const { return _current->data; }
+    pointer     operator->(void) const { return &_current->data; }
+    node_pointer    base(void) { return _current; }
+    const node_pointer    base(void) const { return _current; }
 
     /*                   Increment operators                    */
 
     rb_tree_iter&   operator++(void) {
-         current = current->successor() ; return *this;
+         _current = node_base::successor(_current); return *this;
     }
     rb_tree_iter    operator++(int) {
-        rb_tree_iter    tmp(current);
-        current = current->successor();
+        rb_tree_iter    tmp(_current);
+        _current = node_base::successor(_current);
         return tmp;
     }
 
     /*                   Decrement operators                    */
 
     rb_tree_iter&   operator--(void) {
-        current = current->predecessor(); return *this;
+        _current = node_base::predecessor(_current); return *this;
     }
     rb_tree_iter    operator--(int) {
-        rb_tree_iter    tmp(current);
-        current = current->predecessor();
+        rb_tree_iter    tmp(_current);
+        _current = node_base::predecessor(_current);
         return tmp;
     }
 
     bool operator==(const rb_tree_iter& rhs) {
-        return current == rhs.current;
+        return _current == rhs._current;
     }
 
     bool operator!=(const rb_tree_iter& rhs) {
-        return current != rhs.current;
+        return _current != rhs._current;
     }
 };
 
