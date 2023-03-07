@@ -3,16 +3,18 @@
 
 namespace ft {
 
-enum insertMode {
-    noReplace = false,
-    replace = true
-};
-
 enum nodeColor {
     black = false,
     red = true
 };
-    
+
+enum childrenCombinations {
+    bb,
+    br,
+    rr,
+    rb
+};
+
 }   /* namespace ft */
 
 #endif  /* ENUMS_H */
