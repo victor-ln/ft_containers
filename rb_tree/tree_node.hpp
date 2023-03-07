@@ -9,55 +9,74 @@ namespace ft {
 
 template <typename T>
 struct node {
-    typedef struct node<T>*     nodePtr;
+    typedef node*       node_pointer;
+    T               data;
+    node_pointer    left;
+    node_pointer    right;
+    node_pointer    parent;
+    node_pointer    leaf;
+    nodeColor       color;
 
-    T*          data;
-    nodePtr     left;
-    nodePtr     right;
-    nodePtr     parent;
-    nodeColor   color;
+    node(const T&       _data = T(),
+         node_pointer   _parent = 0,
+         node_pointer   _leaf = 0,
+         nodeColor      _color = black)
+                    :   data(_data),
+                        parent(_parent),
+                        color(_color), 
+                        leaf(_leaf),
+                        left(_leaf),
+                        right(_leaf) {}
 
-    node() : data(0), left(0), right(0), parent(0), color(black) {}
-
-    node(const T* new_data, nodeColor new_color)
-        : data(new_data), left(0), right(0), parent(0), color(new_color) {}
-
-    static nodePtr maximum(nodePtr node) {
-        while (node->right->data) {
-            node = node->right;
-        }
-        return node;
-    }
-
-    static nodePtr minimum(nodePtr node) {
-        while (node->left->data) {
+    static node_pointer minimum(node_pointer node) {
+        while (node->left != node->leaf) {
             node = node->left;
         }
         return node;
     }
 
-    nodePtr successor(void) {
-        if (right) {
-            return minimum(right);
+    static node_pointer maximum(node_pointer node) {
+        while (node->right != node->leaf) {
+            node = node->right;
         }
-        nodePtr x = this;
-        while (x->parent && x == x->parent->right) {
-            x = x->parent;
-        }
-        return x->parent;
+        return node;
     }
 
-    nodePtr predecessor(void) {
-        if (left) {
-            return maximum(left);
+    static node_pointer successor(node_pointer x) {
+        if (x->right != x->leaf) {
+            return minimum(x->right);
         }
-        nodePtr x = this;
-        while (x->parent && x == x->parent->left) {
-            x = x->parent;
+        if (x->_is_last_node()) {
+            return x->leaf;
         }
-        return x->parent;
+        node_pointer y = x->parent;
+        while (y != y->leaf && x == y->right) {
+            x = y;
+            y = y->parent;
+        }
+        return y;
     }
-};
+
+    static node_pointer predecessor(node_pointer x) {
+        if (x->left != x->leaf) {
+            return maximum(x->left);
+        }
+        if (x->parent->_is_last_node()) {
+            return x->parent;
+        }
+        node_pointer y = x->parent;
+        while (y != y->leaf && x == y->left) {
+            x = y;
+            y = y->parent;
+        }
+        return y;
+    }
+
+ private:
+    bool _is_last_node(void) {
+        return this->leaf->parent == this;
+    }
+};  /* struct node */
 
 }   /* namespace ft */
 
