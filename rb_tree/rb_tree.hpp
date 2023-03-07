@@ -4,6 +4,7 @@
 #define RBTREE_RBTREE_HPP_
 
 #include <memory>
+#include <iostream>
 
 #include "tree_node.hpp"
 #include "../iterators/reverse_iter.hpp"
@@ -12,303 +13,356 @@
 
 namespace ft {
 
-template <typename value_type, typename Compare, typename AllocTp>
+template <typename value_type,
+          typename Compare,
+          typename AllocTp = std::allocator<value_type> >
 class rb_tree {
+    typedef node<value_type>                            node_base;
+    typedef node_base*                                  node_pointer;
+    typedef const node_base*                            const_node_pointer;
+    typedef node_base**                                 node_pointer_addr;
+    typedef typename AllocTp::template
+                    rebind<node_base>::other            node_allocator;
+
  public:
-    typedef size_t                                    size_type;
-    typedef ptrdiff_t                                 difference_type;
-    typedef AllocTp                                   allocator_type;
-    typedef value_type&                               reference;
-    typedef const value_type&                         const_reference;
-    typedef value_type*                               pointer;
-    typedef const value_type*                         const_pointer;
+    typedef size_t                                      size_type;
+    typedef ptrdiff_t                                   difference_type;
+    typedef value_type&                                 reference;
+    typedef const value_type&                           const_reference;
+    typedef value_type*                                 pointer;
+    typedef const value_type*                           const_pointer;
+    typedef Compare                                     key_compare;
 
-    typedef ft::rb_tree_iter<pointer>                 iterator;
-    typedef ft::rb_tree_iter<const_pointer>           const_iterator;
-    typedef ft::reverse_iter<iterator>                reverse_iterator;
-    typedef ft::reverse_iter<const_iterator>          const_reverse_iterator;
+    typedef ft::rb_tree_iter<pointer>                   iterator;
+    typedef ft::rb_tree_iter<const_pointer>             const_iterator;
+    typedef ft::reverse_iter<iterator>                  reverse_iterator;
+    typedef ft::reverse_iter<const_iterator>            const_reverse_iterator;
 
-    rb_tree() : size(0) {
-        _root = _create_root_node(0, black);
+    rb_tree(const key_compare& comp, const AllocTp& allocator = AllocTp())
+            :   _size(0),
+                _comp(comp),
+                _node_allocator(allocator) {
+        _nil = _node_allocator.allocate(1);
+        _node_allocator.construct(_nil, node_base());
+        _nil->leaf = _nil;
+        _nil->left = _nil;
+        _nil->right = _nil;
+        _root = _nil;
+    }
+
+    ~rb_tree() {
+        clear();
+        _node_allocator.destroy(_nil);
+        _node_allocator.deallocate(_nil, 1);
     }
 
     void swap(rb_tree& src) {
-        nodePtr         tmp_root(src._root);
-        nodeAllocator   tmp_node_alloc(src._node_alloc);
-        allocator_type  tmp_data_alloc(src._data_alloc);
-        Compare         tmp_comp(src._comp);
-        size_type       tmp_size(src._size);
+        node_pointer        tmp_nil(src._nil);
+        node_pointer        tmp_root(src._root);
+        size_type           tmp_size(src._size);
+        compare_functions   tmp_comp(src._comp);
+        node_allocator      tmp_node_allocator(src._node_allocator);
 
+        src._nil = _nil;
         src._root = _root;
-        src._node_alloc = _node_alloc;
-        src._data_alloc = _data_alloc;
-        src._comp = _comp;
         src._size = _size;
+        src._comp = _comp;
+        src._node_allocator = _node_allocator;
 
+        _nil = tmp_nil;
         _root = tmp_root;
-        _node_alloc = tmp_node_alloc;
-        _data_alloc = tmp_data_alloc;
-        _comp = tmp_comp;
         _size = tmp_size;
+        _comp = tmp_comp;
+        _node_allocator = tmp_node_allocator;
+    }
+
+    size_type   size(void) const {
+        return _size;
+    }
+
+    size_type   max_size(void) const {
+        return _node_allocator.max_size();
+    }
+
+    iterator    begin(void) {
+        return iterator(node_base::minimum(_root));
+    }
+
+    iterator    end(void) {
+        return iterator(_nil);
+    }
+
+    const_iterator    begin(void) const {
+        return const_iterator(node_base::minimum(_root));
+    }
+
+    const_iterator    end(void) const {
+        return const_iterator(_nil);
     }
 
     void clear(void) {
-        clear_recursive(_root);
+        _clear_recursive(_root);
+        _size = 0;
     }
 
-    void clear_recursive(nodePtr node) {
-        if (node) {
-            clear_recursive(node->left);
-            clear_recursive(node->right);
-            if (node->data) {
-                _data_alloc.deallocate(node->data);
-                _data_alloc.destroy(node->data, 1);
-            }
-            _node_alloc.deallocate(node);
-            _node_alloc.destroy(node, 1);
-        }
+    node_pointer    lower_bound(const_reference to_compare) {
+        return _find_bound(to_compare, _comp.not_less);
     }
 
-    void insert(reference new_data, insertMode mode = noReplace, nodePtr from = 0) {
-        if (!from) {
-            from = _root;
-        }
-        while (from->data) {
-            if (_comp(new_data, *from->data)) {
-                from = from->left;
-            } else if (_comp(*from->data, new_data)) {
-                from = from->right;
-            } else if (!mode) {
-                return;
+    node_pointer    upper_bound(const_reference to_compare) {
+        return _find_bound(to_compare, _comp.greater);
+    }
+
+    node_pointer    search(const_reference data) const {
+        node_pointer    node = _root;
+
+        while (node != _nil) {
+            if (_comp.less(data, node->data)) {
+                node = node->left;
+            } else if (_comp.greater(data, node->data)) {
+                node = node->right;
             } else {
-                break;
-            }
-        }
-        if (from->data) {
-            _data_alloc.destroy(from->data);
-            _data_alloc.deallocate(from->data, 1);
-        } else {
-            ++_size;
-        }
-        if (!from->left) {
-            _create_leaf_nodes(from);
-        }
-        from->data = _allocate_data(new_data);
-        if (from != _root) {
-            _balance_tree(from);
-        }
-    }
-
-    bool    remove(const_reference data) {
-        nodePtr node_to_delete = search(data);
-        if (!node_to_delete) {
-            return false;
-        }
-        nodePtr x, y = node_to_delete;
-        nodeColor y_color = y->color;
-        if (!node_to_delete->left) {
-            x = node_to_delete->right;
-            _transplant(node_to_delete, node_to_delete->right);
-        } else if (!node_to_delete->right) {
-            x = node_to_delete->left;
-            _transplant(node_to_delete, node_to_delete->left);
-        } else {
-            y = nodeBase::minimum(node_to_delete->right);
-            y_color = y->color;
-            x = y->right;
-            if (node_to_delete != node_to_delete->right) {
-                _transplant(y, y->right);
-                y->right = node_to_delete->right;
-                y->right->parent = y;
-            } else {
-                x->parent = y;
-            }
-            _transplant(node_to_delete, y);
-            y->left = node_to_delete->left;
-            y->left->parent = y;
-            y->color = node_to_delete->color;
-        }
-        _node_alloc.destroy(node_to_delete);
-        _node_alloc.deallocate(node_to_delete, 1);
-        if (y_color == black) {
-            remove_fix(x);
-        }
-        --_size;
-        return true;
-    }
-
-    nodePtr search(const_reference data) {
-        nodePtr x = _root;
-        while (x->data) {
-            if (_comp(data, *x->data)) {
-                x = x->left;
-            } else if (_comp(*x->data, data)) {
-                x = x->right;
-            } else {
-                return x;
+                return node;
             }
         }
         return 0;
     }
 
-    iterator begin() {
-        return nodeBase::minimum(_root);
+    iterator    insert(const_reference data, node_pointer_addr root_addr = 0) {
+        node_pointer        parent = 0;
+
+        if (!root_addr || _is_nil(*root_addr)) {
+            root_addr = &_root;
+        }
+        while (*root_addr != _nil) {
+            parent = *root_addr;
+            if (_comp.less((*root_addr)->data, data)) {
+                root_addr = &(*root_addr)->right;
+            } else if (_comp.greater((*root_addr)->data, data)) {
+                root_addr = &(*root_addr)->left;
+            } else {
+                return iterator(*root_addr);
+            }
+        }
+        *root_addr = _create_new_node(data, parent);
+        _balance_tree(*root_addr);
+        _update_nil(*root_addr);
+        return iterator(*root_addr);
     }
 
-    iterator end() {
-        return nodeBase::maximum(_root)->right;
-    }
+    bool    remove(const_reference data) {
+        node_pointer    node = search(data);
 
-    const_iterator begin() const {
-        return nodeBase::minimum(_root);
-    }
-    
-    const_iterator end() const {
-        return nodeBase::maximum(_root)->right;
+        if (!node) {
+            return false;
+        }
+        node_pointer    x;
+        node_pointer    y = node;
+        nodeColor       y_color = y->color;
+
+        if (_is_nil(node->left)) {
+            x = node->right;
+            _transplant(node, node->right);
+        } else if (_is_nil(node->right)) {
+            x = node->left;
+            _transplant(node, node->left);
+        } else {
+            y = node_base::minimum(node->right);
+            y_color = y->color;
+            x = y->right;
+            if (y->parent == node) {
+                x->parent = y;
+            } else {
+                _transplant(y, y->right);
+                y->right = node->right;
+                y->right->parent = y;
+            }
+            _transplant(node, y);
+            y->left = node->left;
+            y->left->parent = y;
+            y->color = node->color;
+        }
+        _node_allocator.destroy(node);
+        _node_allocator.deallocate(node, 1);
+        if (y_color == black) {
+            _balance_tree_delete(x);
+        }
+        _update_nil();
+        --_size;
+        return true;
     }
 
  private:
-    typedef node<value_type>*                           nodePtr;
-    typedef node<value_type>                            nodeBase;
-    typedef typename AllocTp::rebind<nodePtr>::other    nodeAllocator;
+    struct compare_functions {
 
-    nodePtr         _root;
-    nodeAllocator   _node_alloc;
-    allocator_type  _data_alloc;
-    Compare         _comp;
-    size_type       _size;
+        compare_functions(const key_compare& _comp) : comp(_comp),
+                                                      less(_comp),
+                                                      not_less(_comp),
+                                                      greater(_comp) {}
 
-    pointer _allocate_data(reference pair) {
-        pointer new_data = _data_alloc.allocate(1);
-        _data_alloc.construct(new_data, pair);
-        return new_data;
+        compare_functions(const compare_functions& src) : comp(src.comp),
+                                                          less(src.comp),
+                                                          not_less(src.comp),
+                                                          greater(src.comp) {}
+
+        struct s_greater {
+            key_compare comp;
+
+            s_greater(const key_compare& _comp) : comp(_comp) {}
+
+            bool operator()(const_reference x, const_reference y) const {
+                return comp(y, x);
+            }
+        };
+
+        struct s_not_less {
+            key_compare comp;
+
+            s_not_less(const key_compare& _comp) : comp(_comp) {}
+
+            bool operator()(const_reference x, const_reference y) const {
+                return !comp(x, y);
+            }
+        };
+
+        struct s_less {
+            key_compare comp;
+
+            s_less(const key_compare& _comp) : comp(_comp) {}
+
+            bool operator()(const_reference x, const_reference y) const {
+                return comp(x, y);
+            }
+        };
+
+        key_compare comp;
+        s_not_less  not_less;
+        s_greater   greater;
+        s_less      less;
+    };
+
+    node_pointer        _root;
+    node_pointer        _nil;
+    size_type           _size;
+    node_allocator      _node_allocator;
+    compare_functions   _comp;
+
+    node_pointer _create_new_node(const_reference data, node_pointer parent) {
+        node_pointer        node = _node_allocator.allocate(1);
+
+        _node_allocator.construct(node, node_base(data, parent, _nil, red));
+        ++_size;
+        return node;
     }
 
-    nodePtr    _create_root_node(pointer new_data, nodeColor node_color = red) {
-        nodePtr new_node = _node_alloc.allocate(1);
-        _node_alloc.construct(new_node, node<value_type>(new_data, node_color));
-        _create_leaf_nodes(new_node);
-        return new_node;
-    }
+    void    _balance_tree(node_pointer node) {
+        node_pointer    sibling;
+        bool            node_is_left_child;
+        bool            parent_is_left_child;
 
-    void        _create_leaf_nodes(nodePtr new_node) {
-        new_node->left = _node_alloc.allocate(1);
-        _node_alloc.construct(new_node->left, node<value_type>());
-        new_node->right = _node_alloc.allocate(1);
-        _node_alloc.construct(new_node->right, node<value_type>());
-    }
-
-    void _transplant(NodePtr u, NodePtr v) {
-        if (u->parent == 0) {
-            _root = v;
-        } else if (u == u->parent->left) {
-            u->parent->left = v;
-        } else {
-            u->parent->right = v;
-        }
-        v->parent = u->parent;
-    }
-
-    void    _balance_tree(nodePtr node) {
-        nodePtr parent = node->parent;
-        nodePtr grand_parent = parent->parent;
-        nodePtr sibling;
-
-        if (parent->color == red) {
-            if (parent == grand_parent->right) {
-                sibling = grand_parent->left;
-                if (sibling->color == red) {
-                    sibling->color = black;
-                    parent->color = black;
-                    grand_parent->color = red;
-                    _balance_tree(grand_parent);
-                } else {
-                    if (node == parent->left) {
-                        _right_rotate(parent);
+		while (node != _root && node->parent->color == red) {
+            sibling = _get_sibling(node->parent);
+            if (sibling->color == red) {
+                sibling->color = black;
+                node->parent->color = black;
+                node->parent->parent->color = red;
+                node = node->parent->parent;
+            } else {
+                node_is_left_child = _is_left_child(node);
+                parent_is_left_child = _is_left_child(node->parent);
+                if (node_is_left_child != parent_is_left_child) {
+                    node = node->parent;
+                    if (node_is_left_child) {
+                        _right_rotate(node);
+                    } else {
+                        _left_rotate(node);
                     }
-                    parent->color = black;
-                    grand_parent->color = red;
-                    _left_rotate(grand_parent);
-                    return;
                 }
-            } else {
-                sibling = grand_parent->right;
-                if (sibling->color == red) {
-                    sibling->color = black;
-                    parent->color = black;
-                    grand_parent->color = red;
-                    _balance_tree(grand_parent);
+                node->parent->color = black;
+                node->parent->parent->color = red;
+                if (parent_is_left_child) {
+                    _right_rotate(node->parent->parent);
                 } else {
-                    if (node == parent->right) {
-                        _left_rotate(parent);
-                    }
-                    parent->color = black;
-                    grand_parent->color = red;
-                    _right_rotate(grand_parent);
-                    return;
+                    _left_rotate(node->parent->parent);
                 }
             }
-        }
-        if (!grand_parent) {
-            _root->color = black;
-            return;
-        }
-        _balance_tree(parent);
+		}
+		_root->color = black;
     }
 
-    void remove_fix(nodePtr node) {
-        if (!node || node->color == red) {
-            return;
-        }
-        nodePtr parent = node->parent;
-        nodePtr sibling = (node == parent->left) ? parent->right : parent->left;
+    void    _balance_tree_delete(node_pointer node) {
+        node_pointer            sibling;
+        bool                    node_is_left_child;
+        childrenCombinations    combination;
 
-        if (sibling->color == red) {
-            sibling->color = black;
-            parent->color = red;
-            if (node == parent->left) {
-                _left_rotate(parent);
-            } else {
-                _right_rotate(parent);
+		while (node != _root && node->color == black) {
+            sibling = _get_sibling(node);
+            node_is_left_child = _is_left_child(node);
+            if (sibling->color == red) {
+                sibling->color = black;
+                node->parent->color = red;
+                if (node_is_left_child) {
+                    _left_rotate(node->parent);
+                    sibling = node->parent->right;
+                } else {
+					_right_rotate(node->parent);
+					sibling = node->parent->left;
+                }
             }
-            sibling = (node == parent->left) ? parent->right : parent->left;
-        }
-        if ((!sibling->left || sibling->left->color == black) &&
-            (!sibling->right || sibling->right->color == black)) {
-            sibling->color = red;
-            _remove_fix(parent);
-        } else {
-            if (node == parent->left &&
-                (!sibling->right || sibling->right->color == black)) {
-                sibling->left->color = black;
+            combination = _get_children_combination(sibling);
+            if (combination == bb) {
                 sibling->color = red;
-                _right_rotate(sibling);
-                sibling = parent->right;
-            } else if (node == parent->right &&
-                        (!sibling->left || sibling->left->color == black)) {
-                sibling->right->color = black;
-                sibling->color = red;
-                _left_rotate(sibling);
-                sibling = parent->left;
-            }
-
-            sibling->color = parent->color;
-            parent->color = black;
-            if (node == parent->left) {
-                sibling->right->color = black;
-                _left_rotate(parent);
+                node = node->parent;
             } else {
-                sibling->left->color = black;
-                _right_rotate(parent);
+                if (node_is_left_child) {
+                    if (combination == rb) {
+                        sibling->left->color = black;
+                        sibling->color = red;
+                        _right_rotate(sibling);
+                        sibling = node->parent->right;
+                    } 
+                    sibling->color = node->parent->color;
+                    node->parent->color = black;
+                    sibling->right->color = black;
+                    _left_rotate(node->parent);
+                } else {
+                    if (combination == br) {
+                        sibling->right->color = black;
+                        sibling->color = red;
+                        _left_rotate(sibling);
+                        sibling = node->parent->left;
+                    } 
+                    sibling->color = node->parent->color;
+                    node->parent->color = black;
+                    sibling->left->color = black;
+                    _right_rotate(node->parent);
+                }
+                node = _root;
             }
-        }
+		}
+		node->color = black;
     }
 
-    void _left_rotate(nodePtr x) {
-        nodePtr y = x->right;
+    bool _is_left_child(node_pointer node) {
+        return node == node->parent->left;
+    }
+
+    node_pointer _get_sibling(node_pointer node) {
+        return _is_left_child(node) ? node->parent->right : node->parent->left;
+    }
+
+    childrenCombinations    _get_children_combination(node_pointer node) {
+        if (node->left->color == black) {
+            return node->right->color == black ? bb : br;
+        }
+        return node->right->color == black ? rb : rr;
+    }
+
+    void _left_rotate(node_pointer x) {
+        node_pointer y = x->right;
 
         x->right = y->left;
-        if (y->left) {
+        if (y->left != _nil) {
             y->left->parent = x;
         }
         y->parent = x->parent;
@@ -323,11 +377,11 @@ class rb_tree {
         x->parent = y;
     }
 
-    void _right_rotate(nodePtr x) {
-        nodePtr y = x->left;
+    void _right_rotate(node_pointer x) {
+        node_pointer y = x->left;
 
         x->left = y->right;
-        if (y->right) {
+        if (y->right != _nil) {
             y->right->parent = x;
         }
         y->parent = x->parent;
@@ -340,6 +394,57 @@ class rb_tree {
         }
         y->right = x;
         x->parent = y;
+    }
+
+    void _transplant(node_pointer node, node_pointer replacement) {
+        if (node->parent == 0) {
+            _root = replacement;
+        } else if (node == node->parent->left) {
+            node->parent->left = replacement;
+        } else {
+            node->parent->right = replacement;
+        }
+        replacement->parent = node->parent;
+    }
+
+    void _clear_recursive(node_pointer node) {
+        if (node != _nil) {
+            _clear_recursive(node->left);
+            _clear_recursive(node->right);
+            _node_allocator.destroy(node);
+            _node_allocator.deallocate(node, 1);
+        }
+        _root = _nil;
+    }
+
+    template <typename function>
+    node_pointer _find_bound(const_reference to_compare, function& condition) {
+        node_pointer    x = _root;
+        node_pointer    last_occurency = _nil;
+
+        while (x != _nil) {
+            if (condition(x->data, to_compare)) {
+                last_occurency = x;
+                x = x->left;
+            } else {
+                x = x->right;
+            }
+        }
+        return last_occurency;
+    }
+
+    bool    _is_nil(node_pointer node) {
+        return !node || node == _nil;
+    }
+
+    void    _update_nil(node_pointer node) {
+        if (!_nil->parent || _comp.less(_nil->parent->data, node->data)) {
+            _nil->parent = node;
+        }
+    }
+
+    void    _update_nil(void) {
+        _nil->parent = node_base::maximum(_root);
     }
 };
 
