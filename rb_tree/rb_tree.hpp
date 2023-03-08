@@ -113,7 +113,22 @@ class rb_tree {
         return _find_bound(to_compare, _comp.greater);
     }
 
-    node_pointer    search(const_reference data) const {
+    const_node_pointer    search(const_reference data) const {
+        const_node_pointer    node = _root;
+
+        while (node != _nil) {
+            if (_comp.less(data, node->data)) {
+                node = node->left;
+            } else if (_comp.greater(data, node->data)) {
+                node = node->right;
+            } else {
+                return node;
+            }
+        }
+        return 0;
+    }
+
+    node_pointer    search(const_reference data) {
         node_pointer    node = _root;
 
         while (node != _nil) {
@@ -128,12 +143,10 @@ class rb_tree {
         return 0;
     }
 
-    iterator    insert(const_reference data, node_pointer_addr root_addr = 0) {
+    iterator    insert(const_reference data, node_pointer hint = 0) {
         node_pointer        parent = 0;
+        node_pointer_addr   root_addr = _is_nil(hint) ? &_root : &hint;
 
-        if (!root_addr || _is_nil(*root_addr)) {
-            root_addr = &_root;
-        }
         while (*root_addr != _nil) {
             parent = *root_addr;
             if (_comp.less((*root_addr)->data, data)) {
@@ -145,30 +158,28 @@ class rb_tree {
             }
         }
         *root_addr = _create_new_node(data, parent);
-        _balance_tree(*root_addr);
-        _update_nil(*root_addr);
+        _balance_tree_insert(*root_addr);
+        _update_nil_insert(*root_addr);
         return iterator(*root_addr);
     }
 
     bool    remove(const_reference data) {
         node_pointer    node = search(data);
-
         if (!node) {
             return false;
         }
         node_pointer    x;
-        node_pointer    y = node;
-        nodeColor       y_color = y->color;
+        nodeColor       old_color = node->color;
 
-        if (_is_nil(node->left)) {
+        if (node->left == _nil) {
             x = node->right;
             _transplant(node, node->right);
-        } else if (_is_nil(node->right)) {
+        } else if (node->right == _nil) {
             x = node->left;
             _transplant(node, node->left);
         } else {
-            y = node_base::minimum(node->right);
-            y_color = y->color;
+            node_pointer    y = node_base::minimum(node->right);
+            old_color = y->color;
             x = y->right;
             if (y->parent == node) {
                 x->parent = y;
@@ -184,10 +195,10 @@ class rb_tree {
         }
         _node_allocator.destroy(node);
         _node_allocator.deallocate(node, 1);
-        if (y_color == black) {
-            _balance_tree_delete(x);
+        if (old_color == black) {
+            _balance_tree_remove(x);
         }
-        _update_nil();
+        _update_nil_remove();
         --_size;
         return true;
     }
@@ -255,7 +266,7 @@ class rb_tree {
         return node;
     }
 
-    void    _balance_tree(node_pointer node) {
+    void    _balance_tree_insert(node_pointer node) {
         node_pointer    sibling;
         bool            node_is_left_child;
         bool            parent_is_left_child;
@@ -290,7 +301,7 @@ class rb_tree {
 		_root->color = black;
     }
 
-    void    _balance_tree_delete(node_pointer node) {
+    void    _balance_tree_remove(node_pointer node) {
         node_pointer            sibling;
         bool                    node_is_left_child;
         childrenCombinations    combination;
@@ -433,18 +444,18 @@ class rb_tree {
         return last_occurency;
     }
 
-    bool    _is_nil(node_pointer node) {
-        return !node || node == _nil;
-    }
-
-    void    _update_nil(node_pointer node) {
+    void    _update_nil_insert(node_pointer node) {
         if (!_nil->parent || _comp.less(_nil->parent->data, node->data)) {
             _nil->parent = node;
         }
     }
 
-    void    _update_nil(void) {
+    void    _update_nil_remove(void) {
         _nil->parent = node_base::maximum(_root);
+    }
+
+    bool    _is_nil(node_pointer node) {
+        return !node || node == _nil;
     }
 };
 
