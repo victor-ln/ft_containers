@@ -123,10 +123,9 @@ class map {
 
     iterator   insert(iterator pos, const value_type& pair) {
         if (_rb_tree.upper_bound(pair) != pos.base()) {
-            return insert(pair).first;
+            return _rb_tree.insert(pair);
         } else {
-            node_pointer node = pos.base();
-            return _rb_tree.insert(pair, &node);
+            return _rb_tree.insert(pair, pos.base());
         }
     }
 
