@@ -11,16 +11,27 @@
     namespace ft = std;
 #else
     #include "../../containers/set.hpp"
+
+    typedef std::set<int>::iterator                  stdIterator;
+    typedef std::set<int>::const_iterator            stdConstIterator;
+    typedef std::set<int>::reverse_iterator          stdReverseIterator;
+    typedef std::set<int>::const_reverse_iterator    stdConstReverseIterator;
+
 #endif
 
-typedef std::set<int>::iterator                  stdIterator;
 typedef ft::set<int>::iterator                   ftIterator;
-typedef std::set<int>::const_iterator            stdConstIterator;
 typedef ft::set<int>::const_iterator             ftConstIterator;
-
-typedef std::set<int>::reverse_iterator          stdReverseIterator;
 typedef ft::set<int>::reverse_iterator           ftReverseIterator;
-typedef std::set<int>::const_reverse_iterator    stdConstReverseIterator;
 typedef ft::set<int>::const_reverse_iterator     ftConstReverseIterator;
+
+template <typename T>
+bool compare(T x, T y) {
+    return x == y;
+}
+
+template <typename T>
+void print(T x) {
+    std::cout << x << ' ';
+}
 
 #endif  /* TESTS_INCLUDES_SET_TESTS_HPP_ */

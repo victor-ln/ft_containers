@@ -6,9 +6,8 @@
 #include <limits>
 #include <cstdlib>
 #include <iostream>
-
-#include "../../algorithm/equal.hpp"
-#include "../../algorithm/lexicographical_compare.hpp"
+#include <sstream>
+#include <iterator>
 
 #define OK      "├── \x1b[32mOK\x1b[0m\n"
 #define KO      "├── \x1b[31mKO\x1b[0m\n"
