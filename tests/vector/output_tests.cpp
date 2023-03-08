@@ -1,6 +1,6 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "vector_tests.hpp"
+#include "../includes/vector_tests.hpp"
 
 static void relationalOperatorsTest(void);
 static void assignmentOperatorTest(void);
@@ -28,49 +28,49 @@ static void constructorsTest(void) {
         std::cout << "\n\nEmpty vector\n";
         ft::vector<int>             v;
 
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nRepeated elements\n";
         ft::vector<int>             v(10, 100);
 
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nRange constructor (pointer)\n";
         ft::vector<int>             v(a, a + 9);
 
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nRange constructor (iterator)\n";
         const std::vector<int>      array(10, 100);
         ft::vector<int>             v(array.begin(), array.end());
 
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nRange constructor with empty range\n";
         int array[] = {0};
         ft::vector<int>             v(array, array);
 
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nCopy constructor\n";
         const ft::vector<int>           v1(a, a + 9);
         ft::vector<int>                 v2(v1);
 
-        printContainer(v1);
-        printContainer(v2);
+        printContainer(v1, print<int>);
+        printContainer(v2, print<int>);
     }
     {
         std::cout << "\n\nCopy constructor with empty vector\n";
         ft::vector<int>             v1;
         ft::vector<int>             v2(v1);
 
-        printContainer(v1);
-        printContainer(v2);
+        printContainer(v1, print<int>);
+        printContainer(v2, print<int>);
     }
 }
 
@@ -80,12 +80,12 @@ static void swapTest(void) {
     ft::vector<int> v2(5, 21);
 
     v1.swap(v2);
-    printContainer(v1);
-    printContainer(v2);
+    printContainer(v1, print<int>);
+    printContainer(v2, print<int>);
 
     swap(v1, v2);
-    printContainer(v1);
-    printContainer(v2);
+    printContainer(v1, print<int>);
+    printContainer(v2, print<int>);
 }
 
 static void relationalOperatorsTest(void) {
@@ -134,42 +134,42 @@ static void assignmentOperatorTest(void) {
 
         std::cout << "\n\nEqual\n";
         v1 = v2;
-        printContainer(v1);
-        printContainer(v2);
+        printContainer(v1, print<int>);
+        printContainer(v2, print<int>);
         ft::vector<int> v3(20, 500);
         v1 = v3;
-        printContainer(v1);
-        printContainer(v3);
+        printContainer(v1, print<int>);
+        printContainer(v3, print<int>);
     }
 }
 
 static void eraseTest(void) {
     std::cout << "\n[ ERASE ]\n";
     int a[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    ftIterator      it;
+    ft::vector<int>::iterator      it;
     {
         ft::vector<int> v(a, a + 9);
         std::cout << "\n\nErase single element (1/3)\n";
         it  = v.erase(v.begin());
 
-        printContainer(v);
+        printContainer(v, print<int>);
         std::cout << "Return iterator: " << *it << '\n';
 
         std::cout << "\n\nErase single element (2/3)\n";
         it  = v.erase(v.begin() + 5);
 
-        printContainer(v);
+        printContainer(v, print<int>);
         std::cout << "Return iterator: " << *it << '\n';
 
         std::cout << "\n\nErase single element (3/3)\n";
         it  = v.erase(--v.end());
 
-        printContainer(v);
+        printContainer(v, print<int>);
         std::cout << "Return iterator: " << *it << '\n';
     }
     {
-        ftIterator      first;
-        ftIterator      last;
+        ft::vector<int>::iterator      first;
+        ft::vector<int>::iterator      last;
         {
             std::cout << "\n\nErase a range of elements (1/2)\n";
             ft::vector<int> v(a, a + 9);
@@ -177,7 +177,7 @@ static void eraseTest(void) {
             last    = v.begin() + 5;
             it      = v.erase(first, last);
 
-            printContainer(v);
+            printContainer(v, print<int>);
             std::cout << "Return iterator: " << *it << '\n';
         }
         {
@@ -187,7 +187,7 @@ static void eraseTest(void) {
             last    = v.begin() + 7;
             it      = v.erase(first, last);
 
-            printContainer(v);
+            printContainer(v, print<int>);
             std::cout << "Return iterator: " << *it << '\n';
         }
     }
@@ -198,24 +198,24 @@ static void insertTest(void) {
     std::cout << "\n[ INSERT ]\n";
     ft::vector<int> v(10, 100);
     {
-        ftIterator  it;
+        ft::vector<int>::iterator  it;
 
         std::cout << "\n\ninsert single element (1/3)\n";
         it = v.insert(v.begin(), 42);
 
-        printContainer(v);
+        printContainer(v, print<int>);
         std::cout << "Return iterator: " << *it << '\n';
 
         std::cout << "\n\ninsert single element (2/3)\n";
         it = v.insert(v.begin() + 5, 42);
 
-        printContainer(v);
+        printContainer(v, print<int>);
         std::cout << "Return iterator: " << *it << '\n';
 
         std::cout << "\n\ninsert single element (3/3)\n";
         it = v.insert(v.end(), 42);
 
-        printContainer(v);
+        printContainer(v, print<int>);
         std::cout << "Return iterator: " << *it << '\n';
     }
     {
@@ -223,24 +223,24 @@ static void insertTest(void) {
         std::cout << "\n\ninsert multiple elements (1/3)\n";
         v.insert(v.begin(), arr, arr + 3);
 
-        printContainer(v);
+        printContainer(v, print<int>);
 
         std::cout << "\n\ninsert multiple elements (2/3)\n";
         v.insert(v.begin() + 5, arr, arr + 3);
 
-        printContainer(v);
+        printContainer(v, print<int>);
 
         std::cout << "\n\ninsert multiple elements (3/3)\n";
         v.insert(v.end(), arr, arr + 3);
 
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\ninsert to itself\n";
         ft::vector<int>             v(10, 100);
 
         v.insert(v.begin(), v.begin(), v.end());
-        printContainer(v);
+        printContainer(v, print<int>);
     }
 }
 
@@ -251,7 +251,7 @@ static void assignTest(void) {
         ft::vector<int>             v(10, 100);
 
         v.assign(5, 200);
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nassign range\n";
@@ -260,7 +260,7 @@ static void assignTest(void) {
         ft::vector<int>             v(a, a + 9);
 
         v.assign(array.begin(), array.end());
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nassign with input iterator\n";
@@ -268,7 +268,7 @@ static void assignTest(void) {
         ft::vector<int> v(5, 10);
 
         v.assign(a, a + 5);
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nassign with empty vector\n";
@@ -276,20 +276,20 @@ static void assignTest(void) {
         ft::vector<int>             v2;
 
         v.assign(v2.begin(), v2.end());
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nassign from empty vector\n";
         ft::vector<int> v;
 
         v.assign(v.begin(), v.end());
-        printContainer(v);
+        printContainer(v, print<int>);
     }
     {
         std::cout << "\n\nassign to itself\n";
         ft::vector<int>             v(10, 100);
 
         v.assign(v.begin(), v.end());
-        printContainer(v);
+        printContainer(v, print<int>);
     }
 }

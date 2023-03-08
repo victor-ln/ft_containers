@@ -1,6 +1,6 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "vector_tests.hpp"
+#include "../includes/vector_tests.hpp"
 
 static void algorithmsTest(void);
 static void exceptionsTest(void);
@@ -73,7 +73,7 @@ static void clearTest(void) {
 
     ftV.clear();
     stdV.clear();
-    printStatus(compare_containers(ftV, stdV));
+    printStatus(compare_containers(ftV, stdV, compare<int>));
 }
 
 static void resizeTest(void) {
@@ -84,7 +84,7 @@ static void resizeTest(void) {
         std::vector<int> stdV(5, 42);
         ftV.resize(3);
         stdV.resize(3);
-        printStatus(compare_containers(ftV, stdV));
+        printStatus(compare_containers(ftV, stdV, compare<int>));
     }
     {
         printColor(BGWHITE,
@@ -93,7 +93,7 @@ static void resizeTest(void) {
         std::vector<int> stdV(3, 42);
         ftV.resize(5);
         stdV.resize(5);
-        printStatus(compare_containers(ftV, stdV));
+        printStatus(compare_containers(ftV, stdV, compare<int>));
     }
     {
         printColor(BGWHITE,
@@ -102,7 +102,7 @@ static void resizeTest(void) {
         std::vector<int> stdV(3, 42);
         ftV.resize(5, 84);
         stdV.resize(5, 84);
-        printStatus(compare_containers(ftV, stdV));
+        printStatus(compare_containers(ftV, stdV, compare<int>));
     }
 }
 
@@ -427,7 +427,7 @@ static void popBackTest(void) {
         ftV.pop_back();
         stdV.pop_back();
 
-        printStatus(compare_begin_and_end(ftV, stdV));
+        printStatus(*ftV.begin() == *stdV.begin() && *ftV.end() == *stdV.end());
         printStatus(ftV.capacity() == stdV.capacity());
         printStatus(!ftV.empty());
     }
