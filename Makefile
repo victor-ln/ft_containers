@@ -21,6 +21,11 @@ UTILS = tests/utils/utils.cpp
 VECTOR1	=	tests/vector/running_tests.cpp
 VECTOR2	=	tests/vector/output_tests.cpp
 
+VECTOR_EXECUTABLES	=	vector_running_tests ftvector_output_tests stdvector_output_tests
+MAP_EXECUTABLES		=	set_running_tests ftset_output_tests stdset_output_tests
+SET_EXECUTABLES		=	map_running_tests ftmap_output_tests stdmap_output_tests
+STACK_EXECUTABLES	=	stack_running_tests ftstack_output_tests stdstack_output_tests
+
 MAP1	=	tests/map/running_tests.cpp
 MAP2	=	tests/map/output_tests.cpp
 
@@ -57,7 +62,7 @@ vector1:
 	./vector_running_tests
 
 vector2:
-	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -g3 -o ftvector_output_tests
+	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -o ftvector_output_tests
 	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(VECTOR2) -o stdvector_output_tests
 	@./ftvector_output_tests > ftOutput.txt
 	@./stdvector_output_tests > stdOutput.txt
@@ -70,15 +75,18 @@ vector2:
 	else \
 		$(PRINT) $(BOLD_GREEN) "Test passed!"$(RESET_COLOR); \
 	fi
+	@mkdir -p logs
+	@mkdir -p logs/vector/
+	@mv ftOutput.txt stdOutput.txt diffOutput.txt logs/vector/
 
 map1:
-	$(CC) $(CFLAGS) $(UTILS) $(map1) -o map_running_tests
+	$(CC) $(CFLAGS) $(UTILS) $(MAP1) -o map_running_tests
 	clear
 	./map_running_tests
 
 map2:
-	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -g3 -o ftmap_output_tests
-	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(VECTOR2) -o stdmap_output_tests
+	@$(CC) $(CFLAGS) $(UTILS) $(MAP2) -o ftmap_output_tests
+	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(MAP2) -o stdmap_output_tests
 	@./ftmap_output_tests > ftOutput.txt
 	@./stdmap_output_tests > stdOutput.txt
 	clear
@@ -90,6 +98,9 @@ map2:
 	else \
 		$(PRINT) $(BOLD_GREEN) "Test passed!"$(RESET_COLOR); \
 	fi
+	@mkdir -p logs
+	@mkdir -p logs/map/
+	@mv ftOutput.txt stdOutput.txt diffOutput.txt logs/map/
 
 set1:
 	$(CC) $(CFLAGS) $(UTILS) $(SET1) -o set_running_tests
@@ -97,8 +108,8 @@ set1:
 	./set_running_tests
 
 set2:
-	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -g3 -o ftset_output_tests
-	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(VECTOR2) -o stdset_output_tests
+	@$(CC) $(CFLAGS) $(UTILS) $(SET2) -o ftset_output_tests
+	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(SET2) -o stdset_output_tests
 	@./ftset_output_tests > ftOutput.txt
 	@./stdset_output_tests > stdOutput.txt
 	clear
@@ -110,12 +121,40 @@ set2:
 	else \
 		$(PRINT) $(BOLD_GREEN) "Test passed!"$(RESET_COLOR); \
 	fi
+	@mkdir -p logs
+	@mkdir -p logs/set/
+	@mv ftOutput.txt stdOutput.txt diffOutput.txt logs/set/
+
+stack1:
+	$(CC) $(CFLAGS) $(UTILS) $(STACK1) -o stack_running_tests
+	clear
+	./stack_running_tests
+
+stack2:
+	@$(CC) $(CFLAGS) $(UTILS) $(STACK2) -o ftstack_output_tests
+	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(STACK2) -o stdstack_output_tests
+	@./ftstack_output_tests > ftOutput.txt
+	@./stdstack_output_tests > stdOutput.txt
+	clear
+
+	@diff -u ftOutput.txt stdOutput.txt > diffOutput.txt; \
+	if test -s diffOutput.txt; then \
+		$(PRINT) $(BOLD_RED) "Test failed\n"$(RESET_COLOR); \
+		cat diffOutput.txt; \
+	else \
+		$(PRINT) $(BOLD_GREEN) "Test passed!"$(RESET_COLOR); \
+	fi
+	@mkdir -p logs
+	@mkdir -p logs/stack/
+	@mv ftOutput.txt stdOutput.txt diffOutput.txt logs/stack/
 
 clean:
-	$(RM) ftvector_output_tests stdvector_output_tests ftOutput.txt stdOutput.txt diffOutput.txt
-	$(RM) vector_running_tests
+	$(RM) $(VECTOR_EXECUTABLES)
+	$(RM) $(MAP_EXECUTABLES)
+	$(RM) $(SET_EXECUTABLES)
+	$(RM) $(STACK_EXECUTABLES)
 	$(RM) $(OBJ_DIR)
-	$(RM) *.txt
+	$(RM) logs
 
 fclean:				clean
 	$(RM) $(NAME)
