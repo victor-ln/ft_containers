@@ -4,12 +4,10 @@
 #define RBTREE_RBTREE_HPP_
 
 #include <memory>
-#include <iostream>
 
 #include "tree_node.hpp"
 #include "../iterators/reverse_iter.hpp"
 #include "../iterators/rb_tree_iter.hpp"
-#include "../utility/pair.hpp"
 
 namespace ft {
 

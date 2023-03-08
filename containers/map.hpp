@@ -4,11 +4,12 @@
 #define CONTAINERS_MAP_HPP_
 
 #include <functional>
+#include <memory>
 
-#include "../rb_tree/rb_tree.hpp"
-#include "../iterators/reverse_iter.hpp"
 #include "../algorithm/equal.hpp"
 #include "../algorithm/lexicographical_compare.hpp"
+#include "../utility/pair.hpp"
+#include "../rb_tree/rb_tree.hpp"
 
 namespace ft {
 
@@ -16,28 +17,29 @@ template <typename Key, typename T, typename Compare = std::less<Key>,
    typename AllocTp = std::allocator<ft::pair<const Key, T> > >
 class map {
  public:
-    typedef Key                                             key_type;
-    typedef T                                               mapped_type;
-    typedef ft::pair<const key_type, mapped_type>           value_type;
-    typedef Compare                                         key_compare;
-    typedef AllocTp                                         allocator_type;
-    typedef value_type&                                     reference;
-    typedef const value_type&                               const_reference;
-    typedef value_type*                                     pointer;
-    typedef const value_type*                               const_pointer;
-    typedef ft::rb_tree_iter<pointer>                       iterator;
-    typedef ft::rb_tree_iter<const_pointer>                 const_iterator;
-    typedef ft::reverse_iter<iterator>                      reverse_iterator;
-    typedef ft::reverse_iter<const_iterator>                const_reverse_iterator;
-    typedef std::ptrdiff_t                                  difference_type;
-    typedef std::size_t                                     size_type;
+    typedef Key                                     key_type;
+    typedef T                                       mapped_type;
+    typedef ft::pair<const key_type, mapped_type>   value_type;
+    typedef Compare                                 key_compare;
+    typedef AllocTp                                 allocator_type;
+    typedef value_type&                             reference;
+    typedef const value_type&                       const_reference;
+    typedef value_type*                             pointer;
+    typedef const value_type*                       const_pointer;
+    typedef std::ptrdiff_t                          difference_type;
+    typedef std::size_t                             size_type;
+
+    typedef ft::rb_tree_iter<pointer>               iterator;
+    typedef ft::rb_tree_iter<const_pointer>         const_iterator;
+    typedef ft::reverse_iter<iterator>              reverse_iterator;
+    typedef ft::reverse_iter<const_iterator>        const_reverse_iterator;
 
     class value_compare : std::binary_function<value_type, value_type, bool> {
         friend class map<Key, T, Compare, AllocTp>;
      protected:
         Compare comp;
 
-        value_compare(Compare c = Compare()) : comp(c) {}
+        explicit value_compare(Compare c = Compare()) : comp(c) {}
 
      public:
         bool operator()(const value_type& lhs, const value_type& rhs) const {
@@ -45,25 +47,23 @@ class map {
         }
     };
 
-    map()
-                    :   _key_comp(key_compare()),
-                        _rb_tree(value_compare(key_compare()), AllocTp()) {}
+    map() : _key_comp(key_compare()),
+            _rb_tree(value_compare(key_compare()), AllocTp()) {}
 
-    map(const Compare& comp, AllocTp alloc = AllocTp())
-                    :   _key_comp(comp),
-                        _rb_tree(value_compare(comp), alloc) {}
+    explicit map(const Compare& comp, AllocTp alloc = AllocTp())
+        :   _key_comp(comp),
+            _rb_tree(value_compare(comp), alloc) {}
 
     template<class InputIt>
-    map(InputIt first, InputIt last, const Compare& comp = Compare(),
-                   const AllocTp& alloc = AllocTp())
-                    :   _key_comp(comp), _rb_tree(value_compare(comp), alloc) {
-         insert(first, last);
-    }
+    map(InputIt first, InputIt last,
+        const Compare& comp = Compare(),
+        const AllocTp& alloc = AllocTp())
+        :   _key_comp(comp),
+            _rb_tree(value_compare(comp), alloc) { insert(first, last); }
+
     map(const map& src)
-                    :   _key_comp(key_compare()),
-                        _rb_tree(value_compare(key_compare()), AllocTp()){
-        *this = src;
-    }
+        :   _key_comp(key_compare()),
+            _rb_tree(value_compare(key_compare()), AllocTp()) { *this = src; }
 
     ~map() {}
 
@@ -74,6 +74,10 @@ class map {
         }
         return *this;
     }
+
+    /*                              Allocator:                            */
+
+    AllocTp                get_allocator(void) const { return AllocTp(); }
 
     /*                              Iterators:                            */
 
@@ -159,9 +163,7 @@ class map {
 
     /*                              Observers:                            */
 
-    key_compare            key_comp(void) const {
-        return Compare();
-    }
+    key_compare            key_comp(void) const { return Compare(); }
     value_compare          value_comp(void) const {
         return value_compare(_key_comp);
     }
@@ -186,29 +188,37 @@ class map {
     }
 
     iterator               lower_bound(const key_type& key) {
-        return iterator(_rb_tree.lower_bound(ft::make_pair(key, mapped_type())));
+        return iterator(
+            _rb_tree.lower_bound(ft::make_pair(key, mapped_type())));
     }
 
     const_iterator         lower_bound(const key_type& key) const {
-        return const_iterator(_rb_tree.lower_bound(ft::make_pair(key, mapped_type())));
+        return const_iterator(
+            _rb_tree.lower_bound(ft::make_pair(key, mapped_type())));
     }
 
     iterator               upper_bound(const key_type& key) {
-        return iterator(_rb_tree.upper_bound(ft::make_pair(key, mapped_type())));
+        return iterator(
+            _rb_tree.upper_bound(ft::make_pair(key, mapped_type())));
     }
 
     const_iterator         upper_bound(const key_type& key) const {
-        return const_iterator(_rb_tree.upper_bound(ft::make_pair(key, mapped_type())));
-    }
-    ft::pair<iterator, iterator>    equal_range(const key_type& key) {
-        return ft::make_pair(lower_bound(key), upper_bound(key));
-    }
-    ft::pair<const_iterator, const_iterator> equal_range(const key_type& key) const {
-        return ft::make_pair(lower_bound(key), upper_bound(key));
+        return const_iterator(
+            _rb_tree.upper_bound(ft::make_pair(key, mapped_type())));
     }
 
-    /*                              Allocator:                            */
-    AllocTp                get_allocator(void) const { return AllocTp(); }
+    ft::pair<iterator, iterator>    equal_range(const key_type& key) {
+        return ft::make_pair(
+            lower_bound(key),
+            upper_bound(key));
+    }
+
+    ft::pair<const_iterator, const_iterator>
+                equal_range(const key_type& key) const {
+        return ft::make_pair(
+            lower_bound(key),
+            upper_bound(key));
+    }
 
  private:
     typedef rb_tree<value_type, value_compare, AllocTp>     rbTreeBase;
@@ -216,7 +226,6 @@ class map {
 
     rbTreeBase  _rb_tree;
     key_compare _key_comp;
-
 }; /* class map */
 
 /*                          Relational Operators                      */
