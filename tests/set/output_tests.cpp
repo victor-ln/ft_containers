@@ -28,49 +28,49 @@ static void constructorsTest(void) {
         std::cout << "\n\nEmpty set\n";
         ft::set<int>             v;
 
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nRepeated elements\n";
         ft::set<int>             v(10, 100);
 
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nRange constructor (pointer)\n";
         ft::set<int>             v(a, a + 9);
 
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nRange constructor (iterator)\n";
         const std::set<int>      array(10, 100);
         ft::set<int>             v(array.begin(), array.end());
 
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nRange constructor with empty range\n";
         int array[] = {0};
         ft::set<int>             v(array, array);
 
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nCopy constructor\n";
         const ft::set<int>           v1(a, a + 9);
         ft::set<int>                 v2(v1);
 
-        printset(v1);
-        printset(v2);
+        printContainer(v1);
+        printContainer(v2);
     }
     {
         std::cout << "\n\nCopy constructor with empty set\n";
         ft::set<int>             v1;
         ft::set<int>             v2(v1);
 
-        printset(v1);
-        printset(v2);
+        printContainer(v1);
+        printContainer(v2);
     }
 }
 
@@ -80,12 +80,12 @@ static void swapTest(void) {
     ft::set<int> v2(5, 21);
 
     v1.swap(v2);
-    printset(v1);
-    printset(v2);
+    printContainer(v1);
+    printContainer(v2);
 
     swap(v1, v2);
-    printset(v1);
-    printset(v2);
+    printContainer(v1);
+    printContainer(v2);
 }
 
 static void relationalOperatorsTest(void) {
@@ -134,12 +134,12 @@ static void assignmentOperatorTest(void) {
 
         std::cout << "\n\nEqual\n";
         v1 = v2;
-        printset(v1);
-        printset(v2);
+        printContainer(v1);
+        printContainer(v2);
         ft::set<int> v3(20, 500);
         v1 = v3;
-        printset(v1);
-        printset(v3);
+        printContainer(v1);
+        printContainer(v3);
     }
 }
 
@@ -152,19 +152,19 @@ static void eraseTest(void) {
         std::cout << "\n\nErase single element (1/3)\n";
         it  = v.erase(v.begin());
 
-        printset(v);
+        printContainer(v);
         std::cout << "Return iterator: " << *it << '\n';
 
         std::cout << "\n\nErase single element (2/3)\n";
         it  = v.erase(v.begin() + 5);
 
-        printset(v);
+        printContainer(v);
         std::cout << "Return iterator: " << *it << '\n';
 
         std::cout << "\n\nErase single element (3/3)\n";
         it  = v.erase(--v.end());
 
-        printset(v);
+        printContainer(v);
         std::cout << "Return iterator: " << *it << '\n';
     }
     {
@@ -177,7 +177,7 @@ static void eraseTest(void) {
             last    = v.begin() + 5;
             it      = v.erase(first, last);
 
-            printset(v);
+            printContainer(v);
             std::cout << "Return iterator: " << *it << '\n';
         }
         {
@@ -187,7 +187,7 @@ static void eraseTest(void) {
             last    = v.begin() + 7;
             it      = v.erase(first, last);
 
-            printset(v);
+            printContainer(v);
             std::cout << "Return iterator: " << *it << '\n';
         }
     }
@@ -203,19 +203,19 @@ static void insertTest(void) {
         std::cout << "\n\ninsert single element (1/3)\n";
         it = v.insert(v.begin(), 42);
 
-        printset(v);
+        printContainer(v);
         std::cout << "Return iterator: " << *it << '\n';
 
         std::cout << "\n\ninsert single element (2/3)\n";
         it = v.insert(v.begin() + 5, 42);
 
-        printset(v);
+        printContainer(v);
         std::cout << "Return iterator: " << *it << '\n';
 
         std::cout << "\n\ninsert single element (3/3)\n";
         it = v.insert(v.end(), 42);
 
-        printset(v);
+        printContainer(v);
         std::cout << "Return iterator: " << *it << '\n';
     }
     {
@@ -223,24 +223,24 @@ static void insertTest(void) {
         std::cout << "\n\ninsert multiple elements (1/3)\n";
         v.insert(v.begin(), arr, arr + 3);
 
-        printset(v);
+        printContainer(v);
 
         std::cout << "\n\ninsert multiple elements (2/3)\n";
         v.insert(v.begin() + 5, arr, arr + 3);
 
-        printset(v);
+        printContainer(v);
 
         std::cout << "\n\ninsert multiple elements (3/3)\n";
         v.insert(v.end(), arr, arr + 3);
 
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\ninsert to itself\n";
         ft::set<int>             v(10, 100);
 
         v.insert(v.begin(), v.begin(), v.end());
-        printset(v);
+        printContainer(v);
     }
 }
 
@@ -251,7 +251,7 @@ static void assignTest(void) {
         ft::set<int>             v(10, 100);
 
         v.assign(5, 200);
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nassign range\n";
@@ -260,7 +260,7 @@ static void assignTest(void) {
         ft::set<int>             v(a, a + 9);
 
         v.assign(array.begin(), array.end());
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nassign with input iterator\n";
@@ -268,7 +268,7 @@ static void assignTest(void) {
         ft::set<int> v(5, 10);
 
         v.assign(a, a + 5);
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nassign with empty set\n";
@@ -276,20 +276,20 @@ static void assignTest(void) {
         ft::set<int>             v2;
 
         v.assign(v2.begin(), v2.end());
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nassign from empty set\n";
         ft::set<int> v;
 
         v.assign(v.begin(), v.end());
-        printset(v);
+        printContainer(v);
     }
     {
         std::cout << "\n\nassign to itself\n";
         ft::set<int>             v(10, 100);
 
         v.assign(v.begin(), v.end());
-        printset(v);
+        printContainer(v);
     }
 }
