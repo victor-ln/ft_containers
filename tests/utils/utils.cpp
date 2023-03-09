@@ -26,3 +26,25 @@ void printStatus(int status) {
 int comp(const int x, const int y) {
     return x - y;
 }
+
+void printTime(void) {
+    if (!TIME_TEST) {
+        return;
+    }
+    static clock_t          t;
+    static double           time_took;
+
+    if (!t) {
+        t = clock();
+    } else {
+        t = clock() - t;
+        time_took = static_cast<double>(t) / CLOCKS_PER_SEC;
+        std::cout << "\n  TIME TOOK:   " << time_took;
+        if (STD) {
+            std::cout << "\n  MAX TIME:    " << (time_took * 20) << '\n';
+        } else {
+            std::cout << "\n\n";
+        }
+        t = clock();
+    }
+}
