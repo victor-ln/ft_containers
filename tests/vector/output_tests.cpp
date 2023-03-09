@@ -72,10 +72,11 @@ static void constructorsTest(void) {
         printContainer(v1, print<int>);
         printContainer(v2, print<int>);
     }
+    printTime();
 }
 
 static void swapTest(void) {
-    std::cout << "\n[ SWAP ]\n\n";
+    std::cout << "\n[ SWAP ]\n";
     ft::vector<int> v1(3, 42);
     ft::vector<int> v2(5, 21);
 
@@ -86,6 +87,7 @@ static void swapTest(void) {
     swap(v1, v2);
     printContainer(v1, print<int>);
     printContainer(v2, print<int>);
+    printTime();
 }
 
 static void relationalOperatorsTest(void) {
@@ -120,8 +122,9 @@ static void relationalOperatorsTest(void) {
 
 static void assignmentOperatorTest(void) {
     std::cout << "\n[ ASSIGNMENT OPERATOR ]\n";
+    printTime();
     {
-        std::cout << "\n\nDeep copying\n";
+        /*  Deep copying */
         ft::vector<int> v1;
         {
             ft::vector<int> v2(10, 100);
@@ -132,7 +135,7 @@ static void assignmentOperatorTest(void) {
         ft::vector<int> v1;
         ft::vector<int> v2(15, 200);
 
-        std::cout << "\n\nEqual\n";
+        /* Equal */
         v1 = v2;
         printContainer(v1, print<int>);
         printContainer(v2, print<int>);
@@ -141,6 +144,7 @@ static void assignmentOperatorTest(void) {
         printContainer(v1, print<int>);
         printContainer(v3, print<int>);
     }
+    printTime();
 }
 
 static void eraseTest(void) {
@@ -191,6 +195,7 @@ static void eraseTest(void) {
             std::cout << "Return iterator: " << *it << '\n';
         }
     }
+    printTime();
 }
 
 
@@ -242,6 +247,7 @@ static void insertTest(void) {
         v.insert(v.begin(), v.begin(), v.end());
         printContainer(v, print<int>);
     }
+    printTime();
 }
 
 static void assignTest(void) {
@@ -292,4 +298,5 @@ static void assignTest(void) {
         v.assign(v.begin(), v.end());
         printContainer(v, print<int>);
     }
+    printTime();
 }
