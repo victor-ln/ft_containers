@@ -68,6 +68,7 @@ static void constructorsTest(void) {
         printContainer(v1, print);
         printContainer(v2, print);
     }
+    printTime();
 }
 
 static void swapTest(void) {
@@ -86,6 +87,7 @@ static void swapTest(void) {
     swap(v1, v2);
     printContainer(v1, print);
     printContainer(v2, print);
+    printTime();
 }
 
 static void relationalOperatorsTest(void) {
@@ -124,6 +126,7 @@ static void relationalOperatorsTest(void) {
 
 static void assignmentOperatorTest(void) {
     std::cout << "\n[ ASSIGNMENT OPERATOR ]\n";
+    printTime();
 
     s_create_pairs  pairs(30);
     s_pairs         p_begin(pairs.begin());
@@ -147,8 +150,8 @@ static void assignmentOperatorTest(void) {
         v1 = v3;
         printContainer(v1, print);
         printContainer(v3, print);
-
     }
+    printTime();
 }
 
 static void eraseTest(void) {
@@ -204,6 +207,7 @@ static void eraseTest(void) {
             printContainer(m, print);
         }
     }
+    printTime();
 }
 
 static void insertTest(void) {
@@ -254,4 +258,5 @@ static void insertTest(void) {
         m.insert(m.begin(), m.end());
         printContainer(m, print);
     }
+    printTime();
 }
