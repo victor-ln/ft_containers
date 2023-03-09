@@ -1,12 +1,11 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "map_tests.hpp"
+#include "../includes/map_tests.hpp"
 
 static void relationalOperatorsTest(void);
 static void assignmentOperatorTest(void);
 static void constructorsTest(void);
 static void insertTest(void);
-static void assignTest(void);
 static void eraseTest(void);
 static void swapTest(void);
 
@@ -14,29 +13,17 @@ int main(void) {
     relationalOperatorsTest();
     assignmentOperatorTest();
     constructorsTest();
-    assignTest();
     insertTest();
     eraseTest();
     swapTest();
     return 0;
 }
 
-static ftStrIntPair* createStrIntPairs(std::size_t size) {
-    if (size) {
-        std::stringstream   ss;
-        std::string         str;
-        ftStrIntPair          *pair_list = new ftStrIntPair[size];
-
-        srand(size);
-        for (std::size_t i = 0; i < size; ++i) {
-            ss << i, ss >> str;
-            pair_list[i] = ftStrIntPair(str, rand());
-        }
-    }
-}
-
 static void constructorsTest(void) {
-    ftStrIntPair* pairs = createStrIntPairs(10);
+
+    s_create_pairs  pairs(10);
+    s_pairs         p_begin(pairs.begin());
+    s_pairs         p_end(pairs.end());
 
     std::cout << "\n[ CONSTRUCTORS ]\n";
     {
@@ -47,27 +34,27 @@ static void constructorsTest(void) {
     }
     {
         std::cout << "\n\nRange constructor (pointer)\n";
-        ft::map<std::string, int>             m(pairs, pairs + 10);
+        ft::map<std::string, int>             m(p_begin.ft, p_end.ft);
 
         printContainer(m, print);
     }
     {
         std::cout << "\n\nRange constructor (iterator)\n";
-        const std::map<std::string, int>    to_copy_from(pairs, pairs + 10);
+        const ft::map<std::string, int>     to_copy_from(p_begin.ft, p_end.ft);
         ft::map<std::string, int>           m(to_copy_from.begin(), to_copy_from.end());
 
         printContainer(m, print);
     }
     {
         std::cout << "\n\nRange constructor with empty range\n";
-        int array[] = {0};
-        ftStrIntMap             m(array, array);
+        ftStrIntPair            *pairs = 0;
+        ftStrIntMap             m(pairs, pairs);
 
         printContainer(m, print);
     }
     {
         std::cout << "\n\nCopy constructor\n";
-        const ftStrIntMap           v1(pairs, pairs + 10);
+        const ftStrIntMap           v1(p_begin.ft, p_end.ft);
         ftStrIntMap                 v2(v1);
 
         printContainer(v1, print);
@@ -81,13 +68,16 @@ static void constructorsTest(void) {
         printContainer(v1, print);
         printContainer(v2, print);
     }
-    delete []pairs;
 }
 
 static void swapTest(void) {
     std::cout << "\n[ SWAP ]\n\n";
-    ftStrIntMap v1(3, 42);
-    ftStrIntMap v2(5, 21);
+
+    s_create_pairs  pairs(10);
+    s_pairs         p_begin(pairs.begin());
+
+    ftStrIntMap v1(p_begin.ft, p_begin.ft + 5);
+    ftStrIntMap v2(p_begin.ft + 5, p_begin.ft + 10);
 
     v1.swap(v2);
     printContainer(v1, print);
@@ -100,9 +90,12 @@ static void swapTest(void) {
 
 static void relationalOperatorsTest(void) {
     std::cout << "\n[ RELATIONAL OPERATORS ]\n";
-    ftStrIntPair* pairs = createStrIntPairs(10);
-    ftStrIntMap             V1(pairs, pairs + 10);
-    ftStrIntMap             V2(pairs, pairs + 10);
+
+    s_create_pairs  pairs(10);
+    s_pairs         p_begin(pairs.begin());
+    s_pairs         p_end(pairs.end());
+    ftStrIntMap             V1(p_begin.ft, p_end.ft);
+    ftStrIntMap             V2(p_begin.ft, p_end.ft);
 
     std::cout << "\n\noperator ==\n";
     std::cout << "is equal: " << (V1 == V2);
@@ -127,40 +120,46 @@ static void relationalOperatorsTest(void) {
     std::cout << "is greater than and not equal: " << (V1 >= V2 && V1 != V2);
     V1.erase(--V1.end());
     std::cout << "is greater than and equal: " << (V1 >= V2 && V1 == V2);
-    delete []pairs;
 }
 
 static void assignmentOperatorTest(void) {
     std::cout << "\n[ ASSIGNMENT OPERATOR ]\n";
+
+    s_create_pairs  pairs(30);
+    s_pairs         p_begin(pairs.begin());
+    s_pairs         p_end(pairs.end());
     {
-        std::cout << "\n\nDeep copying\n";
         ftStrIntMap v1;
         {
-            ftStrIntMap v2(10, 100);
+            ftStrIntMap v2(p_begin.ft, p_begin.ft + 10);
             v1 = v2;
         }
     }
     {
         ftStrIntMap v1;
-        ftStrIntMap v2(15, 200);
+        ftStrIntMap v2(p_begin.ft, p_begin.ft + 20);
 
-        std::cout << "\n\nEqual\n";
         v1 = v2;
         printContainer(v1, print);
         printContainer(v2, print);
-        ftStrIntMap v3(20, 500);
+
+        ftStrIntMap v3(p_begin.ft, p_end.ft);
         v1 = v3;
         printContainer(v1, print);
         printContainer(v3, print);
+
     }
 }
 
 static void eraseTest(void) {
     std::cout << "\n[ ERASE ]\n";
-    int a[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    s_create_pairs  pairs(10);
+    s_pairs         p_begin(pairs.begin());
+    s_pairs         p_end(pairs.end());
     ftIterator      it;
     {
-        ftStrIntMap m(a, a + 9);
+        ftStrIntMap m(p_begin.ft, p_end.ft);
         std::cout << "\n\nErase single element (1/3)\n";
         m.erase(m.begin());
 
@@ -183,7 +182,7 @@ static void eraseTest(void) {
         ftIterator      last;
         {
             std::cout << "\n\nErase a range of elements (1/2)\n";
-            ftStrIntMap m(a, a + 9);
+            ftStrIntMap m(p_begin.ft, p_end.ft);
             first   = m.begin();
             last    = first;
 
@@ -194,12 +193,12 @@ static void eraseTest(void) {
         }
         {
             std::cout << "\n\nErase a range of elements (2/2)\n";
-            ftStrIntMap m(a, a + 9);
+            ftStrIntMap m(p_begin.ft, p_end.ft);
             first   = m.begin();
             last    = first;
 
             std::advance(first, 3);
-            std::advance(first, 7);
+            std::advance(last, 7);
 
             m.erase(first, last);
             printContainer(m, print);
@@ -209,7 +208,11 @@ static void eraseTest(void) {
 
 static void insertTest(void) {
     std::cout << "\n[ INSERT ]\n";
-    ftStrIntMap m;
+    ftStrIntMap     m;
+
+    s_create_pairs  pairs(10);
+    s_pairs         p_begin(pairs.begin());
+    s_pairs         p_end(pairs.end());
     {
         ftIterator  it;
 
@@ -219,87 +222,36 @@ static void insertTest(void) {
         printContainer(m, print);
 
         std::cout << "\n\ninsert single element (2/3)\n";
-        m.insert(m.begin() + 5, 42);
+        m.insert(ft::make_pair(std::string("42"), 10));
 
         printContainer(m, print);
 
         std::cout << "\n\ninsert single element (3/3)\n";
-        m.insert(m.end(), 42);
+        m.insert(m.begin(), ft::make_pair(std::string("12"), 12));
 
         printContainer(m, print);
     }
     {
-        int arr[] = { 1, 2, 3 };
         std::cout << "\n\ninsert multiple elements (1/3)\n";
-        m.insert(m.begin(), arr, arr + 3);
+        m.insert(p_begin.ft, p_begin.ft + 3);
 
         printContainer(m, print);
 
         std::cout << "\n\ninsert multiple elements (2/3)\n";
-        m.insert(m.begin() + 5, arr, arr + 3);
+        m.insert(p_begin.ft + 5, p_begin.ft + 7);
 
         printContainer(m, print);
 
         std::cout << "\n\ninsert multiple elements (3/3)\n";
-        m.insert(m.end(), arr, arr + 3);
+        m.insert(p_begin.ft + 3, p_end.ft);
 
         printContainer(m, print);
     }
     {
         std::cout << "\n\ninsert to itself\n";
-        ftStrIntMap             m(10, 100);
+        ftStrIntMap             m(p_begin.ft, p_end.ft);
 
-        m.insert(m.begin(), m.begin(), m.end());
-        printContainer(m, print);
-    }
-}
-
-static void assignTest(void) {
-    std::cout << "\n[ ASSIGN ]\n";
-    {
-        std::cout << "\n\nassign count\n";
-        ftStrIntMap             m(10, 100);
-
-        m.assign(5, 200);
-        printContainer(m, print);
-    }
-    {
-        std::cout << "\n\nassign range\n";
-        int a[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        const std::map<int>      array(5, 100);
-        ftStrIntMap             m(a, a + 9);
-
-        m.assign(array.begin(), array.end());
-        printContainer(m, print);
-    }
-    {
-        std::cout << "\n\nassign with input iterator\n";
-        int a[] = { 1, 2, 3, 4, 5 };
-        ftStrIntMap m(5, 10);
-
-        m.assign(a, a + 5);
-        printContainer(m, print);
-    }
-    {
-        std::cout << "\n\nassign with empty map\n";
-        ftStrIntMap             m(10, 100);
-        ftStrIntMap             v2;
-
-        m.assign(v2.begin(), v2.end());
-        printContainer(m, print);
-    }
-    {
-        std::cout << "\n\nassign from empty map\n";
-        ftStrIntMap m;
-
-        m.assign(m.begin(), m.end());
-        printContainer(m, print);
-    }
-    {
-        std::cout << "\n\nassign to itself\n";
-        ftStrIntMap             m(10, 100);
-
-        m.assign(m.begin(), m.end());
+        m.insert(m.begin(), m.end());
         printContainer(m, print);
     }
 }
