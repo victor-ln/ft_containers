@@ -158,6 +158,7 @@ class rb_tree {
         *root_addr = _create_new_node(data, parent);
         _balance_tree_insert(*root_addr);
         _update_nil_insert(*root_addr);
+        ++_size;
         return iterator(*root_addr);
     }
 
@@ -245,22 +246,21 @@ class rb_tree {
         };
 
         key_compare comp;
+        s_less      less;
         s_not_less  not_less;
         s_greater   greater;
-        s_less      less;
     };
 
+    size_type           _size;
+    compare_functions   _comp;
+    node_allocator      _node_allocator;
     node_pointer        _root;
     node_pointer        _nil;
-    size_type           _size;
-    node_allocator      _node_allocator;
-    compare_functions   _comp;
 
     node_pointer _create_new_node(const_reference data, node_pointer parent) {
         node_pointer        node = _node_allocator.allocate(1);
 
         _node_allocator.construct(node, node_base(data, parent, _nil, red));
-        ++_size;
         return node;
     }
 
@@ -443,7 +443,7 @@ class rb_tree {
     }
 
     void    _update_nil_insert(node_pointer node) {
-        if (!_nil->parent || _comp.less(_nil->parent->data, node->data)) {
+        if (!_size || _comp.less(_nil->parent->data, node->data)) {
             _nil->parent = node;
         }
     }

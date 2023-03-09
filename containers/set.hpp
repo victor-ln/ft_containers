@@ -195,8 +195,8 @@ class set {
     typedef rb_tree<value_type, value_compare, AllocTp>     rbTreeBase;
     typedef node<value_type>*                               node_pointer;
 
-    rbTreeBase  _rb_tree;
     key_compare _key_comp;
+    rbTreeBase  _rb_tree;
 }; /* class set */
 
 /*                          Relational Operators                      */

@@ -22,11 +22,11 @@ struct node {
          node_pointer   _leaf = 0,
          nodeColor      _color = black)
                     :   data(_data),
-                        parent(_parent),
-                        color(_color), 
-                        leaf(_leaf),
                         left(_leaf),
-                        right(_leaf) {}
+                        right(_leaf),
+                        parent(_parent),
+                        leaf(_leaf),
+                        color(_color) {}
 
     static node_pointer minimum(node_pointer node) {
         while (node->left != node->leaf) {
