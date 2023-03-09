@@ -1,7 +1,7 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#ifndef TESTS_VECTOR_VECTOR_TESTS_HPP_
-#define TESTS_VECTOR_VECTOR_TESTS_HPP_
+#ifndef TESTS_INCLUDES_VECTOR_TESTS_HPP_
+#define TESTS_INCLUDES_VECTOR_TESTS_HPP_
 
 #include <vector>
 
@@ -74,4 +74,4 @@ void print(T x) {
     std::cout << x << ' ';
 }
 
-#endif  /* TESTS_VECTOR_VECTOR_TESTS_HPP_ */
+#endif  /* TESTS_INCLUDES_VECTOR_TESTS_HPP_ */
