@@ -194,6 +194,8 @@ static void iteratorTest(void) {
             *ftIt = 1;
             *stdIt = 1;
             printStatus(*ftIt == *stdIt);
+            *ftIt = 3;
+            *stdIt = 3;
         }
 
         printColor(BGWHITE, "\n├─ iterator::operator++\n");
@@ -277,7 +279,7 @@ static void iteratorTest(void) {
 
             printColor(BGWHITE, "\n├─ reverse_iterator::operator[]\n");
             printStatus(ftIt[0] == stdIt[0]);
-            printStatus(ftConstIt[0] == ftConstIt[0]);
+            printStatus(ftConstIt[0] == stdConstIt[0]);
             ftIt[0] = 10;
             stdIt[0] = 10;
             printStatus(ftIt[0] == stdIt[0]);
@@ -375,9 +377,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ end()\n");
-        ftConstIterator                 ftConstIte = constFtV.end();
-        ftIterator                      ftIte = ftV.end();
-        stdIterator                     stdIte = stdV.end();
+        ftConstIterator                 ftConstIte = --constFtV.end();
+        ftIterator                      ftIte = --ftV.end();
+        stdIterator                     stdIte = --stdV.end();
 
         printStatus(*ftIte == *stdIte);
         printStatus(*ftConstIte == *ftIte);
@@ -385,9 +387,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ rend()\n");
-        ftConstReverseIterator          ftConstIte = constFtV.rend();
-        ftReverseIterator               ftIte = ftV.rend();
-        stdReverseIterator              stdIte = stdV.rend();
+        ftConstReverseIterator          ftConstIte = --constFtV.rend();
+        ftReverseIterator               ftIte = --ftV.rend();
+        stdReverseIterator              stdIte = --stdV.rend();
 
         printStatus(*ftIte == *stdIte);
         printStatus(*ftConstIte == *ftIte);
@@ -482,6 +484,9 @@ static void accessorsTest(void) {
 
     printColor(BGWHITE, "\n├─ operator[]\n");
     printStatus(ftV[4] == stdV[4]);
+    ftV[4] = 42;
+    printStatus(ftV[4] != stdV[4]);
+    ftV[4] = 4;
     printColor(BGWHITE, "\n├─ operator[] const\n");
     printStatus(constFtV[4] == stdV[4]);
 
