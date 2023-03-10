@@ -31,21 +31,21 @@ typedef std::pair<std::string, int>             t_stdStrIntPair;
 
 typedef ft::pair<t_ftIterator, bool>            t_ftPairReturn;
 
-bool operator==(t_ftStrIntPair& x, t_stdStrIntPair& y) {
+bool operator==(const t_ftStrIntPair& x, const t_stdStrIntPair& y) {
     return x.first == y.first;
 }
 
-bool operator!=(t_ftStrIntPair& x, t_stdStrIntPair& y) {
+bool operator!=(const t_ftStrIntPair& x, const t_stdStrIntPair& y) {
     return x.first == y.first;
 }
 
-#ifndef STD
+#if STD != 1
 
-    bool operator==(t_stdStrIntPair& x, t_ftStrIntPair& y) {
+    bool operator==(const t_stdStrIntPair& x, const t_ftStrIntPair& y) {
         return x.first == y.first;
     }
 
-    bool operator!=(t_stdStrIntPair& x, t_ftStrIntPair& y) {
+    bool operator!=(const t_stdStrIntPair& x, const t_ftStrIntPair& y) {
         return x.first == y.first;
     }
 
