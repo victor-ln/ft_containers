@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <iterator>
+#include <algorithm>
 
 #if STD != 1
     #define STD 0
@@ -31,6 +32,7 @@ int     comp(const int, const int);
 void    printStatus(int);
 void    printColor(const char* code, const char* message);
 void    printTime(int);
+int*    createArray(size_t);
 
 #include "./utils.tpp"
 

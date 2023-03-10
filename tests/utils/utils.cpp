@@ -49,3 +49,16 @@ void printTime(int option) {
         t = clock();
     }
 }
+
+int*    createArray(std::size_t size) {
+    if (size) {
+        int *array = new int[size];
+
+        for (std::size_t i = 0; i < size; ++i) {
+            array[i] = i;
+        }
+        std::random_shuffle(array, array + size);
+        return array;
+    }
+    return 0;
+}
