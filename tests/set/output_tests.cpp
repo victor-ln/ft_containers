@@ -5,6 +5,7 @@
 static void relationalOperatorsTest(void);
 static void assignmentOperatorTest(void);
 static void constructorsTest(void);
+static void operationsTest(void);
 static void insertTest(void);
 static void eraseTest(void);
 static void swapTest(void);
@@ -13,6 +14,7 @@ int main(void) {
     relationalOperatorsTest();
     assignmentOperatorTest();
     constructorsTest();
+    operationsTest();
     insertTest();
     eraseTest();
     swapTest();
@@ -50,18 +52,18 @@ static void constructorsTest(void) {
     }
     {
         std::cout << "\n\nCopy constructor\n";
-        const ft::set<int>           v1(array, array + 9);
-        ft::set<int>                 s2(v1);
+        const ft::set<int>           s1(array, array + 9);
+        ft::set<int>                 s2(s1);
 
-        printContainer(v1, print<int>);
+        printContainer(s1, print<int>);
         printContainer(s2, print<int>);
     }
     {
         std::cout << "\n\nCopy constructor with empty set\n";
-        ft::set<int>             v1;
-        ft::set<int>             s2(v1);
+        ft::set<int>             s1;
+        ft::set<int>             s2(s1);
 
-        printContainer(v1, print<int>);
+        printContainer(s1, print<int>);
         printContainer(s2, print<int>);
     }
 }
@@ -120,23 +122,127 @@ static void assignmentOperatorTest(void) {
     for (int i = 0; i < 30; i++) { array[i] = rand(); }
     {
         /* Deep copying */
-        ft::set<int> v1;
+        ft::set<int> s1;
         {
             ft::set<int> s2(array, array + 10);
-            v1 = s2;
+            s1 = s2;
         }
     }
     {
-        ft::set<int> v1;
+        ft::set<int> s1;
         ft::set<int> s2(array, array + 20);
 
-        v1 = s2;
-        printContainer(v1, print<int>);
+        s1 = s2;
+        printContainer(s1, print<int>);
         printContainer(s2, print<int>);
         ft::set<int> v3(array, array + 30);
-        v1 = v3;
-        printContainer(v1, print<int>);
+        s1 = v3;
+        printContainer(s1, print<int>);
         printContainer(v3, print<int>);
+    }
+}
+
+static void operationsTest(void) {
+    ft::set<std::string>           s;
+    std::string                     str("a");
+
+    for (int i = 0; i < 100; i++) {
+        s.insert(str);
+        str[0]++;
+    }
+
+    const ft::set<std::string>     constS(s);
+
+    ft::set<std::string>::iterator it;
+    {
+        std::cout << "\n[ FIND ]\n";
+
+        it = s.find("b");
+
+        if (it != constS.end()) {
+            std::cout << "Found value: " << *it << '\n';
+        } else {
+            std::cout << "Element not found\n";
+        }
+
+        it = s.find("c");
+
+        if (it != constS.end()) {
+            std::cout << "Found value: " << *it << '\n';
+        } else {
+            std::cout << "Element not found\n";
+        }
+
+        it = s.find("h");
+        std::cout << (it == s.end()) << '\n';
+    }
+    {
+        std::cout << "\n[ FIND (const) ]\n";
+
+        if (constS.find("b") != constS.end()) {
+            std::cout << "Found key: " << *constS.find("b") << '\n';
+        } else {
+            std::cout << "Element not found\n";
+        }
+
+        if (constS.find("c") != constS.end()) {
+            std::cout << "Key: " << *constS.find("c") << '\n';
+        } else {
+            std::cout << "Element not found\n";
+        }
+
+        std::cout << (constS.find("h") == constS.end()) << '\n';
+    }
+    {
+        std::cout << "\n[ COUNT ]\n";
+
+        std::cout << "Found " << s.count("b") << " elements with key b\n";
+
+        std::cout << "Found " << s.count("w") << " elements with key w\n";
+    }
+    {
+        std::cout << "\n[ LOWER_BOUND ]\n";
+
+        it = s.lower_bound("b");
+        if (it != s.end()) {
+            std::cout << "Lower bound for b is " << *it << '\n';
+        } else {
+            std::cout << "Lower bound not found\n";
+        }
+
+        it = s.lower_bound("d");
+        if (it != s.end()) {
+            std::cout << "Lower bound for d is " << *it << '\n';
+        } else {
+            std::cout << "Lower bound not found\n";
+        }
+    }
+    {
+        std::cout << "\n[ UPPER_BOUND ]\n";
+
+        it = s.upper_bound("b");
+        if (it != s.end()) {
+            std::cout << "Upper bound for b is " << *it << '\n';
+        } else {
+            std::cout << "Upper bound not found\n";
+        }
+
+        it = s.upper_bound("c");
+        if (it != s.end()) {
+            std::cout << "Upper bound for c is " << *it << '\n';
+        } else {
+            std::cout << "Upper bound not found\n";
+        }
+    }
+    {
+        std::cout << "\n[ EQUAL_RANGE ]\n";
+
+        ft::pair<ft::set<std::string>::iterator, ft::set<std::string>::iterator> ret = s.equal_range("b");
+        std::cout << "lower bound points to: ";
+        std::cout << *ret.first << " => " << *ret.first << '\n';
+
+        std::cout << "upper bound points to: ";
+        std::cout << *ret.second << " => " << *ret.second << '\n';
     }
 }
 
