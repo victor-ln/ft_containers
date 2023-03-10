@@ -18,7 +18,7 @@ class stack {
     typedef typename Container::reference           reference;
     typedef typename Container::const_reference     const_reference;
 
-    explicit stack(const Container& ctnr) : _c(ctnr) {}
+    explicit stack(const Container& ctnr = Container()) : _c(ctnr) {}
     ~stack() {}
 
     stack&          operator=(const stack& src) { _c = src._c; return *this; }
@@ -35,8 +35,32 @@ class stack {
 
     /*                              Modifiers:                            */
 
-    void            push(const value_type&) { _c.push_back(x); }
+    void            push(const value_type& x) { _c.push_back(x); }
     void            pop(void) { _c.pop_back(); }
+
+    bool operator==(const stack& rhs) const {
+        return _c == rhs._c;
+    }
+
+    bool operator!=(const stack& rhs) const {
+        return _c != rhs._c;
+    }
+
+    bool operator< (const stack& rhs) const {
+        return _c < rhs._c;
+    }
+
+    bool operator<=(const stack& rhs) const {
+        return _c <= rhs._c;
+    }
+
+    bool operator> (const stack& rhs) const {
+        return _c > rhs._c;
+    }
+
+    bool operator>=(const stack& rhs) const {
+        return _c >= rhs._c;
+    }
 
  protected:
     Container       _c;
@@ -44,36 +68,6 @@ class stack {
 
 /*                          Relational Operators                      */
 
-template <class T, class Alloc>
-bool operator==(const stack<T, Alloc>& lhs, const stack<T, Alloc>& rhs) {
-    return lhs._c == rhs._c;
-}
-
-template <class T, class Alloc>
-bool operator!=(const stack<T, Alloc>& lhs, const stack<T, Alloc>& rhs) {
-    return lhs._c != rhs._c;
-}
-
-template <class T, class Alloc>
-bool operator< (const stack<T, Alloc>& lhs, const stack<T, Alloc>& rhs) {
-    return lhs._c < rhs._c;
-}
-
-template <class T, class Alloc>
-bool operator<=(const stack<T, Alloc>& lhs, const stack<T, Alloc>& rhs) {
-    return lhs._c <= rhs._c;
-}
-
-template <class T, class Alloc>
-bool operator> (const stack<T, Alloc>& lhs, const stack<T, Alloc>& rhs) {
-    return lhs._c > rhs._c;
-}
-
-template <class T, class Alloc>
-bool operator>=(const stack<T, Alloc>& lhs, const stack<T, Alloc>& rhs) {
-    return lhs._c >= rhs._c;
-}
-
-}; /* namespace ft */
+} /* namespace ft */
 
 #endif /* CONTAINERS_STACK_HPP_ */
