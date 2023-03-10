@@ -15,6 +15,9 @@
 
 #if TIME_TEST != 1
     #define TIME_TEST 0
+    #define AMOUNT 10
+#else
+    #define AMOUNT 10000
 #endif
 
 #define OK      "├── \x1b[32mOK\x1b[0m\n"
@@ -27,7 +30,7 @@
 int     comp(const int, const int);
 void    printStatus(int);
 void    printColor(const char* code, const char* message);
-void    printTime(void);
+void    printTime(int);
 
 #include "./utils.tpp"
 

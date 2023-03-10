@@ -27,15 +27,16 @@ int comp(const int x, const int y) {
     return x - y;
 }
 
-void printTime(void) {
+void printTime(int option) {
     if (!TIME_TEST) {
         return;
     }
     static clock_t          t;
     static double           time_took;
 
-    if (!t) {
+    if (!option) {
         t = clock();
+        std::cout << "-----/-----/-----/-----\n\n";
     } else {
         t = clock() - t;
         time_took = static_cast<double>(t) / CLOCKS_PER_SEC;
