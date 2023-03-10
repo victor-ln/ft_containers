@@ -116,11 +116,11 @@ map2:
 	@mv $(MAP_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/map
 
 map3:
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(VECTOR2) -o ftmap_output_tests
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(VECTOR2) -o stdmap_output_tests
+	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(MAP2) -o ftmap_output_tests
+	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(MAP2) -o stdmap_output_tests
 	$(call time_test,ftmap_output_tests,stdmap_output_tests,map)
 	@mkdir -p $(EXECUTABLES_DIR)/map
-	@mv $(VECTOR_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/map
+	@mv $(MAP_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/map
 
 set1:
 	$(CC) $(CFLAGS) $(UTILS) $(SET1) -o set_running_tests
@@ -137,11 +137,11 @@ set2:
 	@mv $(SET_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/set
 
 set3:
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(VECTOR2) -o ftset_output_tests
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(VECTOR2) -o stdset_output_tests
+	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(SET2) -o ftset_output_tests
+	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(SET2) -o stdset_output_tests
 	$(call time_test,ftset_output_tests,stdset_output_tests,set)
 	@mkdir -p $(EXECUTABLES_DIR)/set
-	@mv $(VECTOR_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/set
+	@mv $(SET_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/set
 
 stack1:
 	$(CC) $(CFLAGS) $(UTILS) $(STACK1) -o stack_running_tests
@@ -158,11 +158,11 @@ stack2:
 	@mv $(STACK_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/stack
 
 stack3:
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(VECTOR2) -o ftstack_output_tests
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(VECTOR2) -o stdstack_output_tests
+	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(STACK2) -o ftstack_output_tests
+	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(STACK2) -o stdstack_output_tests
 	$(call time_test,ftstack_output_tests,stdstack_output_tests,stack)
 	@mkdir -p $(EXECUTABLES_DIR)/stack
-	@mv $(VECTOR_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/stack
+	@mv $(STACK_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/stack
 
 clean:
 	$(RM) $(EXECUTABLES_DIR)
