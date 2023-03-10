@@ -1,12 +1,16 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "../includes/map_tests.hpp"
+#include "../includes/containers/map_tests.hpp"
 
 static void algorithmsTest(void);
 static void accessorsTest(void);
 static void iteratorTest(void);
 static void clearTest(void);
 static void sizeTest(void);
+
+const s_create_pairs  g_pairs(15);
+const s_pairs         g_pair_begin(g_pairs.begin());
+const s_pairs         g_pair_end(g_pairs.end());
 
 int main(void) {
     algorithmsTest();
@@ -20,20 +24,16 @@ int main(void) {
 
 static void algorithmsTest(void) {
     printColor(CYAN, "\n[ LEXICOGRAPHICAL ]\n");
-
-    s_create_pairs  pairs(15);
-    s_pairs         p_begin(pairs.begin());
-    s_pairs         p_end(pairs.end());
     {
-        t_ftStrIntMap   M1(p_begin.ft, p_end.ft);
-        t_stdStrIntMap  M2(p_begin.std, p_begin.std + 14);
+        t_ftStrIntMap   M1(g_pair_begin.ft, g_pair_end.ft);
+        t_stdStrIntMap  M2(g_pair_begin.std, g_pair_begin.std + 14);
         {
             printColor(BGWHITE, "\n├─ Different size\n");
             printStatus(ft::lexicographical_compare(M1.begin(), M1.end(),
                                                     M2.begin(), M2.end(),
                                                     compare()));
 
-            M2.insert(p_begin.std[14]);
+            M2.insert(g_pair_begin.std[14]);
 
             printColor(BGWHITE, "\n├─ Same size and value with pred\n");
             printStatus(!ft::lexicographical_compare(M1.begin(), M1.end(),
@@ -47,11 +47,11 @@ static void algorithmsTest(void) {
             printStatus(ft::equal(M1.begin(), M1.end(), M2.begin(), equal()));
 
             printColor(BGWHITE, "\n├─ Different size\n");
-            M1.erase(p_begin.ft[10].first);
+            M1.erase(g_pair_begin.ft[10].first);
             printStatus(!ft::equal(M1.begin(), M1.end(), M2.begin(), equal()));
 
             printColor(BGWHITE, "\n├─ Different value\n");
-            M2.erase(p_begin.ft[11].first);
+            M2.erase(g_pair_begin.ft[11].first);
             printStatus(!ft::equal(M1.begin(), M1.end(), M2.begin(), equal()));
         }
     }
@@ -59,12 +59,9 @@ static void algorithmsTest(void) {
 
 static void clearTest(void) {
     printColor(CYAN, "\n[ CLEAR ]\n\n");
-    s_create_pairs  pairs(15);
-    s_pairs         p_begin(pairs.begin());
-    s_pairs         p_end(pairs.end());
 
-    t_ftStrIntMap   ftM(p_begin.ft, p_end.ft);
-    t_stdStrIntMap  stdM(p_begin.std, p_end.std);
+    t_ftStrIntMap   ftM(g_pair_begin.ft, g_pair_end.ft);
+    t_stdStrIntMap  stdM(g_pair_begin.std, g_pair_end.std);
 
     ftM.clear();
     stdM.clear();
@@ -72,13 +69,9 @@ static void clearTest(void) {
 }
 
 static void iteratorTest(void) {
-    s_create_pairs      pairs(15);
-    s_pairs             p_begin(pairs.begin());
-    s_pairs             p_end(pairs.end());
-
-    t_ftStrIntMap   ftM(p_begin.ft, p_end.ft);
-    t_stdStrIntMap  stdM(p_begin.std, p_end.std);
-    const t_ftStrIntMap constFtM(p_begin.ft, p_end.ft);
+    t_ftStrIntMap   ftM(g_pair_begin.ft, g_pair_end.ft);
+    t_stdStrIntMap  stdM(g_pair_begin.std, g_pair_end.std);
+    const t_ftStrIntMap constFtM(g_pair_begin.ft, g_pair_end.ft);
 
     printColor(CYAN, "\n[ ITERATORS ]\n");
     {
@@ -216,15 +209,11 @@ static void iteratorTest(void) {
 }
 
 static void sizeTest(void) {
-    s_create_pairs  new_pairs(15);
-    s_pairs         p_begin(new_pairs.begin());
-    s_pairs         p_end(new_pairs.end());
-
     printColor(CYAN, "\n[ SIZE ]\n");
     {
         printColor(BGWHITE, "\n├─ size (non-empty map)\n");
-        t_ftStrIntMap   ftM(p_begin.ft, p_end.ft);
-        t_stdStrIntMap  stdM(p_begin.std, p_end.std);
+        t_ftStrIntMap   ftM(g_pair_begin.ft, g_pair_end.ft);
+        t_stdStrIntMap  stdM(g_pair_begin.std, g_pair_end.std);
 
         printStatus(ftM.size() == ftM.size());
     }
@@ -239,24 +228,22 @@ static void sizeTest(void) {
 
 static void accessorsTest(void) {
     printColor(CYAN, "\n[ ACCESSORS ]\n\n");
-    s_create_pairs  new_pairs(15);
-    s_pairs         p_begin(new_pairs.begin());
     t_ftStrIntMap   ftM;
     t_stdStrIntMap  stdM;
 
     for (int i = 0; i < 10; i++) {
-        ftM[p_begin.ft[i].first] = p_begin.ft[i].second;
-        stdM[p_begin.std[i].first] = p_begin.std[i].second;
+        ftM[g_pair_begin.ft[i].first] = g_pair_begin.ft[i].second;
+        stdM[g_pair_begin.std[i].first] = g_pair_begin.std[i].second;
     }
 
     printColor(BGWHITE, "\n├─ operator[]\n");
-    printStatus(ftM[p_begin.ft[4].first] == stdM[p_begin.std[4].first]);
-    ftM[p_begin.ft[4].first] = p_begin.ft[11].second;
-    printStatus(ftM[p_begin.ft[4].first] != stdM[p_begin.std[4].first]);
-    ftM[p_begin.ft[4].first] = p_begin.ft[4].second;
+    printStatus(ftM[g_pair_begin.ft[4].first] == stdM[g_pair_begin.std[4].first]);
+    ftM[g_pair_begin.ft[4].first] = g_pair_begin.ft[11].second;
+    printStatus(ftM[g_pair_begin.ft[4].first] != stdM[g_pair_begin.std[4].first]);
+    ftM[g_pair_begin.ft[4].first] = g_pair_begin.ft[4].second;
 
     printColor(BGWHITE, "\n├─ at()\n");
-    printStatus(ftM.at(p_begin.ft[4].first) == stdM.at(p_begin.std[4].first));
-    ftM.at(p_begin.ft[4].first) = p_begin.ft[12].second;
-    printStatus(ftM.at(p_begin.ft[4].first) != stdM.at(p_begin.std[4].first));
+    printStatus(ftM.at(g_pair_begin.ft[4].first) == stdM.at(g_pair_begin.std[4].first));
+    ftM.at(g_pair_begin.ft[4].first) = g_pair_begin.ft[12].second;
+    printStatus(ftM.at(g_pair_begin.ft[4].first) != stdM.at(g_pair_begin.std[4].first));
 }

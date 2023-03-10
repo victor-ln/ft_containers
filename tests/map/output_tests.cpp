@@ -1,6 +1,6 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "../includes/map_tests.hpp"
+#include "../includes/containers/map_tests.hpp"
 
 static void relationalOperatorsTest(void);
 static void assignmentOperatorTest(void);
@@ -10,6 +10,10 @@ static void insertTest(void);
 static void eraseTest(void);
 static void swapTest(void);
 
+const s_create_pairs  g_pairs(AMOUNT);
+const s_pairs         g_pair_begin(g_pairs.begin());
+const s_pairs         g_pair_end(g_pairs.end());
+
 int main(void) {
     relationalOperatorsTest();
     assignmentOperatorTest();
@@ -18,15 +22,11 @@ int main(void) {
     insertTest();
     eraseTest();
     swapTest();
+    printTime(RESULT);
     return 0;
 }
 
 static void constructorsTest(void) {
-
-    s_create_pairs  pairs(10);
-    s_pairs         p_begin(pairs.begin());
-    s_pairs         p_end(pairs.end());
-
     std::cout << "\n[ CONSTRUCTORS ]\n";
     printTime(0);
     {
@@ -37,13 +37,13 @@ static void constructorsTest(void) {
     }
     {
         std::cout << "\n\nRange constructor (pointer)\n";
-        ft::map<std::string, int>             m(p_begin.ft, p_end.ft);
+        ft::map<std::string, int>             m(g_pair_begin.ft, g_pair_end.ft);
 
         printContainer(m, print);
     }
     {
         std::cout << "\n\nRange constructor (iterator)\n";
-        const ft::map<std::string, int>     to_copy_from(p_begin.ft, p_end.ft);
+        const ft::map<std::string, int>     to_copy_from(g_pair_begin.ft, g_pair_end.ft);
         ft::map<std::string, int>           m(to_copy_from.begin(), to_copy_from.end());
 
         printContainer(m, print);
@@ -57,7 +57,7 @@ static void constructorsTest(void) {
     }
     {
         std::cout << "\n\nCopy constructor\n";
-        const t_ftStrIntMap           m1(p_begin.ft, p_end.ft);
+        const t_ftStrIntMap           m1(g_pair_begin.ft, g_pair_end.ft);
         t_ftStrIntMap                 m2(m1);
 
         printContainer(m1, print);
@@ -75,14 +75,10 @@ static void constructorsTest(void) {
 }
 
 static void swapTest(void) {
-
-    s_create_pairs  pairs(AMOUNT);
-    s_pairs         p_begin(pairs.begin());
-
     std::cout << "\n[ SWAP ]\n";
     printTime(0);
-    t_ftStrIntMap m1(p_begin.ft, p_begin.ft + (pairs.size / 2));
-    t_ftStrIntMap m2(p_begin.ft + (pairs.size / 2), p_begin.ft + pairs.size);
+    t_ftStrIntMap m1(g_pair_begin.ft, g_pair_begin.ft + (g_pairs.size / 2));
+    t_ftStrIntMap m2(g_pair_begin.ft + (g_pairs.size / 2), g_pair_begin.ft + g_pairs.size);
 
     m1.swap(m2);
     printContainer(m1, print);
@@ -211,13 +207,8 @@ static void operationsTest(void) {
 }
 
 static void relationalOperatorsTest(void) {
-
-    s_create_pairs          pairs(AMOUNT);
-    s_pairs                 p_begin(pairs.begin());
-    s_pairs                 p_end(pairs.end());
-
-    t_ftStrIntMap           M1(p_begin.ft, p_end.ft);
-    t_ftStrIntMap           M2(p_begin.ft, p_end.ft);
+    t_ftStrIntMap           M1(g_pair_begin.ft, g_pair_end.ft);
+    t_ftStrIntMap           M2(g_pair_begin.ft, g_pair_end.ft);
 
     std::cout << "\n[ RELATIONAL OPERATORS ]\n";
     printTime(0);
@@ -250,29 +241,24 @@ static void relationalOperatorsTest(void) {
 }
 
 static void assignmentOperatorTest(void) {
-
-    s_create_pairs  pairs(AMOUNT);
-    s_pairs         p_begin(pairs.begin());
-    s_pairs         p_end(pairs.end());
-
     std::cout << "\n[ ASSIGNMENT OPERATOR ]\n";
     printTime(0);
     {
         t_ftStrIntMap m1;
         {
-            t_ftStrIntMap m2(p_begin.ft, p_begin.ft + (pairs.size / 3));
+            t_ftStrIntMap m2(g_pair_begin.ft, g_pair_begin.ft + (g_pairs.size / 3));
             m1 = m2;
         }
     }
     {
         t_ftStrIntMap m1;
-        t_ftStrIntMap m2(p_begin.ft, p_begin.ft + (pairs.size / 2));
+        t_ftStrIntMap m2(g_pair_begin.ft, g_pair_begin.ft + (g_pairs.size / 2));
 
         m1 = m2;
         printContainer(m1, print);
         printContainer(m2, print);
 
-        t_ftStrIntMap v3(p_begin.ft, p_end.ft);
+        t_ftStrIntMap v3(g_pair_begin.ft, g_pair_end.ft);
         m1 = v3;
         printContainer(m1, print);
         printContainer(v3, print);
@@ -281,15 +267,11 @@ static void assignmentOperatorTest(void) {
 }
 
 static void eraseTest(void) {
-
-    s_create_pairs      pairs(AMOUNT);
-    s_pairs             p_begin(pairs.begin());
-    s_pairs             p_end(pairs.end());
     t_ftIterator        it;
     std::cout << "\n[ ERASE ]\n";
     printTime(0);
     {
-        t_ftStrIntMap   m(p_begin.ft, p_end.ft);
+        t_ftStrIntMap   m(g_pair_begin.ft, g_pair_end.ft);
         std::cout << "\n\nErase single element (1/3)\n";
         m.erase(m.begin());
 
@@ -319,23 +301,23 @@ static void eraseTest(void) {
         t_ftIterator    last;
         {
             std::cout << "\n\nErase a range of elements (1/2)\n";
-            t_ftStrIntMap m(p_begin.ft, p_end.ft);
+            t_ftStrIntMap m(g_pair_begin.ft, g_pair_end.ft);
             first   = m.begin();
             last    = first;
 
-            std::advance(last, pairs.size / 2);
+            std::advance(last, g_pairs.size / 2);
 
             m.erase(first, last);
             printContainer(m, print);
         }
         {
             std::cout << "\n\nErase a range of elements (2/2)\n";
-            t_ftStrIntMap   m(p_begin.ft, p_end.ft);
+            t_ftStrIntMap   m(g_pair_begin.ft, g_pair_end.ft);
             first   = m.begin();
             last    = first;
 
-            std::advance(first, (pairs.size * 0.3));
-            std::advance(last, ((pairs.size * 0.7)));
+            std::advance(first, (g_pairs.size * 0.3));
+            std::advance(last, ((g_pairs.size * 0.7)));
 
             m.erase(first, last);
             printContainer(m, print);
@@ -346,10 +328,6 @@ static void eraseTest(void) {
 
 static void insertTest(void) {
     t_ftStrIntMap       m;
-
-    s_create_pairs      pairs(AMOUNT);
-    s_pairs             p_begin(pairs.begin());
-    s_pairs             p_end(pairs.end());
     std::cout << "\n[ INSERT ]\n";
     printTime(0);
     {
@@ -374,24 +352,24 @@ static void insertTest(void) {
     }
     {
         std::cout << "\n\ninsert multiple elements (1/3)\n";
-        m.insert(p_begin.ft, p_begin.ft + static_cast<size_t>(pairs.size * 0.3));
+        m.insert(g_pair_begin.ft, g_pair_begin.ft + static_cast<size_t>(g_pairs.size * 0.3));
 
         printContainer(m, print);
 
         std::cout << "\n\ninsert multiple elements (2/3)\n";
-        m.insert(p_begin.ft + static_cast<size_t>(pairs.size * 0.5),
-                 p_begin.ft + static_cast<size_t>(pairs.size * 0.8));
+        m.insert(g_pair_begin.ft + static_cast<size_t>(g_pairs.size * 0.5),
+                 g_pair_begin.ft + static_cast<size_t>(g_pairs.size * 0.8));
 
         printContainer(m, print);
 
         std::cout << "\n\ninsert multiple elements (3/3)\n";
-        m.insert(p_begin.ft + static_cast<size_t>(pairs.size * 0.3), p_end.ft);
+        m.insert(g_pair_begin.ft + static_cast<size_t>(g_pairs.size * 0.3), g_pair_end.ft);
 
         printContainer(m, print);
     }
     {
         std::cout << "\n\ninsert to itself\n";
-        t_ftStrIntMap   m(p_begin.ft, p_end.ft);
+        t_ftStrIntMap   m(g_pair_begin.ft, g_pair_end.ft);
 
         m.insert(m.begin(), m.end());
         printContainer(m, print);

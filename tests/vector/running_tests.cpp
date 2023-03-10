@@ -1,6 +1,6 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "../includes/vector_tests.hpp"
+#include "../includes/containers/vector_tests.hpp"
 
 static void algorithmsTest(void);
 static void exceptionsTest(void);

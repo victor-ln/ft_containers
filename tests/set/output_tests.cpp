@@ -1,6 +1,6 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#include "../includes/set_tests.hpp"
+#include "../includes/containers/set_tests.hpp"
 
 static void relationalOperatorsTest(void);
 static void assignmentOperatorTest(void);
@@ -10,6 +10,9 @@ static void insertTest(void);
 static void eraseTest(void);
 static void swapTest(void);
 
+const int     g_array_size = AMOUNT;
+const int     *g_array = createArray(g_array_size);
+
 int main(void) {
     relationalOperatorsTest();
     assignmentOperatorTest();
@@ -18,12 +21,14 @@ int main(void) {
     insertTest();
     eraseTest();
     swapTest();
+    printTime(RESULT);
+    delete[] g_array;
     return 0;
 }
 
 static void constructorsTest(void) {
-    int array[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     std::cout << "\n[ CONSTRUCTORS ]\n";
+    printTime(0);
     {
         std::cout << "\n\nEmpty set\n";
         ft::set<int>             s;
@@ -32,13 +37,13 @@ static void constructorsTest(void) {
     }
     {
         std::cout << "\n\nRange constructor (pointer)\n";
-        ft::set<int>             s(array, array + 9);
+        ft::set<int>             s(g_array, g_array + g_array_size);
 
         printContainer(s, print<int>);
     }
     {
         std::cout << "\n\nRange constructor (iterator)\n";
-        const std::set<int>      to_copy_from(array, array + 9);
+        const std::set<int>      to_copy_from(g_array, g_array + g_array_size);
         ft::set<int>             s(to_copy_from.begin(), to_copy_from.end());
 
         printContainer(s, print<int>);
@@ -52,7 +57,7 @@ static void constructorsTest(void) {
     }
     {
         std::cout << "\n\nCopy constructor\n";
-        const ft::set<int>           s1(array, array + 9);
+        const ft::set<int>           s1(g_array, g_array + g_array_size);
         ft::set<int>                 s2(s1);
 
         printContainer(s1, print<int>);
@@ -66,14 +71,15 @@ static void constructorsTest(void) {
         printContainer(s1, print<int>);
         printContainer(s2, print<int>);
     }
+    printTime(1);
 }
 
 static void swapTest(void) {
-    std::cout << "\n[ SWAP ]\n\n";
-    int array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    ft::set<int> s1(array, array + 5);
-    ft::set<int> s2(array + 5, array + 10);
+    ft::set<int> s1(g_array, g_array + (g_array_size / 2));
+    ft::set<int> s2(g_array + (g_array_size / 2), g_array + g_array_size);
 
+    std::cout << "\n[ SWAP ]\n";
+    printTime(0);
     s1.swap(s2);
     printContainer(s1, print<int>);
     printContainer(s2, print<int>);
@@ -81,14 +87,15 @@ static void swapTest(void) {
     swap(s1, s2);
     printContainer(s1, print<int>);
     printContainer(s2, print<int>);
+    printTime(1);
 }
 
 static void relationalOperatorsTest(void) {
-    std::cout << "\n[ RELATIONAL OPERATORS ]\n";
-    int array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    ft::set<int>             s1(array, array + 9);
-    ft::set<int>             s2(array, array + 9);
+    ft::set<int>             s1(g_array, g_array + g_array_size);
+    ft::set<int>             s2(g_array, g_array + g_array_size);
 
+    std::cout << "\n[ RELATIONAL OPERATORS ]\n";
+    printTime(0);
     std::cout << "\n\noperator ==\n";
     std::cout << "is equal: " << (s1 == s2);
 
@@ -112,48 +119,55 @@ static void relationalOperatorsTest(void) {
     std::cout << "is greater than and not equal: " << (s1 >= s2 && s1 != s2);
     s1.erase(--s1.end());
     std::cout << "is greater than and equal: " << (s1 >= s2 && s1 == s2);
+    std::cout << '\n';
+    printTime(1);
 }
 
 static void assignmentOperatorTest(void) {
     std::cout << "\n[ ASSIGNMENT OPERATOR ]\n";
-    int array[30];
-
-    srand(30);
-    for (int i = 0; i < 30; i++) { array[i] = rand(); }
+    printTime(0);
     {
         /* Deep copying */
         ft::set<int> s1;
         {
-            ft::set<int> s2(array, array + 10);
+            ft::set<int> s2(g_array, g_array + (g_array_size / 3));
             s1 = s2;
         }
     }
     {
         ft::set<int> s1;
-        ft::set<int> s2(array, array + 20);
+        ft::set<int> s2(g_array, g_array + (g_array_size / 2));
 
         s1 = s2;
         printContainer(s1, print<int>);
         printContainer(s2, print<int>);
-        ft::set<int> v3(array, array + 30);
+        ft::set<int> v3(g_array, g_array + g_array_size);
         s1 = v3;
         printContainer(s1, print<int>);
         printContainer(v3, print<int>);
     }
+    printTime(1);
 }
 
 static void operationsTest(void) {
     ft::set<std::string>           s;
-    std::string                     str("a");
+    std::string                    str("a");
+    int                            j = 0;
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < AMOUNT; i++) {
         s.insert(str);
-        str[0]++;
+        str[j]++;
+        if (str[j] > 'z') {
+            str += "a";
+            j++;
+        }
     }
 
     const ft::set<std::string>     constS(s);
-
     ft::set<std::string>::iterator it;
+
+    std::cout << "\n[ OPERATIONS ]\n";
+    printTime(0);
     {
         std::cout << "\n[ FIND ]\n";
 
@@ -244,14 +258,15 @@ static void operationsTest(void) {
         std::cout << "upper bound points to: ";
         std::cout << *ret.second << " => " << *ret.second << '\n';
     }
+    printTime(1);
 }
 
 static void eraseTest(void) {
-    std::cout << "\n[ ERASE ]\n";
-    int array[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     t_ftIterator      it;
+    std::cout << "\n[ ERASE ]\n";
+    printTime(0);
     {
-        ft::set<int> s(array, array + 9);
+        ft::set<int> s(g_array, g_array + g_array_size);
         std::cout << "\n\nErase single element (1/3)\n";
         s.erase(s.begin());
 
@@ -259,7 +274,7 @@ static void eraseTest(void) {
 
         std::cout << "\n\nErase single element (2/3)\n";
         it = s.begin();
-        std::advance(it, 5);
+        std::advance(it, g_array_size / 2);
         int         key = *it;
 
         std::size_t ret = s.erase(key);
@@ -280,35 +295,36 @@ static void eraseTest(void) {
         t_ftIterator      last;
         {
             std::cout << "\n\nErase a range of elements (1/2)\n";
-            ft::set<int> s(array, array + 9);
+            ft::set<int> s(g_array, g_array + g_array_size);
             first   = s.begin();
             last    = first;
 
-            std::advance(last, 5);
+            std::advance(last, g_array_size / 2);
             s.erase(first, last);
 
             printContainer(s, print<int>);
         }
         {
             std::cout << "\n\nErase a range of elements (2/2)\n";
-            ft::set<int> s(array, array + 9);
+            ft::set<int> s(g_array, g_array + g_array_size);
             first   = s.begin();
             last    = first;
 
-            std::advance(first, 3);
-            std::advance(last, 7);
+            std::advance(first, g_array_size * 0.3);
+            std::advance(last, g_array_size * 0.7);
 
             s.erase(first, last);
             printContainer(s, print<int>);
         }
     }
+    printTime(1);
 }
 
 
 static void insertTest(void) {
-    std::cout << "\n[ INSERT ]\n";
     ft::set<int> s;
-    int array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::cout << "\n[ INSERT ]\n";
+    printTime(0);
     {
         t_ftIterator  it;
 
@@ -334,25 +350,28 @@ static void insertTest(void) {
     }
     {
         std::cout << "\n\ninsert multiple elements (1/3)\n";
-        s.insert(array, array + 3);
+        s.insert(g_array, g_array + static_cast<size_t>(g_array_size * 0.3));
 
         printContainer(s, print<int>);
 
         std::cout << "\n\ninsert multiple elements (2/3)\n";
-        s.insert(array + 5, array + 7);
+        s.insert(g_array + static_cast<size_t>(g_array_size * 0.5),
+                 g_array + static_cast<size_t>(g_array_size * 0.7));
 
         printContainer(s, print<int>);
 
         std::cout << "\n\ninsert multiple elements (3/3)\n";
-        s.insert(array + 3, array + 10);
+        s.insert(g_array + static_cast<size_t>(g_array_size * 0.3),
+                 g_array + g_array_size);
 
         printContainer(s, print<int>);
     }
     {
         std::cout << "\n\ninsert to itself\n";
-        ft::set<int>             s(array, array + 10);
+        ft::set<int>             s(g_array, g_array + g_array_size);
 
         s.insert(s.begin(), s.end());
         printContainer(s, print<int>);
     }
+    printTime(1);
 }
