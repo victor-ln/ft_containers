@@ -8,12 +8,7 @@
 #include <list>
 
 #include "../utils.hpp"
-
-#if STD == 1
-    namespace ft = std;
-#else
-    #include "../../../containers/stack.hpp"
-#endif
+#include "../../../containers/stack.hpp"
 
 template <typename T>
 bool compare(T x, T y) {
