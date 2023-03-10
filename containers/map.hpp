@@ -177,7 +177,8 @@ class map {
         return iterator(node);
     }
     const_iterator         find(const key_type& key) const {
-        node_pointer node = _rb_tree.search(ft::make_pair(key, mapped_type()));
+        const_node_pointer node = _rb_tree.search(
+                                            ft::make_pair(key, mapped_type()));
         if (!node)
             return _rb_tree.end();
         return const_iterator(node);
@@ -223,6 +224,7 @@ class map {
  private:
     typedef rb_tree<value_type, value_compare, AllocTp>     rbTreeBase;
     typedef node<value_type>*                               node_pointer;
+    typedef const node<value_type>*                         const_node_pointer;
 
     key_compare _key_comp;
     rbTreeBase  _rb_tree;

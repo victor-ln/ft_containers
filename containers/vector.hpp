@@ -325,8 +325,9 @@ class vector {
     template <class InputIter>
     void _insert_dispatch(iterator pos, InputIter first, InputIter last,
                           false_type) {
-        size_type   n = last - first;
-        pointer     first_ptr(&*first), last_ptr(&*last), pos_ptr(pos.base());
+        size_type       n = last - first;
+        const_pointer   first_ptr(&*first), last_ptr(&*last);
+        pointer         pos_ptr(pos.base());
 
         if (n > static_cast<size_type>(_end_of_storage - _last)) {
             size_type len(size() + std::max(n, size()));
@@ -356,7 +357,7 @@ class vector {
                 std::copy_backward(pos_ptr, old_last - n, old_last);
                 std::copy(first_ptr, last_ptr, pos_ptr);
             } else {
-                pointer mid(first_ptr + pos_n);
+                const_pointer mid(first_ptr + pos_n);
                 _last = std::uninitialized_copy(mid, last_ptr, _last);
                 _last = std::uninitialized_copy(pos_ptr, old_last, _last);
                 std::copy(first_ptr, mid, pos_ptr);
