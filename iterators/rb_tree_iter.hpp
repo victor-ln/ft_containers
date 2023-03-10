@@ -27,7 +27,7 @@ class rb_tree_iter {
     node_pointer       _current;
 
  public:
-    rb_tree_iter() : _current(0) {}
+    rb_tree_iter() : _current() {}
 
     explicit rb_tree_iter(node_pointer x) : _current(x) {}
 

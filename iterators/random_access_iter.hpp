@@ -22,7 +22,7 @@ class random_access_iter {
     typedef typename _iter_traits::reference            reference;
     typedef typename _iter_traits::pointer              pointer;
 
-    random_access_iter() : current(0) {}
+    random_access_iter() : current() {}
 
     explicit random_access_iter(const T& x) : current(x) {}
 

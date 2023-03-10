@@ -22,7 +22,7 @@ class reverse_iter {
     typedef typename _iter_traits::reference            reference;
     typedef typename _iter_traits::pointer              pointer;
 
-    reverse_iter() : current(0) {}
+    reverse_iter() : current() {}
 
     explicit reverse_iter(const T& x) : current(x) {}
 
