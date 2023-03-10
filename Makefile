@@ -1,7 +1,7 @@
 NAME	=	ft_containers
 
 OBJ_DIR =	objects/
-SRC_DIR	=	./
+SRC_DIR	=	@./
 
 SOURCE	=	main.cpp
 OBJECT	=	$(addprefix $(OBJ_DIR),$(SOURCE:%.cpp=%.o))
@@ -37,6 +37,7 @@ RM		=	rm -rf
 ITALIC_LIGHTER_YELLOW	= "\e[1;33m"
 BOLD_GREEN		= "\e[0;92m"
 BOLD_RED		= "\e[0;91m"
+CYAN_COLOR		= "\e[0;96m"
 RESET_COLOR		= "\e[0m"
 
 define time_test
@@ -44,7 +45,7 @@ define time_test
 	@./$(2) > stdOutput.txt
 
 	@$(PRINT) "\n------------ FT  TIME ------------ | ------------ STD TIME ------------\n"
-	@pr -m -t ftOutput.txt stdOutput.txt | grep TIME -B 1
+	@pr -m -t ftOutput.txt stdOutput.txt | grep -E 'TIME|-/-----' -A 1 -B 1
 	@mkdir -p logs
 	@mkdir -p logs/$(3)/
 	@mv ftOutput.txt stdOutput.txt logs/$(3)/
@@ -54,7 +55,6 @@ define compare_outputs
 	@./$(1) > ftOutput.txt
 	@./$(2) > stdOutput.txt
 
-	clear
 	@diff -u ftOutput.txt stdOutput.txt > diffOutput.txt; \
 	if test -s diffOutput.txt; then \
 		$(PRINT) $(BOLD_RED) "Test failed\n"$(RESET_COLOR); \
@@ -68,98 +68,101 @@ define compare_outputs
 endef
 
 $(OBJ_DIR)%.o:		$(SRC_DIR)/%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
+
+containers:	vector1 vector2 vector3 map1 map2 map3 set1 set2 set3 stack1 stack2 stack3 
+	@$(PRINT) $(CYAN_COLOR) "\n Results available in log directory\n" $(RESET_COLOR)
 
 all:				$(NAME)
 
 bonus:				$(NAME)
 
 $(NAME):			$(OBJ_DIR) $(OBJECT)
-	$(CC) $(CFLAGS) $(OBJECT) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJECT) -o $(NAME)
 
 vector1:
-	$(CC) $(CFLAGS) $(UTILS) $(VECTOR1) -o vector_running_tests
-	clear
-	./vector_running_tests
+	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR1) -o vector_running_tests
+	@./vector_running_tests
 	@mkdir -p $(EXECUTABLES_DIR)/vector
 	@mv vector_running_tests $(EXECUTABLES_DIR)/vector
 
 vector2:
-	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -o ftvector_output_tests
-	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(VECTOR2) -o stdvector_output_tests
+	@$(PRINT) $(CYAN_COLOR) "\n OUTPUT TESTS\n" $(RESET_COLOR)
+	@@$(CC) $(CFLAGS) $(UTILS) $(VECTOR2) -o ftvector_output_tests
+	@@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(VECTOR2) -o stdvector_output_tests
 	$(call compare_outputs,ftvector_output_tests,stdvector_output_tests,vector)
 	@mkdir -p $(EXECUTABLES_DIR)/vector
 	@mv $(VECTOR_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/vector
 
 vector3:
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(VECTOR2) -o ftvector_output_tests
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(VECTOR2) -o stdvector_output_tests
+	@@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(VECTOR2) -o ftvector_output_tests
+	@@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(VECTOR2) -o stdvector_output_tests
 	$(call time_test,ftvector_output_tests,stdvector_output_tests,vector)
 	@mkdir -p $(EXECUTABLES_DIR)/vector
 	@mv $(VECTOR_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/vector
 
 map1:
-	$(CC) $(CFLAGS) $(UTILS) $(MAP1) -o map_running_tests
-	clear
-	./map_running_tests
+	@$(CC) $(CFLAGS) $(UTILS) $(MAP1) -o map_running_tests
+	@./map_running_tests
 	@mkdir -p $(EXECUTABLES_DIR)/map
 	@mv map_running_tests $(EXECUTABLES_DIR)/map
 
 map2:
-	@$(CC) $(CFLAGS) $(UTILS) $(MAP2) -o ftmap_output_tests
-	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(MAP2) -o stdmap_output_tests
+	@$(PRINT) $(CYAN_COLOR) "\n OUTPUT TESTS\n" $(RESET_COLOR)
+	@@$(CC) $(CFLAGS) $(UTILS) $(MAP2) -o ftmap_output_tests
+	@@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(MAP2) -o stdmap_output_tests
 	$(call compare_outputs,ftmap_output_tests,stdmap_output_tests,map)
 	@mkdir -p $(EXECUTABLES_DIR)/map
 	@mv $(MAP_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/map
 
 map3:
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(MAP2) -o ftmap_output_tests
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(MAP2) -o stdmap_output_tests
+	@@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(MAP2) -o ftmap_output_tests
+	@@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(MAP2) -o stdmap_output_tests
 	$(call time_test,ftmap_output_tests,stdmap_output_tests,map)
 	@mkdir -p $(EXECUTABLES_DIR)/map
 	@mv $(MAP_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/map
 
 set1:
-	$(CC) $(CFLAGS) $(UTILS) $(SET1) -o set_running_tests
-	clear
-	./set_running_tests
+	@$(CC) $(CFLAGS) $(UTILS) $(SET1) -o set_running_tests
+	@./set_running_tests
 	@mkdir -p $(EXECUTABLES_DIR)/set
 	@mv set_running_tests $(EXECUTABLES_DIR)/set
 
 set2:
-	@$(CC) $(CFLAGS) $(UTILS) $(SET2) -o ftset_output_tests
-	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(SET2) -o stdset_output_tests
+	@$(PRINT) $(CYAN_COLOR) "\n OUTPUT TESTS\n" $(RESET_COLOR)
+	@@$(CC) $(CFLAGS) $(UTILS) $(SET2) -o ftset_output_tests
+	@@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(SET2) -o stdset_output_tests
 	$(call compare_outputs,ftset_output_tests,stdset_output_tests,set)
 	@mkdir -p $(EXECUTABLES_DIR)/set
 	@mv $(SET_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/set
 
 set3:
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(SET2) -o ftset_output_tests
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(SET2) -o stdset_output_tests
+	@@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(SET2) -o ftset_output_tests
+	@@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(SET2) -o stdset_output_tests
 	$(call time_test,ftset_output_tests,stdset_output_tests,set)
 	@mkdir -p $(EXECUTABLES_DIR)/set
 	@mv $(SET_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/set
 
 stack1:
-	$(CC) $(CFLAGS) $(UTILS) $(STACK1) -o stack_running_tests
-	clear
-	./stack_running_tests
+	@$(CC) $(CFLAGS) $(UTILS) $(STACK1) -o stack_running_tests
+	@./stack_running_tests
 	@mkdir -p $(EXECUTABLES_DIR)/stack
 	@mv stack_running_tests $(EXECUTABLES_DIR)/stack
 
 stack2:
-	@$(CC) $(CFLAGS) $(UTILS) $(STACK2) -o ftstack_output_tests
-	@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(STACK2) -o stdstack_output_tests
+	@$(PRINT) $(CYAN_COLOR) "\n OUTPUT TESTS\n" $(RESET_COLOR)
+	@@$(CC) $(CFLAGS) $(UTILS) $(STACK2) -o ftstack_output_tests
+	@@$(CC) $(CFLAGS) -D STD=1 $(UTILS) $(STACK2) -o stdstack_output_tests
 	$(call compare_outputs,ftstack_output_tests,stdstack_output_tests,stack)
 	@mkdir -p $(EXECUTABLES_DIR)/stack
 	@mv $(STACK_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/stack
 
 stack3:
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(STACK2) -o ftstack_output_tests
-	@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(STACK2) -o stdstack_output_tests
+	@@$(CC) $(CFLAGS) -D TIME_TEST=1 $(UTILS) $(STACK2) -o ftstack_output_tests
+	@@$(CC) $(CFLAGS) -D TIME_TEST=1 -D STD=1 $(UTILS) $(STACK2) -o stdstack_output_tests
 	$(call time_test,ftstack_output_tests,stdstack_output_tests,stack)
 	@mkdir -p $(EXECUTABLES_DIR)/stack
 	@mv $(STACK_OUTPUT_EXECUTABLES) $(EXECUTABLES_DIR)/stack
