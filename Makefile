@@ -71,7 +71,7 @@ $(NAME): containers
 all:	containers
 
 containers:	vector1 vector2 vector3 map1 map2 map3 set1 set2 set3 stack1 stack2 stack3 
-	@$(PRINT) $(CYAN_COLOR) "\n Results available in log directory\n" $(RESET_COLOR)
+	@$(PRINT) $(CYAN_COLOR) "\n Results available in logs directory\n" $(RESET_COLOR)
 
 time:
 	@if [ -n "$(target)" ]; then \
@@ -80,10 +80,6 @@ time:
 	else \
 		echo "Usage: make time target=<container_name>"; \
 	fi
-
-$(NAME): $(OBJECTS)
-	@$(CC) $(CFLAGS) $(OBJECTS) -o $(NAME)
-	@$(CC) $(CFLAGS) -D STD=1 $(OBJECTS) -o $(NAME)std
 
 vector1:
 	@$(CC) $(CFLAGS) $(UTILS) $(VECTOR1) -o vector_running_tests
