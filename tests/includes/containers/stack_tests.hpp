@@ -7,12 +7,12 @@
 #include <deque>
 #include <list>
 
-#include "./utils.hpp"
+#include "../utils.hpp"
 
 #if STD == 1
     namespace ft = std;
 #else
-    #include "../../containers/stack.hpp"
+    #include "../../../containers/stack.hpp"
 #endif
 
 template <typename T>

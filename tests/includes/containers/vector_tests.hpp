@@ -5,12 +5,12 @@
 
 #include <vector>
 
-#include "./utils.hpp"
+#include "../utils.hpp"
 
 #if STD == 1
     namespace ft = std;
 #else
-    #include "../../containers/vector.hpp"
+    #include "../../../containers/vector.hpp"
 
     typedef std::vector<int>::iterator                  t_stdIterator;
     typedef std::vector<int>::const_iterator            t_stdConstIterator;

@@ -14,6 +14,20 @@ void printContainer(Container& container, void (*print)(T)) {
     std::cout << "size: " << container.size() << "\n";
 }
 
+template <typename Container>
+void printStack(Container& container) {
+    std::cout << "\n";
+    std::cout << "size: " << container.size() << "\n";
+    std::cout << "empty: " << container.empty() << "\n";
+    while (!container.empty()) {
+        std::cout << container.top() << " ";
+        container.pop();
+    }
+    std::cout << "\n";
+    std::cout << "size: " << container.size() << "\n";
+    std::cout << "empty: " << container.empty() << "\n";
+}
+
 template <typename Container1, typename Container2, typename Compare>
 bool compare_containers(const Container1& c1, const Container2& c2, Compare comp) {
     if (c1.size() != c2.size()) {

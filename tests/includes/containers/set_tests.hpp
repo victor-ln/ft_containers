@@ -5,12 +5,12 @@
 
 #include <set>
 
-#include "./utils.hpp"
+#include "../utils.hpp"
 
 #if STD == 1
     namespace ft = std;
 #else
-    #include "../../containers/set.hpp"
+    #include "../../../containers/set.hpp"
 
     typedef std::set<int>::iterator                 t_stdIterator;
     typedef std::set<int>::const_iterator           t_stdConstIterator;
