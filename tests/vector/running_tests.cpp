@@ -150,8 +150,8 @@ static void reserveTest(void) {
         printStatus(ftV.capacity() == stdV.capacity());
         printStatus(ftV.size() == stdV.size());
 
-        ftIterator  ft_it = ftV.begin() + 2;
-        stdIterator or_it = stdV.begin() + 2;
+        t_ftIterator  ft_it = ftV.begin() + 2;
+        t_stdIterator or_it = stdV.begin() + 2;
         const size_t old_size = ftV.size();
 
         ftV.reserve(5);
@@ -172,11 +172,11 @@ static void iteratorTest(void) {
     {
         printColor(CYAN, "\n  { random_access_iterator }\n");
         printColor(CYAN, "\n    ( member functions )\n");
-        ftIterator                      ftIt = ftV.begin() + 2;
-        stdIterator                     stdIt = stdV.begin() + 2;
+        t_ftIterator                      ftIt = ftV.begin() + 2;
+        t_stdIterator                     stdIt = stdV.begin() + 2;
         {
-            ftConstIterator             ftConstIt = constFtV.begin() + 2;
-            stdConstIterator            stdConstIt = stdV.begin() + 2;
+            t_ftConstIterator             ftConstIt = constFtV.begin() + 2;
+            t_stdConstIterator            stdConstIt = stdV.begin() + 2;
 
             printColor(BGWHITE, "\n├─ iterator::base()\n");
             printStatus(*ftIt.base() == *stdIt.base());
@@ -230,8 +230,8 @@ static void iteratorTest(void) {
 
         printColor(CYAN, "\n    ( non-member functions )\n");
         {
-            ftIterator   ftCmpIt(ftIt);
-            stdIterator  stdCmpIt(stdIt);
+            t_ftIterator   ftCmpIt(ftIt);
+            t_stdIterator  stdCmpIt(stdIt);
 
             printColor(BGWHITE, "\n├─ iterator::operator==\n");
             printStatus((ftIt == ftCmpIt) == (stdIt == stdCmpIt));
@@ -265,11 +265,11 @@ static void iteratorTest(void) {
         }
     }
     {
-        ftReverseIterator               ftIt = ftV.rbegin() + 2;
-        stdReverseIterator              stdIt = stdV.rbegin() + 2;
+        t_ftReverseIterator               ftIt = ftV.rbegin() + 2;
+        t_stdReverseIterator              stdIt = stdV.rbegin() + 2;
         {
-            ftConstReverseIterator      ftConstIt = constFtV.rbegin() + 2;
-            stdConstReverseIterator     stdConstIt = stdV.rbegin() + 2;
+            t_ftConstReverseIterator      ftConstIt = constFtV.rbegin() + 2;
+            t_stdConstReverseIterator     stdConstIt = stdV.rbegin() + 2;
 
             printColor(CYAN, "\n  { reverse_iterator }\n");
             printColor(CYAN, "\n    ( member functions )\n");
@@ -321,8 +321,8 @@ static void iteratorTest(void) {
         printStatus(stdStrV.rbegin()->size() == ftConstStrV.rbegin()->size());
         printColor(CYAN, "\n    ( non-member functions )\n");
         {
-            ftReverseIterator   ftCmpIt(ftIt);
-            stdReverseIterator  stdCmpIt(stdIt);
+            t_ftReverseIterator   ftCmpIt(ftIt);
+            t_stdReverseIterator  stdCmpIt(stdIt);
 
             printColor(BGWHITE, "\n├─ iterator::operator==\n");
             printStatus((ftIt == ftCmpIt) == (stdIt == stdCmpIt));
@@ -357,9 +357,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ begin()\n");
-        ftConstIterator                 ftConstIt = constFtV.begin();
-        ftIterator                      ftIt = ftV.begin();
-        stdIterator                     stdIt = stdV.begin();
+        t_ftConstIterator                 ftConstIt = constFtV.begin();
+        t_ftIterator                      ftIt = ftV.begin();
+        t_stdIterator                     stdIt = stdV.begin();
 
         printStatus(*ftIt == *stdIt);
         printStatus(*ftConstIt == *ftIt);
@@ -367,9 +367,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ rbegin()\n");
-        ftConstReverseIterator          ftConstIt = constFtV.rbegin();
-        ftReverseIterator               ftIt = ftV.rbegin();
-        stdReverseIterator              stdIt = stdV.rbegin();
+        t_ftConstReverseIterator          ftConstIt = constFtV.rbegin();
+        t_ftReverseIterator               ftIt = ftV.rbegin();
+        t_stdReverseIterator              stdIt = stdV.rbegin();
 
         printStatus(*ftIt == *stdIt);
         printStatus(*ftConstIt == *ftIt);
@@ -377,9 +377,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ end()\n");
-        ftConstIterator                 ftConstIte = --constFtV.end();
-        ftIterator                      ftIte = --ftV.end();
-        stdIterator                     stdIte = --stdV.end();
+        t_ftConstIterator                 ftConstIte = --constFtV.end();
+        t_ftIterator                      ftIte = --ftV.end();
+        t_stdIterator                     stdIte = --stdV.end();
 
         printStatus(*ftIte == *stdIte);
         printStatus(*ftConstIte == *ftIte);
@@ -387,9 +387,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ rend()\n");
-        ftConstReverseIterator          ftConstIte = --constFtV.rend();
-        ftReverseIterator               ftIte = --ftV.rend();
-        stdReverseIterator              stdIte = --stdV.rend();
+        t_ftConstReverseIterator          ftConstIte = --constFtV.rend();
+        t_ftReverseIterator               ftIte = --ftV.rend();
+        t_stdReverseIterator              stdIte = --stdV.rend();
 
         printStatus(*ftIte == *stdIte);
         printStatus(*ftConstIte == *ftIte);

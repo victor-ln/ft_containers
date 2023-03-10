@@ -12,17 +12,17 @@
 #else
     #include "../../containers/vector.hpp"
 
-    typedef std::vector<int>::iterator                  stdIterator;
-    typedef std::vector<int>::const_iterator            stdConstIterator;
-    typedef std::vector<int>::reverse_iterator          stdReverseIterator;
-    typedef std::vector<int>::const_reverse_iterator    stdConstReverseIterator;
+    typedef std::vector<int>::iterator                  t_stdIterator;
+    typedef std::vector<int>::const_iterator            t_stdConstIterator;
+    typedef std::vector<int>::reverse_iterator          t_stdReverseIterator;
+    typedef std::vector<int>::const_reverse_iterator    t_stdConstReverseIterator;
 
 #endif
 
-typedef ft::vector<int>::iterator                   ftIterator;
-typedef ft::vector<int>::const_iterator             ftConstIterator;
-typedef ft::vector<int>::reverse_iterator           ftReverseIterator;
-typedef ft::vector<int>::const_reverse_iterator     ftConstReverseIterator;
+typedef ft::vector<int>::iterator                   t_ftIterator;
+typedef ft::vector<int>::const_iterator             t_ftConstIterator;
+typedef ft::vector<int>::reverse_iterator           t_ftReverseIterator;
+typedef ft::vector<int>::const_reverse_iterator     t_ftConstReverseIterator;
 
 #define EXCEPT_MSG_01 \
 "Error: accessing out of range element didn't throw an exception\n"
