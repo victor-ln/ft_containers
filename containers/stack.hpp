@@ -18,52 +18,52 @@ class stack {
     typedef typename Container::reference           reference;
     typedef typename Container::const_reference     const_reference;
 
-    explicit stack(const Container& ctnr = Container()) : _c(ctnr) {}
+    explicit stack(const Container& ctnr = Container()) : c(ctnr) {}
     ~stack() {}
 
-    stack&          operator=(const stack& src) { _c = src._c; return *this; }
+    stack&          operator=(const stack& src) { c = src.c; return *this; }
 
     /*                              Capacity:                             */
 
-    bool            empty(void) const { return _c.empty(); }
-    size_type       size(void) const { return _c.size(); }
+    bool            empty(void) const { return c.empty(); }
+    size_type       size(void) const { return c.size(); }
 
     /*                          Element access:                           */
 
-    reference       top(void) { return _c.back(); }
-    const_reference top(void) const { return _c.back(); }
+    reference       top(void) { return c.back(); }
+    const_reference top(void) const { return c.back(); }
 
     /*                              Modifiers:                            */
 
-    void            push(const value_type& x) { _c.push_back(x); }
-    void            pop(void) { _c.pop_back(); }
+    void            push(const value_type& x) { c.push_back(x); }
+    void            pop(void) { c.pop_back(); }
 
     bool operator==(const stack& rhs) const {
-        return _c == rhs._c;
+        return c == rhs.c;
     }
 
     bool operator!=(const stack& rhs) const {
-        return _c != rhs._c;
+        return c != rhs.c;
     }
 
     bool operator< (const stack& rhs) const {
-        return _c < rhs._c;
+        return c < rhs.c;
     }
 
     bool operator<=(const stack& rhs) const {
-        return _c <= rhs._c;
+        return c <= rhs.c;
     }
 
     bool operator> (const stack& rhs) const {
-        return _c > rhs._c;
+        return c > rhs.c;
     }
 
     bool operator>=(const stack& rhs) const {
-        return _c >= rhs._c;
+        return c >= rhs.c;
     }
 
  protected:
-    Container       _c;
+    Container       c;
 }; /* class stack */
 
 /*                          Relational Operators                      */
