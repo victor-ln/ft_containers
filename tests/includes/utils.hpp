@@ -9,6 +9,7 @@
 #include <sstream>
 #include <iterator>
 #include <algorithm>
+#include <unistd.h>
 
 #if STD != 1
     #define STD 0
@@ -27,6 +28,7 @@
 #define BGWHITE "\033[1;37m"
 #define RESET   "\033[0m"
 #define RESULT  2
+#define DELAY   100
 
 int     comp(const int, const int);
 void    printStatus(int);

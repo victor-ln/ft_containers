@@ -6,6 +6,10 @@ void printColor(const char* code, const char* message) {
     std::cout << code << message << RESET;
 }
 
+void delay(void) {
+    usleep(1000 * DELAY);
+}
+
 void printStatus(int status) {
     static int all;
     static int correct;
@@ -21,6 +25,7 @@ void printStatus(int status) {
         return;
     }
     ++all;
+    delay();
 }
 
 int comp(const int x, const int y) {
@@ -33,11 +38,12 @@ void printTime(int option) {
     }
     static clock_t          t;
     static double           time_took;
+    static double           total_time;
 
     if (!option) {
         t = clock();
         std::cout << "-----/-----/-----/-----\n\n";
-    } else {
+    } else if (option == 1) {
         t = clock() - t;
         time_took = static_cast<double>(t) / CLOCKS_PER_SEC;
         std::cout << "\n  TIME TOOK:   " << time_took;
@@ -46,7 +52,9 @@ void printTime(int option) {
         } else {
             std::cout << "\n\n";
         }
-        t = clock();
+        total_time += time_took;
+    } else {
+        std::cout << "\n  TOTAL TIME:  " << total_time << '\n';
     }
 }
 
