@@ -79,7 +79,7 @@ struct s_pairs {
 
     s_pairs() : ft(0), std(0) {}
 
-    s_pairs(s_pairs& src, std::size_t offset)
+    s_pairs(const s_pairs& src, std::size_t offset)
         :   ft(src.ft + offset),
             std(src.std + offset) {}
 };
@@ -116,11 +116,11 @@ struct s_create_pairs {
         }
     }
 
-    s_pairs    begin(void) {
+    s_pairs    begin(void) const {
         return pairs;
     }
 
-    s_pairs    end(void) {
+    s_pairs    end(void) const {
         return s_pairs(pairs, size);
     }
 };
