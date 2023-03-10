@@ -95,7 +95,6 @@ class reverse_iter {
         current += n;
         return *this;
     }
-
 };  /* class reverse_iter */
 
 /*                   Relational operators                   */
@@ -139,7 +138,7 @@ template<class T1, class T2>
 typename reverse_iter<T1>::difference_type
         operator-(const reverse_iter<T1>& lhs, const reverse_iter<T2>& rhs) {
     return rhs.base() - lhs.base();
-}
+}   /* class reverse_iter */
 
 }   /* namespace ft */
 

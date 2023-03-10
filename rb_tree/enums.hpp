@@ -1,5 +1,7 @@
-#ifndef ENUMS_H
-#define ENUMS_H
+/* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
+
+#ifndef RB_TREE_ENUMS_HPP_
+#define RB_TREE_ENUMS_HPP_
 
 namespace ft {
 
@@ -17,4 +19,4 @@ enum childrenCombinations {
 
 }   /* namespace ft */
 
-#endif  /* ENUMS_H */
+#endif  /* RB_TREE_ENUMS_HPP_ */

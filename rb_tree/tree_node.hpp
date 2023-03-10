@@ -1,9 +1,9 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#ifndef RBTREE_TREE_NODE_HPP_
-#define RBTREE_TREE_NODE_HPP_
+#ifndef RB_TREE_TREE_NODE_HPP_
+#define RB_TREE_TREE_NODE_HPP_
 
-#include "enums.hpp"
+#include "./enums.hpp"
 
 namespace ft {
 
@@ -80,4 +80,4 @@ struct node {
 
 }   /* namespace ft */
 
-#endif  /* RBTREE_TREE_NODE_HPP_ */
+#endif  /* RB_TREE_TREE_NODE_HPP_ */

@@ -80,7 +80,7 @@ class random_access_iter {
         current -= n;
         return *this;
     }
-};
+};  /* class random_access_iter */
 
 /*                   Relational operators                   */
 

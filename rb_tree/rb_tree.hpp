@@ -1,11 +1,11 @@
 /* Copyright © 2022 Victor Nunes, Licensed under the MIT License. */
 
-#ifndef RBTREE_RBTREE_HPP_
-#define RBTREE_RBTREE_HPP_
+#ifndef RB_TREE_RB_TREE_HPP_
+#define RB_TREE_RB_TREE_HPP_
 
 #include <memory>
 
-#include "tree_node.hpp"
+#include "./tree_node.hpp"
 #include "../iterators/reverse_iter.hpp"
 #include "../iterators/rb_tree_iter.hpp"
 
@@ -36,7 +36,8 @@ class rb_tree {
     typedef ft::reverse_iter<iterator>                  reverse_iterator;
     typedef ft::reverse_iter<const_iterator>            const_reverse_iterator;
 
-    rb_tree(const key_compare& comp, const AllocTp& allocator = AllocTp())
+    explicit rb_tree(const key_compare& comp,
+                    const AllocTp& allocator = AllocTp())
             :   _size(0),
                 _comp(comp),
                 _node_allocator(allocator) {
@@ -204,21 +205,22 @@ class rb_tree {
 
  private:
     struct compare_functions {
+        explicit compare_functions(const key_compare& _comp)
+                :   comp(_comp),
+                    less(_comp),
+                    not_less(_comp),
+                    greater(_comp) {}
 
-        compare_functions(const key_compare& _comp) : comp(_comp),
-                                                      less(_comp),
-                                                      not_less(_comp),
-                                                      greater(_comp) {}
-
-        compare_functions(const compare_functions& src) : comp(src.comp),
-                                                          less(src.comp),
-                                                          not_less(src.comp),
-                                                          greater(src.comp) {}
+        explicit compare_functions(const compare_functions& src)
+                :   comp(src.comp),
+                    less(src.comp),
+                    not_less(src.comp),
+                    greater(src.comp) {}
 
         struct s_greater {
             key_compare comp;
 
-            s_greater(const key_compare& _comp) : comp(_comp) {}
+            explicit s_greater(const key_compare& _comp) : comp(_comp) {}
 
             bool operator()(const_reference x, const_reference y) const {
                 return comp(y, x);
@@ -228,7 +230,7 @@ class rb_tree {
         struct s_not_less {
             key_compare comp;
 
-            s_not_less(const key_compare& _comp) : comp(_comp) {}
+            explicit s_not_less(const key_compare& _comp) : comp(_comp) {}
 
             bool operator()(const_reference x, const_reference y) const {
                 return !comp(x, y);
@@ -238,7 +240,7 @@ class rb_tree {
         struct s_less {
             key_compare comp;
 
-            s_less(const key_compare& _comp) : comp(_comp) {}
+            explicit s_less(const key_compare& _comp) : comp(_comp) {}
 
             bool operator()(const_reference x, const_reference y) const {
                 return comp(x, y);
@@ -269,7 +271,7 @@ class rb_tree {
         bool            node_is_left_child;
         bool            parent_is_left_child;
 
-		while (node != _root && node->parent->color == red) {
+        while (node != _root && node->parent->color == red) {
             sibling = _get_sibling(node->parent);
             if (sibling->color == red) {
                 sibling->color = black;
@@ -295,8 +297,8 @@ class rb_tree {
                     _left_rotate(node->parent->parent);
                 }
             }
-		}
-		_root->color = black;
+        }
+        _root->color = black;
     }
 
     void    _balance_tree_remove(node_pointer node) {
@@ -304,7 +306,7 @@ class rb_tree {
         bool                    node_is_left_child;
         childrenCombinations    combination;
 
-		while (node != _root && node->color == black) {
+        while (node != _root && node->color == black) {
             sibling = _get_sibling(node);
             node_is_left_child = _is_left_child(node);
             if (sibling->color == red) {
@@ -314,8 +316,8 @@ class rb_tree {
                     _left_rotate(node->parent);
                     sibling = node->parent->right;
                 } else {
-					_right_rotate(node->parent);
-					sibling = node->parent->left;
+                    _right_rotate(node->parent);
+                    sibling = node->parent->left;
                 }
             }
             combination = _get_children_combination(sibling);
@@ -329,7 +331,7 @@ class rb_tree {
                         sibling->color = red;
                         _right_rotate(sibling);
                         sibling = node->parent->right;
-                    } 
+                    }
                     sibling->color = node->parent->color;
                     node->parent->color = black;
                     sibling->right->color = black;
@@ -340,7 +342,7 @@ class rb_tree {
                         sibling->color = red;
                         _left_rotate(sibling);
                         sibling = node->parent->left;
-                    } 
+                    }
                     sibling->color = node->parent->color;
                     node->parent->color = black;
                     sibling->left->color = black;
@@ -348,8 +350,8 @@ class rb_tree {
                 }
                 node = _root;
             }
-		}
-		node->color = black;
+        }
+        node->color = black;
     }
 
     bool _is_left_child(node_pointer node) {
@@ -427,7 +429,8 @@ class rb_tree {
     }
 
     template <typename function>
-    node_pointer _find_bound(const_reference to_compare, function& condition) {
+    node_pointer _find_bound(const_reference to_compare,
+                             const function& condition) {
         node_pointer    x = _root;
         node_pointer    last_occurency = _nil;
 
@@ -455,8 +458,8 @@ class rb_tree {
     bool    _is_nil(node_pointer node) {
         return !node || node == _nil;
     }
-};
+};  /* class rb_tree */
 
 }  /* namespace ft */
 
-#endif   /* RBTREE_RBTREE_HPP_ */
+#endif   /* RB_TREE_RB_TREE_HPP_ */

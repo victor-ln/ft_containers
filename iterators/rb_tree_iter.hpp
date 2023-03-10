@@ -26,7 +26,6 @@ class rb_tree_iter {
     node_pointer       _current;
 
  public:
-
     rb_tree_iter() : _current(0) {}
 
     explicit rb_tree_iter(node_pointer x) : _current(x) {}
@@ -81,8 +80,8 @@ class rb_tree_iter {
     bool operator!=(const rb_tree_iter& rhs) {
         return _current != rhs._current;
     }
-};
+};  /* class rb_tree_iter */
 
-}
+}   /* namespace ft */
 
 #endif  /* ITERATORS_RB_TREE_ITER_HPP_ */
