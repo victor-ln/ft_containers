@@ -12,17 +12,19 @@
 #else
     #include "../../containers/set.hpp"
 
-    typedef std::set<int>::iterator                  stdIterator;
-    typedef std::set<int>::const_iterator            stdConstIterator;
-    typedef std::set<int>::reverse_iterator          stdReverseIterator;
-    typedef std::set<int>::const_reverse_iterator    stdConstReverseIterator;
+    typedef std::set<int>::iterator                 t_stdIterator;
+    typedef std::set<int>::const_iterator           t_stdConstIterator;
+    typedef std::set<int>::reverse_iterator         t_stdReverseIterator;
+    typedef std::set<int>::const_reverse_iterator   t_stdConstReverseIterator;
 
 #endif
 
-typedef ft::set<int>::iterator                   ftIterator;
-typedef ft::set<int>::const_iterator             ftConstIterator;
-typedef ft::set<int>::reverse_iterator           ftReverseIterator;
-typedef ft::set<int>::const_reverse_iterator     ftConstReverseIterator;
+typedef ft::set<int>::iterator                      t_ftIterator;
+typedef ft::set<int>::const_iterator                t_ftConstIterator;
+typedef ft::set<int>::reverse_iterator              t_ftReverseIterator;
+typedef ft::set<int>::const_reverse_iterator        t_ftConstReverseIterator;
+
+typedef ft::pair<t_ftIterator, bool>                t_ftPairReturn;
 
 template <typename T>
 bool compare(T x, T y) {

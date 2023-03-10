@@ -28,7 +28,7 @@ static void constructorsTest(void) {
     std::cout << "\n[ CONSTRUCTORS ]\n";
     {
         std::cout << "\n\nEmpty map\n";
-        ftStrIntMap             m;
+        t_ftStrIntMap             m;
 
         printContainer(m, print);
     }
@@ -47,26 +47,26 @@ static void constructorsTest(void) {
     }
     {
         std::cout << "\n\nRange constructor with empty range\n";
-        ftStrIntPair            *pairs = 0;
-        ftStrIntMap             m(pairs, pairs);
+        t_ftStrIntPair            *pairs = 0;
+        t_ftStrIntMap             m(pairs, pairs);
 
         printContainer(m, print);
     }
     {
         std::cout << "\n\nCopy constructor\n";
-        const ftStrIntMap           v1(p_begin.ft, p_end.ft);
-        ftStrIntMap                 v2(v1);
+        const t_ftStrIntMap           m1(p_begin.ft, p_end.ft);
+        t_ftStrIntMap                 m2(m1);
 
-        printContainer(v1, print);
-        printContainer(v2, print);
+        printContainer(m1, print);
+        printContainer(m2, print);
     }
     {
         std::cout << "\n\nCopy constructor with empty map\n";
-        ftStrIntMap             v1;
-        ftStrIntMap             v2(v1);
+        t_ftStrIntMap             m1;
+        t_ftStrIntMap             m2(m1);
 
-        printContainer(v1, print);
-        printContainer(v2, print);
+        printContainer(m1, print);
+        printContainer(m2, print);
     }
     printTime();
 }
@@ -77,51 +77,51 @@ static void swapTest(void) {
     s_create_pairs  pairs(10);
     s_pairs         p_begin(pairs.begin());
 
-    ftStrIntMap v1(p_begin.ft, p_begin.ft + 5);
-    ftStrIntMap v2(p_begin.ft + 5, p_begin.ft + 10);
+    t_ftStrIntMap m1(p_begin.ft, p_begin.ft + 5);
+    t_ftStrIntMap m2(p_begin.ft + 5, p_begin.ft + 10);
 
-    v1.swap(v2);
-    printContainer(v1, print);
-    printContainer(v2, print);
+    m1.swap(m2);
+    printContainer(m1, print);
+    printContainer(m2, print);
 
-    swap(v1, v2);
-    printContainer(v1, print);
-    printContainer(v2, print);
+    swap(m1, m2);
+    printContainer(m1, print);
+    printContainer(m2, print);
     printTime();
 }
 
 static void relationalOperatorsTest(void) {
     std::cout << "\n[ RELATIONAL OPERATORS ]\n";
 
-    s_create_pairs  pairs(10);
-    s_pairs         p_begin(pairs.begin());
-    s_pairs         p_end(pairs.end());
-    ftStrIntMap             V1(p_begin.ft, p_end.ft);
-    ftStrIntMap             V2(p_begin.ft, p_end.ft);
+    s_create_pairs          pairs(10);
+    s_pairs                 p_begin(pairs.begin());
+    s_pairs                 p_end(pairs.end());
+    t_ftStrIntMap             M1(p_begin.ft, p_end.ft);
+    t_ftStrIntMap             M2(p_begin.ft, p_end.ft);
 
     std::cout << "\n\noperator ==\n";
-    std::cout << "is equal: " << (V1 == V2);
+    std::cout << "is equal: " << (M1 == M2);
 
     std::cout << "\n\noperator !=\n";
-    V1.erase(--V1.end());
-    std::cout << "is not equal: " << (V1 != V2);
+    M1.erase(--M1.end());
+    std::cout << "is not equal: " << (M1 != M2);
 
     std::cout << "\n\noperator <\n";
-    std::cout << "is less than: " << (V1 < V2);
+    std::cout << "is less than: " << (M1 < M2);
 
     std::cout << "\n\noperator <=\n";
-    std::cout << "is less than and not equal: " << (V1 <= V2 && V1 != V2);
-    V1.insert(ft::make_pair(std::string("0"), 0));
-    std::cout << "is less than and equal: " << (V1 <= V2 && V1 == V2);
+    std::cout << "is less than and not equal: " << (M1 <= M2 && M1 != M2);
+    M1.insert(ft::make_pair(std::string("0"), 0));
+    std::cout << "is less than and equal: " << (M1 <= M2 && M1 == M2);
 
     std::cout << "\n\noperator >\n";
-    V1.insert(ft::make_pair(std::string("9999999999999999999"), 0));
-    std::cout << "is greater than : " << (V1 > V2);
+    M1.insert(ft::make_pair(std::string("9999999999999999999"), 0));
+    std::cout << "is greater than : " << (M1 > M2);
 
     std::cout << "\n\noperator >=\n";
-    std::cout << "is greater than and not equal: " << (V1 >= V2 && V1 != V2);
-    V1.erase(--V1.end());
-    std::cout << "is greater than and equal: " << (V1 >= V2 && V1 == V2);
+    std::cout << "is greater than and not equal: " << (M1 >= M2 && M1 != M2);
+    M1.erase(--M1.end());
+    std::cout << "is greater than and equal: " << (M1 >= M2 && M1 == M2);
 }
 
 static void assignmentOperatorTest(void) {
@@ -132,23 +132,23 @@ static void assignmentOperatorTest(void) {
     s_pairs         p_begin(pairs.begin());
     s_pairs         p_end(pairs.end());
     {
-        ftStrIntMap v1;
+        t_ftStrIntMap m1;
         {
-            ftStrIntMap v2(p_begin.ft, p_begin.ft + 10);
-            v1 = v2;
+            t_ftStrIntMap m2(p_begin.ft, p_begin.ft + 10);
+            m1 = m2;
         }
     }
     {
-        ftStrIntMap v1;
-        ftStrIntMap v2(p_begin.ft, p_begin.ft + 20);
+        t_ftStrIntMap m1;
+        t_ftStrIntMap m2(p_begin.ft, p_begin.ft + 20);
 
-        v1 = v2;
-        printContainer(v1, print);
-        printContainer(v2, print);
+        m1 = m2;
+        printContainer(m1, print);
+        printContainer(m2, print);
 
-        ftStrIntMap v3(p_begin.ft, p_end.ft);
-        v1 = v3;
-        printContainer(v1, print);
+        t_ftStrIntMap v3(p_begin.ft, p_end.ft);
+        m1 = v3;
+        printContainer(m1, print);
         printContainer(v3, print);
     }
     printTime();
@@ -160,9 +160,9 @@ static void eraseTest(void) {
     s_create_pairs  pairs(10);
     s_pairs         p_begin(pairs.begin());
     s_pairs         p_end(pairs.end());
-    ftIterator      it;
+    t_ftIterator      it;
     {
-        ftStrIntMap m(p_begin.ft, p_end.ft);
+        t_ftStrIntMap m(p_begin.ft, p_end.ft);
         std::cout << "\n\nErase single element (1/3)\n";
         m.erase(m.begin());
 
@@ -171,7 +171,13 @@ static void eraseTest(void) {
         std::cout << "\n\nErase single element (2/3)\n";
         it = m.begin();
         std::advance(it, 5);
-        m.erase(it);
+        std::string key = it->first;
+
+        std::size_t ret = m.erase(key);
+        std::cout << "Erase return (1/2) : " << ret << '\n';
+
+        ret = m.erase(key);
+        std::cout << "Erase return (2/2) : " << ret << '\n';
 
         printContainer(m, print);
 
@@ -181,11 +187,11 @@ static void eraseTest(void) {
         printContainer(m, print);
     }
     {
-        ftIterator      first;
-        ftIterator      last;
+        t_ftIterator      first;
+        t_ftIterator      last;
         {
             std::cout << "\n\nErase a range of elements (1/2)\n";
-            ftStrIntMap m(p_begin.ft, p_end.ft);
+            t_ftStrIntMap m(p_begin.ft, p_end.ft);
             first   = m.begin();
             last    = first;
 
@@ -196,7 +202,7 @@ static void eraseTest(void) {
         }
         {
             std::cout << "\n\nErase a range of elements (2/2)\n";
-            ftStrIntMap m(p_begin.ft, p_end.ft);
+            t_ftStrIntMap m(p_begin.ft, p_end.ft);
             first   = m.begin();
             last    = first;
 
@@ -212,18 +218,19 @@ static void eraseTest(void) {
 
 static void insertTest(void) {
     std::cout << "\n[ INSERT ]\n";
-    ftStrIntMap     m;
+    t_ftStrIntMap     m;
 
     s_create_pairs  pairs(10);
     s_pairs         p_begin(pairs.begin());
     s_pairs         p_end(pairs.end());
     {
-        ftIterator  it;
+        t_ftIterator  it;
 
         std::cout << "\n\ninsert single element (1/3)\n";
-        m.insert(m.begin(), ft::make_pair(std::string("10"), 42));
+        it = m.insert(m.begin(), ft::make_pair(std::string("10"), 42));
 
         printContainer(m, print);
+        std::cout << "insert return: Key: " << it->first << " Value: " << it->second << '\n';
 
         std::cout << "\n\ninsert single element (2/3)\n";
         m.insert(ft::make_pair(std::string("42"), 10));
@@ -253,7 +260,7 @@ static void insertTest(void) {
     }
     {
         std::cout << "\n\ninsert to itself\n";
-        ftStrIntMap             m(p_begin.ft, p_end.ft);
+        t_ftStrIntMap             m(p_begin.ft, p_end.ft);
 
         m.insert(m.begin(), m.end());
         printContainer(m, print);

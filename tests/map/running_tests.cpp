@@ -25,18 +25,20 @@ static void algorithmsTest(void) {
     s_pairs         p_begin(pairs.begin());
     s_pairs         p_end(pairs.end());
     {
-        ftStrIntMap     M1(p_begin.ft, p_end.ft);
-        stdStrIntMap    M2(p_begin.std, p_begin.std + 14);
+        t_ftStrIntMap   M1(p_begin.ft, p_end.ft);
+        t_stdStrIntMap  M2(p_begin.std, p_begin.std + 14);
         {
             printColor(BGWHITE, "\n├─ Different size\n");
             printStatus(ft::lexicographical_compare(M1.begin(), M1.end(),
-                                                    M2.begin(), M2.end(), compare()));
+                                                    M2.begin(), M2.end(),
+                                                    compare()));
 
             M2.insert(p_begin.std[14]);
 
             printColor(BGWHITE, "\n├─ Same size and value with pred\n");
             printStatus(!ft::lexicographical_compare(M1.begin(), M1.end(),
-                                                M2.begin(), M2.end(), compare()));
+                                                     M2.begin(), M2.end(),
+                                                     compare()));
         }
         {
             printColor(CYAN, "\n[ EQUAL ]\n");
@@ -61,8 +63,8 @@ static void clearTest(void) {
     s_pairs         p_begin(pairs.begin());
     s_pairs         p_end(pairs.end());
 
-    ftStrIntMap     ftM(p_begin.ft, p_end.ft);
-    stdStrIntMap    stdM(p_begin.std, p_end.std);
+    t_ftStrIntMap   ftM(p_begin.ft, p_end.ft);
+    t_stdStrIntMap  stdM(p_begin.std, p_end.std);
 
     ftM.clear();
     stdM.clear();
@@ -74,17 +76,17 @@ static void iteratorTest(void) {
     s_pairs             p_begin(pairs.begin());
     s_pairs             p_end(pairs.end());
 
-    ftStrIntMap         ftM(p_begin.ft, p_end.ft);
-    stdStrIntMap        stdM(p_begin.std, p_end.std);
-    const ftStrIntMap   constFtM(p_begin.ft, p_end.ft);
+    t_ftStrIntMap   ftM(p_begin.ft, p_end.ft);
+    t_stdStrIntMap  stdM(p_begin.std, p_end.std);
+    const t_ftStrIntMap constFtM(p_begin.ft, p_end.ft);
 
     printColor(CYAN, "\n[ ITERATORS ]\n");
     {
         printColor(CYAN, "\n  { bidirectional_iterator }\n");
         printColor(CYAN, "\n    ( member functions )\n");
 
-        ftIterator                      ftIt = ftM.begin();
-        stdIterator                     stdIt = stdM.begin();
+        t_ftIterator                      ftIt = ftM.begin();
+        t_stdIterator                     stdIt = stdM.begin();
 
         printColor(BGWHITE, "\n├─ iterator::operator*\n");
         printStatus(equal()(*ftIt, *stdIt));
@@ -109,8 +111,8 @@ static void iteratorTest(void) {
 
         printColor(CYAN, "\n    ( non-member functions )\n");
         {
-            ftIterator   ftCmpIt(ftIt);
-            stdIterator  stdCmpIt(stdIt);
+            t_ftIterator   ftCmpIt(ftIt);
+            t_stdIterator  stdCmpIt(stdIt);
 
             printColor(BGWHITE, "\n├─ iterator::operator==\n");
             printStatus((ftIt == ftCmpIt) == (stdIt == stdCmpIt));
@@ -120,13 +122,13 @@ static void iteratorTest(void) {
         }
     }
     {
-        ftReverseIterator               ftIt = ftM.rbegin();
-        stdReverseIterator              stdIt = stdM.rbegin();
+        t_ftReverseIterator               ftIt = ftM.rbegin();
+        t_stdReverseIterator              stdIt = stdM.rbegin();
         std::advance(ftIt, 2);
         std::advance(stdIt, 2);
         {
-            ftConstReverseIterator      ftConstIt = constFtM.rbegin();
-            stdConstReverseIterator     stdConstIt = stdM.rbegin();
+            t_ftConstReverseIterator      ftConstIt = constFtM.rbegin();
+            t_stdConstReverseIterator     stdConstIt = stdM.rbegin();
             std::advance(ftConstIt, 2);
             std::advance(stdConstIt, 2);
 
@@ -161,21 +163,21 @@ static void iteratorTest(void) {
 
         printColor(CYAN, "\n    ( non-member functions )\n");
         {
-            ftReverseIterator   ftCmpIt(ftIt);
-            stdReverseIterator  stdCmpIt(stdIt);
+            t_ftReverseIterator   ftCmpIt(ftIt);
+            t_stdReverseIterator  stdCmpIt(stdIt);
 
-            printColor(BGWHITE, "\n├─ iterator::operator==\n");
+            printColor(BGWHITE, "\n├─ reverse_iterator::operator==\n");
             printStatus((ftIt == ftCmpIt) == (stdIt == stdCmpIt));
 
-            printColor(BGWHITE, "\n├─ iterator::operator!=\n");
+            printColor(BGWHITE, "\n├─ reverse_iterator::operator!=\n");
             printStatus((++ftIt != ftCmpIt) == (++stdIt != stdCmpIt));
         }
     }
     {
         printColor(BGWHITE, "\n├─ begin()\n");
-        ftConstIterator                 ftConstIt = constFtM.begin();
-        ftIterator                      ftIt = ftM.begin();
-        stdIterator                     stdIt = stdM.begin();
+        t_ftConstIterator                 ftConstIt = constFtM.begin();
+        t_ftIterator                      ftIt = ftM.begin();
+        t_stdIterator                     stdIt = stdM.begin();
 
         printStatus(equal()(*ftIt, *stdIt));
         printStatus(*ftConstIt == *ftIt);
@@ -183,9 +185,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ rbegin()\n");
-        ftConstReverseIterator          ftConstIt = constFtM.rbegin();
-        ftReverseIterator               ftIt = ftM.rbegin();
-        stdReverseIterator              stdIt = stdM.rbegin();
+        t_ftConstReverseIterator          ftConstIt = constFtM.rbegin();
+        t_ftReverseIterator               ftIt = ftM.rbegin();
+        t_stdReverseIterator              stdIt = stdM.rbegin();
 
         printStatus(equal()(*ftIt, *stdIt));
         printStatus(*ftConstIt == *ftIt);
@@ -193,9 +195,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ end()\n");
-        ftConstIterator                 ftConstIte = --constFtM.end();
-        ftIterator                      ftIte = --ftM.end();
-        stdIterator                     stdIte = --stdM.end();
+        t_ftConstIterator                 ftConstIte = --constFtM.end();
+        t_ftIterator                      ftIte = --ftM.end();
+        t_stdIterator                     stdIte = --stdM.end();
 
         printStatus(equal()(*ftIte, *stdIte));
         printStatus(*ftConstIte == *ftIte);
@@ -203,9 +205,9 @@ static void iteratorTest(void) {
     }
     {
         printColor(BGWHITE, "\n├─ rend()\n");
-        ftConstReverseIterator          ftConstIte = --constFtM.rend();
-        ftReverseIterator               ftIte = --ftM.rend();
-        stdReverseIterator              stdIte = --stdM.rend();
+        t_ftConstReverseIterator          ftConstIte = --constFtM.rend();
+        t_ftReverseIterator               ftIte = --ftM.rend();
+        t_stdReverseIterator              stdIte = --stdM.rend();
 
         printStatus(equal()(*ftIte, *stdIte));
         printStatus(*ftConstIte == *ftIte);
@@ -221,15 +223,15 @@ static void sizeTest(void) {
     printColor(CYAN, "\n[ SIZE ]\n");
     {
         printColor(BGWHITE, "\n├─ size (non-empty map)\n");
-        ftStrIntMap             ftM(p_begin.ft, p_end.ft);
-        stdStrIntMap            stdM(p_begin.std, p_end.std);
+        t_ftStrIntMap   ftM(p_begin.ft, p_end.ft);
+        t_stdStrIntMap  stdM(p_begin.std, p_end.std);
 
         printStatus(ftM.size() == ftM.size());
     }
     {
         printColor(BGWHITE, "\n├─ size (empty map)\n");
-        ftStrIntMap             ftM;
-        stdStrIntMap            stdM;
+        t_ftStrIntMap   ftM;
+        t_stdStrIntMap  stdM;
 
         printStatus(ftM.size() == stdM.size());
     }
@@ -239,8 +241,8 @@ static void accessorsTest(void) {
     printColor(CYAN, "\n[ ACCESSORS ]\n\n");
     s_create_pairs  new_pairs(15);
     s_pairs         p_begin(new_pairs.begin());
-    ftStrIntMap     ftM;
-    stdStrIntMap    stdM;
+    t_ftStrIntMap   ftM;
+    t_stdStrIntMap  stdM;
 
     for (int i = 0; i < 10; i++) {
         ftM[p_begin.ft[i].first] = p_begin.ft[i].second;
