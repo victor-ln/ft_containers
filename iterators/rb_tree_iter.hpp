@@ -20,8 +20,9 @@ class rb_tree_iter {
     typedef typename _iter_traits::pointer              pointer;
 
  protected:
-    typedef ft::node<value_type>                       node_base;
-    typedef node_base*                                 node_pointer;
+    typedef ft::node<value_type>                        node_base;
+    typedef node_base*                                  node_pointer;
+    typedef const node_base*                            const_node_pointer;
 
     node_pointer       _current;
 
@@ -29,6 +30,9 @@ class rb_tree_iter {
     rb_tree_iter() : _current(0) {}
 
     explicit rb_tree_iter(node_pointer x) : _current(x) {}
+
+    explicit rb_tree_iter(const_node_pointer x)
+            : _current(const_cast<node_pointer>(x)) {}
 
     rb_tree_iter(const rb_tree_iter& x) : _current(x.base()) {}
 
