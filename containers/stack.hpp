@@ -18,6 +18,12 @@ class stack {
     typedef typename Container::reference           reference;
     typedef typename Container::const_reference     const_reference;
 
+    template <class Type, class Cont>
+    friend bool operator==(const stack<Type, Cont>&, const stack<Type, Cont>&);
+
+    template <class Type, class Cont>
+    friend bool operator< (const stack<Type, Cont>&, const stack<Type, Cont>&);
+
     explicit stack(const Container& ctnr = Container()) : c(ctnr) {}
     ~stack() {}
 
@@ -38,33 +44,39 @@ class stack {
     void            push(const value_type& x) { c.push_back(x); }
     void            pop(void) { c.pop_back(); }
 
-    bool operator==(const stack& rhs) const {
-        return c == rhs.c;
-    }
-
-    bool operator!=(const stack& rhs) const {
-        return c != rhs.c;
-    }
-
-    bool operator< (const stack& rhs) const {
-        return c < rhs.c;
-    }
-
-    bool operator<=(const stack& rhs) const {
-        return c <= rhs.c;
-    }
-
-    bool operator> (const stack& rhs) const {
-        return c > rhs.c;
-    }
-
-    bool operator>=(const stack& rhs) const {
-        return c >= rhs.c;
-    }
-
  protected:
     Container       c;
 }; /* class stack */
+
+template <class T, class Container>
+bool operator==(const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
+    return lhs.c == rhs.c;
+}
+
+template <class T, class Container>
+bool operator!=(const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
+    return !(lhs == rhs);
+}
+
+template <class T, class Container>
+bool operator< (const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
+    return lhs.c < rhs.c;
+}
+
+template <class T, class Container>
+bool operator<=(const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
+    return !(rhs < lhs);
+}
+
+template <class T, class Container>
+bool operator> (const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
+    return rhs < lhs;
+}
+
+template <class T, class Container>
+bool operator>=(const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
+    return !(lhs < rhs);
+}
 
 /*                          Relational Operators                      */
 
